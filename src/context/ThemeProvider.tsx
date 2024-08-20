@@ -1,6 +1,4 @@
-"use client";
-
-// ** React Imports
+// ** React
 import { ReactNode } from "react";
 
 // ** MUI Imports
@@ -28,7 +26,6 @@ interface Props {
 
 const ThemeComponent = ({ children }: Props) => {
   const { mode } = useMode();
-  console.log("🚀 ~ ThemeComponent ~ mode:", mode)
 
   let theme = createTheme({
     components: overrides(),

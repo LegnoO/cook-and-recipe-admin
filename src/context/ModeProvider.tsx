@@ -1,6 +1,4 @@
-"use client";
-
-// ** React Imports
+// ** React
 import { useState, useEffect, createContext, ReactNode } from "react";
 
 // ** MUI Imports
@@ -9,7 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 // ** Types
 export type ModeType = "light" | "dark" | "system";
 
-export interface ModeContextType {
+export interface IModeContext {
   mode: ModeType;
   setMode: (newMode: ModeType) => void;
 }
@@ -19,13 +17,8 @@ type Props = {
   children: ReactNode;
 };
 
-const defaultProvider: ModeContextType = {
-  mode: "light",
-  setMode: () => null,
-};
-
 // ** Create Context
-export const ModeContext = createContext(defaultProvider);
+export const ModeContext = createContext<IModeContext | undefined>(undefined);
 
 const ModeProvider = ({ children }: Props) => {
   const modeStorage = localStorage.getItem("mode")
@@ -67,8 +60,6 @@ const ModeProvider = ({ children }: Props) => {
         pickedMode: "system",
       }),
     );
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

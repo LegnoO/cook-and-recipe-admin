@@ -1,9 +1,14 @@
 // ** MUI Imports
 import { Palette } from "@mui/material";
-import { grey } from "@mui/material/colors";
 
-// ** Utils
-import { adjustRgbColor } from "@/utils/color";
+// ** Constants
+import {
+  mainColors,
+  commonColors,
+  backgroundColors,
+  textColors,
+  supportColors,
+} from "@/constants";
 
 // ** Types
 interface newCustomPalette {
@@ -50,19 +55,17 @@ declare module "@mui/material/Button" {
 }
 
 const DefaultPalette = (mode: Palette["mode"]): Palette => {
-  const whiteColor = "#fff";
-  const lightColor = "47, 43, 61";
-  const darkColor = "208, 212, 241";
-  const mainColor = mode === "light" ? lightColor : darkColor;
-  const bodyColor = mode === "light" ? grey[50] : "#141A21";
-  const paperColor = mode === "light" ? whiteColor : "#1C252E";
+  const textColor = mode === "light" ? textColors.light : textColors.dark;
 
   const customColors = {
-    dark: darkColor,
-    main: mainColor,
-    light: lightColor,
-    lightPaperBg: whiteColor,
-    darkPaperBg: paperColor,
+    dark: textColors.dark,
+    main: textColor,
+    light: textColors.light,
+    lightPaperBg: commonColors.white,
+    darkPaperBg:
+      mode === "light"
+        ? backgroundColors.paper.light
+        : backgroundColors.paper.dark,
     bodyBg: mode === "light" ? "#F8F7FA" : "#25293C",
     trackBg: mode === "light" ? "#F1F0F2" : "#363B54",
     avatarBg: mode === "light" ? "#DBDADE" : "#4A5072",
@@ -74,71 +77,58 @@ const DefaultPalette = (mode: Palette["mode"]): Palette => {
     customColors,
     mode: mode,
     common: {
-      black: "#000",
-      white: whiteColor,
+      ...commonColors,
     },
     primary: {
-      light: "#fad396",
-      main: adjustRgbColor("rgb(253, 189, 150)", 1, "hex"),
-      dark: adjustRgbColor("rgb(253, 189, 150)", 0.9, "hex"),
-      contrastText: whiteColor,
+      ...mainColors.primary,
     },
     secondary: {
-      light: "#B2B4B8",
-      main: "#A8AAAE",
-      dark: "#949699",
-      contrastText: whiteColor,
+      ...mainColors.secondary,
     },
     tertiary: {
-      main: mode === "light" ? "#1C252E" : whiteColor,
-      contrastText: mode === "light" ? whiteColor : "#1C252E",
+      main: mode === "light" ? "#1C252E" : commonColors.white,
+      contrastText: mode === "light" ? commonColors.white : "#1C252E",
     },
     error: {
-      light: "#ED6F70",
-      main: "#EA5455",
-      dark: "#fff",
-      contrastText: whiteColor,
+      ...supportColors.error,
     },
     warning: {
-      light: "#FFAB5A",
-      main: "#FF9F43",
-      dark: "#E08C3B",
-      contrastText: whiteColor,
+      ...supportColors.warning,
     },
     info: {
-      light: "#1FD5EB",
-      main: "#00CFE8",
-      dark: "#00B6CC",
-      contrastText: whiteColor,
+      ...supportColors.info,
     },
     success: {
-      light: "#42CE80",
-      main: "#28C76F",
-      dark: "#23AF62",
-      contrastText: whiteColor,
+      ...supportColors.success,
     },
     text: {
-      primary: `rgba(${mainColor}, 0.78)`,
-      secondary: `rgba(${mainColor}, 0.68)`,
-      disabled: `rgba(${mainColor}, 0.42)`,
+      primary: `rgba(${textColor}, 0.78)`,
+      secondary: `rgba(${textColor}, 0.68)`,
+      disabled: `rgba(${textColor}, 0.42)`,
     },
-    divider: `rgba(${mainColor}, 0.16)`,
+    divider: `rgba(${textColor}, 0.16)`,
     background: {
-      paper: paperColor,
-      default: bodyColor,
+      paper:
+        mode === "light"
+          ? backgroundColors.paper.light
+          : backgroundColors.paper.dark,
+      default:
+        mode === "light"
+          ? backgroundColors.body.light
+          : backgroundColors.body.dark,
     },
     action: {
-      active: `rgba(${mainColor}, 0.54)`,
-      hover: `rgba(${mainColor}, 0.04)`,
-      selected: `rgba(${mainColor}, 0.06)`,
+      active: `rgba(${textColor}, 0.54)`,
+      hover: `rgba(${textColor}, 0.04)`,
+      selected: `rgba(${textColor}, 0.06)`,
       selectedOpacity: 0.06,
-      disabled: `rgba(${mainColor}, 0.26)`,
-      disabledBackground: `rgba(${mainColor}, 0.12)`,
-      focus: `rgba(${mainColor}, 0.12)`,
-      hoverOpacity: 0.04, // default
-      disabledOpacity: 0.38, // default
-      focusOpacity: 0.12, // default
-      activatedOpacity: 0.12, // default
+      disabled: `rgba(${textColor}, 0.26)`,
+      disabledBackground: `rgba(${textColor}, 0.12)`,
+      focus: `rgba(${textColor}, 0.12)`,
+      hoverOpacity: 0.04,
+      disabledOpacity: 0.38,
+      focusOpacity: 0.12,
+      activatedOpacity: 0.12,
     },
   } as Palette;
 };
