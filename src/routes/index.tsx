@@ -23,7 +23,7 @@ import LoadingScreen from "@/components/layouts/LoadingScreen";
 import Suspense from "@/components/Suspense";
 
 // ** Pages
-import LoginPage from "@/pages/LoginPage";
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const App = lazy(() => import("@/App"));
 

@@ -26,7 +26,6 @@ export interface IAuthContext {
   setUser: Dispatch<SetStateAction<User | null>>;
   logout: () => void;
   login: ({ username, password }: LoginCredentials) => void;
-  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 // ** Create Context
@@ -37,7 +36,7 @@ const AuthProvider = () => {
   const isLoginPage = window.location.pathname.includes("/login");
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, _setLoading] = useState(false);
 
   const { mutate, isPending } = useMutation<
     User,
@@ -104,7 +103,6 @@ const AuthProvider = () => {
         login: handleLogin,
         logout: handleLogout,
         isLoading: isLoading || isPending,
-        setLoading,
       }}>
       <Outlet />
     </AuthContext.Provider>

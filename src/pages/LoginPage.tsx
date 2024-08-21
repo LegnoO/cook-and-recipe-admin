@@ -39,8 +39,6 @@ import {
   LoginFormSchema,
 } from "@/lib/schema-validate/loginForm";
 
-
-
 // ** Styled Components
 const StyledForm = styled("form")(() => ({
   display: "flex",
@@ -62,8 +60,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
 );
 
 const LoginPage = () => {
-
-  const { login, isLoading, setLoading } = useAuth();
+  const { login, isLoading } = useAuth();
 
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
@@ -214,13 +211,6 @@ const LoginPage = () => {
           </StyledForm>
         </CardContent>
       </Card>
-
-      <div
-        onClick={() => {
-          setLoading(true);
-        }}>
-        test
-      </div>
     </Box>
   );
 };
