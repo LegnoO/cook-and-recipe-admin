@@ -1,8 +1,8 @@
-import { STATUS_CODES } from "@/constants/statusCodes";
 import axios, { AxiosError } from "axios";
+import { STATUS_CODES } from "@/constants/statusCodes";
 
 const AxiosInstance = axios.create({
-  baseURL: "https://dummyjson.com",
+  baseURL: import.meta.env.VITE_DATABASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,8 +27,21 @@ AxiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error: AxiosError) => {
-    if (error.response && error.response.status === STATUS_CODES.UNAUTHORIZED) {
+  async (error: AxiosError) => {
+    if (
+      error.config &&
+      error.response &&
+      error.response.status === STATUS_CODES.UNAUTHORIZED &&
+      !error.response?.config?.url?.includes("/login")
+    ) {
+      try {
+        // const newAccessToken = await refreshToken();
+        // error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return axios.request(error.config);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
+      }
     }
 
     return Promise.reject(error);

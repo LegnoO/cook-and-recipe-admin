@@ -16,7 +16,6 @@ const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   "&": {
     backgroundColor: "transparent",
     color: theme.palette.text.primary,
-    paddingTop: "1rem",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
@@ -31,7 +30,7 @@ const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   "&:before": {
     content: '""',
     position: "absolute",
-    top: 0,
+    top: "-1rem",
     left: 0,
     zIndex: -1,
     backdropFilter: "blur(10px)",

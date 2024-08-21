@@ -1,11 +1,6 @@
 // ** MUI Imports
 import { styled, useTheme } from "@mui/material/styles";
 
-// ** Props
-interface IProps {
-  hideLabel?: boolean;
-}
-
 // ** Styled
 export const LogoLabel = styled("span")(({ theme }) => ({
   color: theme.palette.text.primary,
@@ -24,13 +19,19 @@ export const StyledLogo = styled("div")({
   alignItems: "center",
 });
 
-const Logo = ({ hideLabel }: IProps) => {
+// ** Types
+interface IProps {
+  hideLabel?: boolean;
+  logoSize?: number;
+}
+
+const Logo = ({ logoSize = 34, hideLabel }: IProps) => {
   const theme = useTheme();
 
   const LogoIcon = (
     <svg
       className="logo-icon"
-      width={34}
+      width={logoSize}
       viewBox="0 0 32 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

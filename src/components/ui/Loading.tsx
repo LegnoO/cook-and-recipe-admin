@@ -38,15 +38,35 @@ const Dot = styled(Box)(({ theme }) => ({
   },
 }));
 
-const Loading = () => {
+interface IProps {
+  layout?: boolean;
+}
+
+const Loading = ({ layout }: IProps) => {
+  if (layout) {
+    return (
+      <LayoutWrapper className="suspense-loading-layout">
+        <Loader>
+          <Dot />
+          <Dot />
+          <Dot />
+        </Loader>
+      </LayoutWrapper>
+    );
+  }
+
   return (
-    <LayoutWrapper className="suspense-loading-layout">
-      <Loader>
-        <Dot />
-        <Dot />
-        <Dot />
-      </Loader>
-    </LayoutWrapper>
+    <Loader>
+      <Dot
+        sx={{ backgroundColor: (theme) => theme.palette.primary.contrastText }}
+      />
+      <Dot
+        sx={{ backgroundColor: (theme) => theme.palette.primary.contrastText }}
+      />
+      <Dot
+        sx={{ backgroundColor: (theme) => theme.palette.primary.contrastText }}
+      />
+    </Loader>
   );
 };
 

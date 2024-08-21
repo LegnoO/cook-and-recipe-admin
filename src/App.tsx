@@ -1,5 +1,5 @@
 // ** React
-import { useEffect, useState } from "react";
+import {useState } from "react";
 
 // ** Library
 import NoDataIcon from "@/assets/ic-content.svg";
@@ -31,16 +31,9 @@ import Image from "@/components/Image";
 import Icon from "@/components/ui/Icon";
 
 // import { User } from "./types/User";
-import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const { login, isLoading } = useAuth();
-  console.log("🚀 ~ App ~ isLoading:", isLoading);
-
   const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
-  useEffect(() => {
-    login({ username: "emilys", password: "emilyspass" });
-  }, []);
 
   const handleCloseTooltip = () => {
     setActiveTooltip(null);

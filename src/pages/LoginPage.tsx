@@ -20,14 +20,18 @@ import {
 } from "@mui/material";
 
 // ** Components
-import CustomTextField from "@/components/ui/CustomTextField";
 import Icon from "@/components/ui/Icon";
 import Logo from "@/components/ui/Logo";
+import Loading from "@/components/ui/Loading";
+import CustomTextField from "@/components/ui/CustomTextField";
 
 // ** Library
 import { Link } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+// ** Hooks
+import { useAuth } from "@/hooks/useAuth";
 
 // ** Schema Validate
 import {
@@ -56,18 +60,20 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
 );
 
 const LoginPage = () => {
+  const { login, isLoading } = useAuth();
+
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
-      email: "",
-      password: "",
+      username: "emilys",
+      password: "emilyspass",
     },
     resolver: zodResolver(LoginFormSchema),
   });
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  function onSubmit(data: LoginFormData) {
-    console.log(data);
+  function onSubmit({ username, password }: LoginFormData) {
+    login({ username, password });
   }
 
   function handleClickShowPassword() {
@@ -117,7 +123,7 @@ const LoginPage = () => {
             autoComplete="off"
             onSubmit={handleSubmit(onSubmit)}>
             <Controller
-              name="email"
+              name="username"
               control={control}
               rules={{ required: true }}
               render={({
@@ -125,13 +131,13 @@ const LoginPage = () => {
                 fieldState: { error },
               }) => (
                 <CustomTextField
-                  variant="outlined"
                   fullWidth
-                  label="Email"
-                  placeholder="Enter your email"
-                  onChange={onChange}
+                  label="username"
+                  placeholder="Enter your username"
+                  variant="outlined"
                   value={value}
-                  error={!!error}
+                  onChange={onChange}
+                  error={Boolean(error)}
                   helperText={error ? error.message : null}
                 />
               )}
@@ -189,13 +195,19 @@ const LoginPage = () => {
                 Forgot Password?
               </Typography>
             </Box>
-            <Button
-              sx={{ fontWeight: 500 }}
-              fullWidth
-              type="submit"
-              variant="contained">
-              Login
-            </Button>
+            {isLoading ? (
+              <Button sx={{ fontWeight: 500 }} fullWidth variant="contained">
+                <Loading />
+              </Button>
+            ) : (
+              <Button
+                sx={{ fontWeight: 500 }}
+                fullWidth
+                type="submit"
+                variant="contained">
+                Login
+              </Button>
+            )}
           </StyledForm>
         </CardContent>
       </Card>

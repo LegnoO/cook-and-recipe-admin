@@ -14,6 +14,9 @@ import { styled } from "@mui/material/styles";
 // ** Components
 import Icon from "@/components/ui/Icon";
 
+// ** Hooks
+import { useAuth } from "@/hooks/useAuth";
+
 // ** Styled Components
 const BadgeContentSpan = styled("span")(({ theme }) => ({
   width: 8,
@@ -52,6 +55,7 @@ const ButtonLogout = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const UserDropDown = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   function handleDropdownOpen(event: MouseEvent<HTMLElement>) {
@@ -134,9 +138,7 @@ const UserDropDown = () => {
           }}
           className="menu-item">
           <ButtonLogout
-            onClick={() => {
-              navigate("/login");
-            }}
+            onClick={logout}
             className="logout-button"
             variant="contained"
             color="error">

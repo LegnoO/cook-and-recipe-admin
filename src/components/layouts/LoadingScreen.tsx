@@ -1,27 +1,59 @@
-// * Mui Imports
-import { Box } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-
-// ** Components
+// ** MUI Imports
+import { Box, keyframes, styled } from "@mui/material";
 import Logo from "@/components/ui/Logo";
+import Image from "@/components/Image";
+
+// ** Images
+import WaveAnimationGif from "@/assets/wave.gif";
+
+// ** Styled
+const wavePulse = keyframes`
+0% {
+    transform: scaleZ(1);
+}
+30% {
+    transform: scale3d(1.1, 1.1, 1.1);
+}
+60% {
+    transform: scale3d(1.1, 1.1, 1.1);
+}
+100% {
+    transform: scaleZ(1);
+}
+`;
+
+const LayoutWrapper = styled(Box)({
+  display: "flex",
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  height: "100%",
+});
+const LayoutContent = styled(Box)({
+  position: "relative",
+});
 
 const LoadingScreen = () => {
   return (
-    <Box
-      sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        justifyContent: "center",
-        width: "100%",
-        zIndex: 2000,
-      }}
-      className="loading">
-      <Logo />
-      <CircularProgress disableShrink sx={{ mt: "2rem" }} />
-    </Box>
+    <LayoutWrapper className="loading-full-screen">
+      <LayoutContent>
+        <Box
+          sx={{
+            "&": {
+              position: "absolute",
+              top: "50%",
+              right: "50%",
+              transform: "translate(50%, -50%)",
+              zIndex: 2000,
+            },
+            "& .logo": { animation: `${wavePulse} 1.83s 0.4s infinite` },
+          }}>
+          <Logo logoSize={80} hideLabel />
+        </Box>
+        <Image src={WaveAnimationGif} alt="wave-animation" />
+      </LayoutContent>
+    </LayoutWrapper>
   );
 };
 

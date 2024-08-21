@@ -7,9 +7,12 @@ import {
   useEffect,
 } from "react";
 
+// ** Components
+import LoadingScreen from "@/components/layouts/LoadingScreen";
+
 // ** Library
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useSearchParams, useNavigate, Outlet } from "react-router-dom";
 
 // ** Services
 import { signIn } from "@/services/authService";
@@ -30,8 +33,10 @@ export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  const isLoginPage = window.location.pathname.includes("/login");
+  const [searchParams] = useSearchParams();
+  const [user, setUser] = useState<any | null>(null);
+  const [isLoading, _setLoading] = useState(false);
 
   const { mutate, isPending } = useMutation<
     User,
@@ -40,7 +45,12 @@ const AuthProvider = () => {
   >({
     mutationFn: ({ username, password }) => signIn(username, password),
     onSuccess: (data) => {
-      setUser(data);
+      const { token } = data;
+      localStorage.setItem("accessToken", token);
+      const returnUrl = searchParams.get("returnUrl");
+      const redirectURL = returnUrl ? returnUrl : "/";
+      setUser({ test: "not empty" });
+      navigate(redirectURL);
     },
     onError: (error) => {
       console.error("Login failed:", error);
@@ -48,23 +58,23 @@ const AuthProvider = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-
-    const initAuth = async () => {
-      if (token) {
-        try {
-          setLoading(true);
-          // const userData = await getUserInfo();
-          // setUser(userData);
-        } catch (error) {
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    initAuth();
+    // const token = localStorage.getItem("accessToken");
+    // const initAuth = async () => {
+    //   if (token) {
+    //     try {
+    //       setLoading(true);
+    //       const userData = await getUserInfo();
+    //       setUser(userData);
+    //     } catch (error) {
+    //       localStorage.removeItem("accessToken");
+    //       localStorage.removeItem("refreshToken");
+    //       setUser(null);
+    //     } finally {
+    //       setLoading(false);
+    //     }
+    //   }
+    // };
+    // initAuth();
   }, []);
 
   function handleLogin({ username, password }: LoginCredentials) {
@@ -74,9 +84,16 @@ const AuthProvider = () => {
   }
 
   const handleLogout = () => {
+    localStorage.removeItem("accessToken");
     setUser(null);
-    navigate("/signin");
+    navigate("/login");
   };
+
+  if (!isLoginPage) {
+    if (isLoading || isPending) {
+      return <LoadingScreen />;
+    }
+  }
 
   return (
     <AuthContext.Provider

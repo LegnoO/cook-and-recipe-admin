@@ -1,15 +1,20 @@
 // ** Library
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 
 // ** Hooks
 import { useAuth } from "@/hooks/useAuth";
 
 const ProtectedRoute = () => {
-  const { user } = useAuth();
-  console.log("🚀 ~ ProtectedRoute ~ user:", user)
+  const auth = useAuth();
+  const location = useLocation();
 
-  // return user ? <Outlet /> : <Navigate to="/login" replace />;
-  return <Outlet />;
+  if (auth.user) {
+    return <Outlet />;
+  }
+
+  const redirectToLogin = `/login?returnUrl=${location.pathname}`;
+  return <Navigate to={redirectToLogin} />;
+  // return <Outlet />;
 };
 
 export default ProtectedRoute;

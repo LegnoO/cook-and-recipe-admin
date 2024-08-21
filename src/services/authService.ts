@@ -15,3 +15,15 @@ export async function signIn(
 
   return response.data;
 }
+
+export async function getUserInfo(): Promise<User> {
+  const response = await AxiosInstance.post<User>("/auth/login");
+
+  return response.data;
+}
+
+export async function refreshToken(): Promise<User> {
+  const response = await AxiosInstance.post<User>("/auth/login");
+
+  return response.data;
+}

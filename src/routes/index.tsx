@@ -1,5 +1,5 @@
 // ** React
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 // ** Library
 import {
@@ -19,36 +19,32 @@ import Loading from "@/components/ui/Loading";
 
 // ** Routes
 import ProtectedRoute from "./ProtectedRoute";
+import LoadingScreen from "@/components/layouts/LoadingScreen";
+import Suspense from "@/components/Suspense";
 
 // ** Pages
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const App = lazy(() => import("@/App"));
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" errorElement={<ErrorBoundary />}>
+    <Route errorElement={<ErrorBoundary />}>
       <Route element={<AuthProvider />}>
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
-            <Route
-              index
-              element={
-                <Suspense fallback={<Loading />}>
-                  <App />
-                </Suspense>
-              }
-            />
+            <Route element={<Suspense fallback={<Loading layout />} />}>
+              <Route index path="/" element={<App />} />
+              <Route index path="/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
         </Route>
+
         <Route element={<BlankLayout />}>
-          <Route
-            path="/login"
-            element={
-              <Suspense fallback={<Loading />}>
-                <LoginPage />
-              </Suspense>
-            }
-          />
+          <Route element={<Suspense fallback={<LoadingScreen />} />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/test" element={<LoadingScreen />} />
+          </Route>
         </Route>
       </Route>
     </Route>,
