@@ -11,14 +11,13 @@ import ModeToggler from "@/components/ModeToggler";
 // ** Utils
 import { hexToRGBA } from "@/utils/color";
 
-// ** Styled
+// ** Styled Components
 const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   "&": {
-    backgroundColor: "transparent",
+    marginTop: "1rem",
     color: theme.palette.text.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    backgroundColor: hexToRGBA(theme.palette.background.paper, 0.85),
+    borderRadius: theme.shape.borderRadius,
     //   [theme.breakpoints.up("sm")]: {
     //     paddingLeft: theme.spacing(6),
     //     paddingRight: theme.spacing(6),
@@ -27,22 +26,21 @@ const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
     //     paddingLeft: theme.spacing(4),
     //     paddingRight: theme.spacing(4),
   },
-  "&:before": {
-    content: '""',
-    position: "absolute",
-    top: "-1rem",
-    left: 0,
-    zIndex: -1,
-    backdropFilter: "blur(10px)",
-    width: "100%",
-    height: `calc(${theme.mixins.toolbar.minHeight}px + 1rem)`,
-    background: `linear-gradient(180deg,${hexToRGBA(theme.palette.background.default, 0.7)} 44%, ${hexToRGBA(theme.palette.background.default, 0.43)} 73%, ${hexToRGBA(theme.palette.background.default, 0)})`,
-  },
+  // "&:before": {
+  //   content: '""',
+  //   position: "absolute",
+  //   top: "-1rem",
+  //   left: 0,
+  //   zIndex: -1,
+  //   height: "1rem",
+  //   width: "100%",
+  //   backdropFilter: "blur(6px)",
+  //   background: hexToRGBA(theme.palette.background.default, 0.95),
+  // },
 }));
 
 const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
   width: "100%",
-  backgroundColor: theme.palette.background.paper,
   padding: "0.5rem 1rem",
   alignItems: "stretch",
   borderRadius: theme.shape.borderRadius,
@@ -53,7 +51,7 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 
 const AppBar = () => {
   return (
-    <StyledAppBar position="sticky" elevation={0}>
+    <StyledAppBar className="app-bar" position="sticky" elevation={0}>
       <Toolbar>
         <Box
           sx={{

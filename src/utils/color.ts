@@ -4,7 +4,11 @@ const cssRgbaRegex =
   /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|1|0?\.\d+)\s*\)$/;
 const hexColorRegex = /^#([A-Fa-f0-9]{3}){1,2}$/;
 
-export function hexToRGBA(hexColor: string, opacity: number): string {
+export function hexToRGBA(
+  hexColor: string,
+  opacity: number,
+  percent?: number,
+): string {
   if (!hexColorRegex.test(hexColor)) {
     throw new Error(`Invalid color format: ${hexColor}`);
   }
@@ -20,6 +24,10 @@ export function hexToRGBA(hexColor: string, opacity: number): string {
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
+
+  if (percent) {
+    return `rgba(${r + percent}, ${g + percent}, ${b + percent}, ${opacity})`;
+  }
 
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }

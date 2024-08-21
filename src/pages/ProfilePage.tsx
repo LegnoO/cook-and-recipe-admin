@@ -19,14 +19,14 @@ import Icon from "@/components/ui/Icon";
 
 // ** Utils
 import { hexToRGBA } from "@/utils/color";
-import CustomTextField from "@/components/ui/CustomTextField";
+import CustomTextField from "@/components/ui/TextField";
 
 // ** Library
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfileFormSchema } from "@/lib/schema-validate/profileForm";
 
-// ** Styled
+// ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
   paddingInline: "1.5rem",
   paddingBlock: "2rem",

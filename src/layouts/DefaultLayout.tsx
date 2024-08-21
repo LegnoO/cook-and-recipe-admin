@@ -6,12 +6,12 @@ import { Outlet } from "react-router-dom";
 
 // ** Components
 import Sidebar from "@/components/layouts/Sidebar";
-import Header from "@/components/layouts/Header";
+import AppBar from "@/components/layouts/Appbar";
 
 // ** Nav Items
 import { verticalNavItems } from "@/lib/navigation/vertical";
 
-// ** Styled
+// ** Styled Components
 const LayoutWrapper = styled("div")(({ theme }: { theme: Theme }) => ({
   position: "relative",
   height: "100%",
@@ -44,7 +44,7 @@ const DefaultLayout = () => {
     <LayoutWrapper className="layout-wrapper">
       <LayoutInner className="layout-inner">
         <Sidebar navItems={verticalNavItems} />
-        <Header />
+        <AppBar />
         <LayoutContent className="layout-content">
           <Outlet />
         </LayoutContent>

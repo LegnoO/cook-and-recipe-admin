@@ -3,9 +3,9 @@ import { forwardRef } from "react";
 
 // ** MUI
 import { styled } from "@mui/material/styles";
-import TextField, { TextFieldProps } from "@mui/material/TextField";
+import MuiTextField, { TextFieldProps } from "@mui/material/TextField";
 
-const TextFieldStyled = styled(TextField)<TextFieldProps>(({ theme }) => ({
+const StyledTextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
   alignItems: "flex-start",
   "& .MuiInputLabel-root": {
     transform: "none",
@@ -158,11 +158,11 @@ const TextFieldStyled = styled(TextField)<TextFieldProps>(({ theme }) => ({
   },
 }));
 
-const CustomTextField = forwardRef((props: TextFieldProps, ref) => {
+const TextField = forwardRef((props: TextFieldProps, ref) => {
   const { size = "small", InputLabelProps, ...rest } = props;
 
   return (
-    <TextFieldStyled
+    <StyledTextField
       size={size}
       inputRef={ref}
       {...rest}
@@ -172,6 +172,6 @@ const CustomTextField = forwardRef((props: TextFieldProps, ref) => {
   );
 });
 
-CustomTextField.displayName = "CustomTextField";
+TextField.displayName = "TextField";
 
-export default CustomTextField;
+export default TextField;

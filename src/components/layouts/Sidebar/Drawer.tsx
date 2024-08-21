@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 // ** MUI Imports
 import { styled } from "@mui/material/styles";
 
-// ** Styled
+// ** Styled Components
 export const StyledDrawer = styled("div")(({ theme }) => ({
   position: "fixed",
   top: 0,

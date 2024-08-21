@@ -30,7 +30,7 @@ interface Props {
   isRootParent: boolean;
 }
 
-// ** Styled
+// ** Styled Components
 export const StyledNavGroup = styled("li")(() => () => ({
   "&": {
     marginTop: "0.375rem",

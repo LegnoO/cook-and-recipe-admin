@@ -1,8 +1,8 @@
 // ** MUI Imports
 import { styled, useTheme } from "@mui/material/styles";
 
-// ** Styled
-export const LogoLabel = styled("span")(({ theme }) => ({
+// ** Styled Components
+const LogoLabel = styled("span")(({ theme }) => ({
   color: theme.palette.text.primary,
   lineHeight: 1.09091,
   fontWeight: 700,
@@ -14,7 +14,7 @@ export const LogoLabel = styled("span")(({ theme }) => ({
     "margin-inline-start 300ms ease-in-out 0s, opacity 300ms ease-in-out 0s",
 }));
 
-export const StyledLogo = styled("div")({
+const StyledLogo = styled("div")({
   display: "flex",
   alignItems: "center",
 });

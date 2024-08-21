@@ -11,11 +11,11 @@ export const commonColors = {
 export const backgroundColors = {
   body: {
     light: "#fafafa",
-    dark: "#1d2833",
+    dark: "#25293C",
   },
   paper: {
-    light: "#fbfbfe",
-    dark: "#263340",
+    light: "#fff",
+    dark: "#2F3349",
   },
 };
 

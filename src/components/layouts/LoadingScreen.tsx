@@ -1,12 +1,14 @@
 // ** MUI Imports
 import { Box, keyframes, styled } from "@mui/material";
-import Logo from "@/components/ui/Logo";
+
+// ** Components
 import Image from "@/components/Image";
+import Logo from "@/components/ui/Logo";
 
 // ** Images
 import WaveAnimationGif from "@/assets/wave.gif";
 
-// ** Styled
+// ** Styled Components
 const wavePulse = keyframes`
 0% {
     transform: scaleZ(1);

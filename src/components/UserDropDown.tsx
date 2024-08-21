@@ -5,13 +5,14 @@ import { useState, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ** MUI Imports
-import { Menu, Badge, Avatar, Typography, Divider } from "@mui/material";
+import { Badge, Avatar, Typography, Divider } from "@mui/material";
 import MuiMenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 import Box, { BoxProps } from "@mui/material/Box";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 
 // ** Components
+import Menu from "@/components/ui/Menu";
 import Icon from "@/components/ui/Icon";
 
 // ** Hooks

@@ -48,9 +48,9 @@ const AuthProvider = () => {
       const { token } = data;
       localStorage.setItem("accessToken", token);
       const returnUrl = searchParams.get("returnUrl");
-      const redirectURL = returnUrl ? returnUrl : "/";
       setUser({ test: "not empty" });
-      navigate(redirectURL);
+      const redirectUrl = returnUrl ? returnUrl : "/";
+      navigate(redirectUrl);
     },
     onError: (error) => {
       console.error("Login failed:", error);

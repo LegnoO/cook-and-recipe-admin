@@ -7,7 +7,7 @@ import { Outlet } from "react-router-dom";
 // ** MUI Imports
 import { styled } from "@mui/material/styles";
 
-// ** Styled
+// ** Styled Components
 const LayoutWrapper = styled("div")(({ theme }) => ({
   position: "relative",
   height: "100%",

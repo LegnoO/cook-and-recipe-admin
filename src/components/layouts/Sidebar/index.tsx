@@ -20,7 +20,7 @@ interface Props {
   navItems: IVerticalNavItemsType;
 }
 
-// ** Styled
+// ** Styled Components
 export const StyledSidebar = styled("aside")(() => ({
   // position: "fixed",
   // inset: 0,

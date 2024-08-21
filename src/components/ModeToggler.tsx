@@ -5,11 +5,12 @@ import { useState, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 // ** MUI Imports
-import { Menu, Typography, IconButton } from "@mui/material";
+import { Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiMenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 
 // ** Components
+import Menu from "@/components/ui/Menu";
 import Icon from "@/components/ui/Icon";
 
 // ** Library

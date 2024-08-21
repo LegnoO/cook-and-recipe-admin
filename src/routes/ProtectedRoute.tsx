@@ -12,7 +12,10 @@ const ProtectedRoute = () => {
     return <Outlet />;
   }
 
-  const redirectToLogin = `/login?returnUrl=${location.pathname}`;
+  const redirectToLogin =
+    location.pathname !== "/"
+      ? `/login?returnUrl=${location.pathname}`
+      : "/login";
   return <Navigate to={redirectToLogin} />;
   // return <Outlet />;
 };

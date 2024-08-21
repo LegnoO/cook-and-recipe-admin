@@ -26,7 +26,7 @@ interface Props {
   setRootGroupActive: Dispatch<SetStateAction<string[]>>;
 }
 
-// ** Styled
+// ** Styled Components
 export const MenuNavLink = styled("li")(({ theme }) => ({
   "&": {
     marginTop: "0.375rem",

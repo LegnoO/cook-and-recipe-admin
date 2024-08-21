@@ -1,5 +1,5 @@
 // ** React
-import {useState } from "react";
+import { useState } from "react";
 
 // ** Library
 import NoDataIcon from "@/assets/ic-content.svg";
@@ -9,7 +9,6 @@ import MoreFill from "./assets/mingcute-more-fill.svg?react";
 import {
   Box,
   IconButton,
-  Tooltip,
   MenuList,
   MenuItem,
   ClickAwayListener,
@@ -24,6 +23,7 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui/CustomTable";
+import Tooltip from "@/components/ui/Tooltip";
 // import Paper from "@mui/material/Paper";
 import { Checkbox, Typography, TablePagination } from "@mui/material";
 

@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 
 // ** MUI Imports
 import { styled } from "@mui/material/styles";
-
-// ** Components
 import Logo from "@/components/ui/Logo";
 
-// ** Styled
-export const StyledNavHeader = styled("div")({
+// ** Components
+
+// ** Styled Components
+const StyledNavHeader = styled("div")({
   "&": {
     display: "flex",
     alignItems: "center",

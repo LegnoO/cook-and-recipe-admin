@@ -9,7 +9,7 @@ interface Props {
   item: INavSectionTitle;
 }
 
-// ** Styled
+// ** Styled Components
 export const StyledNavSectionTitle = styled("li")({
   position: "relative",
   display: "flex",
