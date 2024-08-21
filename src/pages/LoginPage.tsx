@@ -39,7 +39,7 @@ import {
   LoginFormSchema,
 } from "@/lib/schema-validate/loginForm";
 
-import { useNavigate } from "react-router-dom";
+
 
 // ** Styled Components
 const StyledForm = styled("form")(() => ({
@@ -62,8 +62,8 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
 );
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+
+  const { login, isLoading, setLoading } = useAuth();
 
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
@@ -214,9 +214,10 @@ const LoginPage = () => {
           </StyledForm>
         </CardContent>
       </Card>
+
       <div
         onClick={() => {
-          navigate("/test");
+          setLoading(true);
         }}>
         test
       </div>
