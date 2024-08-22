@@ -1,5 +1,5 @@
 // ** React
-import { useState, MouseEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 
 // ** Library
 import { useNavigate } from "react-router-dom";
@@ -44,8 +44,15 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
 }));
 
 const ModeToggler = ({ drag }: { drag?: boolean }) => {
+  const modeTogglerRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const { mode, setMode } = useMode();
+  const [constraints, setConstraints] = useState({
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  });
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const MODE_MENU_ITEMS = ["Light", "Dark", "System"];
   const modePicked = localStorage.getItem("mode")
@@ -68,11 +75,26 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
     setAnchorEl(null);
   }
 
+  useEffect(() => {
+    if (modeTogglerRef.current) {
+      const buttonRect = modeTogglerRef.current.getBoundingClientRect();
+      setConstraints({
+        left: -buttonRect.left + 50,
+        right: window.innerWidth - buttonRect.right - 50,
+        top: -buttonRect.top + 50,
+        bottom: window.innerHeight - buttonRect.bottom - 50,
+      });
+    }
+  }, []);
+
   return (
     <>
       {drag ? (
         <motion.div
+          ref={modeTogglerRef}
           drag
+          dragMomentum={false}
+          dragConstraints={constraints}
           style={{ position: "absolute", bottom: "20%", right: " 5%" }}>
           <IconButton onClick={handleDropdownOpen}>
             <Icon
