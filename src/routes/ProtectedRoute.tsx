@@ -8,16 +8,16 @@ import { useAuth } from "@/hooks/useAuth";
 import LoadingScreen from "@/components/layouts/LoadingScreen";
 
 const ProtectedRoute = () => {
-  const { user, isLoading } = useAuth();
   const location = useLocation();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    console.log("LoadingScreen");
+  
     return <LoadingScreen />;
   }
 
   if (user && !isLoading) {
-    console.log("Outlet");
+
     return <Outlet />;
   }
 

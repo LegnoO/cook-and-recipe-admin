@@ -1,6 +1,6 @@
 // ** React
-// import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+// import { StrictMode } from "react";
 // ** Library
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";

@@ -65,7 +65,6 @@ const AuthProvider = () => {
     const accessToken = localStorage.getItem("accessToken");
 
     const initAuth = async () => {
-      console.log(window.history)
       if (accessToken) {
         try {
           setLoading(true);
