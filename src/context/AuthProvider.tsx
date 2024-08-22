@@ -65,6 +65,7 @@ const AuthProvider = () => {
     const accessToken = localStorage.getItem("accessToken");
 
     const initAuth = async () => {
+      console.log(window.history)
       if (accessToken) {
         try {
           setLoading(true);
@@ -91,6 +92,7 @@ const AuthProvider = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     setUser(null);
     navigate("/login");
   };

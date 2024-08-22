@@ -94,11 +94,7 @@ const UserDropDown = () => {
         }}>
         <Box sx={{ px: "1.5rem", py: "0.4375rem" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Avatar
-              alt="Avatar"
-              src="https://scontent.fsgn6-1.fna.fbcdn.net/v/t1.6435-1/139131444_3393715627406941_8376925531107375232_n.jpg?stp=c0.0.200.200a_dst-jpg_p200x200&_nc_cat=103&ccb=1-7&_nc_sid=e4545e&_nc_ohc=GifADf7S5R0Q7kNvgFraanA&_nc_ht=scontent.fsgn6-1.fna&oh=00_AYBpTskoJj6lw8hEJjJwwKvtNNYoG9FWkacadByAe2N6jQ&oe=66C0B525"
-              sx={{ width: "2.5rem", height: "2.5rem" }}
-            />
+            <Avatar alt="Avatar" sx={{ width: "2.5rem", height: "2.5rem" }} />
             <Box
               sx={{
                 display: "flex",
@@ -164,7 +160,6 @@ const UserDropDown = () => {
           onClick={handleDropdownOpen}
           sx={{ width: 38, height: 38 }}
           alt="Avatar"
-          src="https://scontent.fsgn6-1.fna.fbcdn.net/v/t1.6435-1/139131444_3393715627406941_8376925531107375232_n.jpg?stp=c0.0.200.200a_dst-jpg_p200x200&_nc_cat=103&ccb=1-7&_nc_sid=e4545e&_nc_ohc=GifADf7S5R0Q7kNvgFraanA&_nc_ht=scontent.fsgn6-1.fna&oh=00_AYBpTskoJj6lw8hEJjJwwKvtNNYoG9FWkacadByAe2N6jQ&oe=66C0B525"
         />
         <MenuDropdown />
       </Badge>
