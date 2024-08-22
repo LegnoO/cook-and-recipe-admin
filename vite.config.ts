@@ -9,14 +9,4 @@ export default defineConfig({
   resolve: {
     alias: [{ find: "@", replacement: resolve(__dirname, "src") }],
   },
-  server: {
-    proxy: {
-      "/api": {
-        target: "https://cook-and-recipe.vercel.app",
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
 });

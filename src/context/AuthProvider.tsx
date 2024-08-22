@@ -7,23 +7,21 @@ import {
   useEffect,
 } from "react";
 
-// ** Components
-import LoadingScreen from "@/components/layouts/LoadingScreen";
-
 // ** Library
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams, useNavigate, Outlet } from "react-router-dom";
 
 // ** Services
-import { signIn } from "@/services/authService";
+import { getUserInfo, signIn } from "@/services/authService";
 
 // ** Types
-import { LoginCredentials, User } from "@/types/User";
+import { LoginCredentials, User, AuthTokens } from "@/types/Auth";
 
 export interface IAuthContext {
   user: User | null;
   isLoading: boolean;
   setUser: Dispatch<SetStateAction<User | null>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
   login: ({ username, password }: LoginCredentials) => void;
 }
@@ -33,22 +31,23 @@ export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = () => {
   const navigate = useNavigate();
-  const isLoginPage = window.location.pathname.includes("/login");
+
   const [searchParams] = useSearchParams();
-  const [user, setUser] = useState<any | null>(null);
-  const [isLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setLoading] = useState(true);
 
   const { mutate, isPending } = useMutation<
-    User,
+    AuthTokens,
     Error,
     { username: string; password: string }
   >({
     mutationFn: ({ username, password }) => signIn(username, password),
-    onSuccess: (data) => {
-      const { token } = data;
-      localStorage.setItem("accessToken", token);
+    onSuccess: async (data) => {
+      const { accessToken, refreshToken } = data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      await fetchUserData();
       const returnUrl = searchParams.get("returnUrl");
-      setUser({ test: "not empty" });
       const redirectUrl = returnUrl ? returnUrl : "/";
       navigate(redirectUrl);
     },
@@ -57,24 +56,31 @@ const AuthProvider = () => {
     },
   });
 
+  async function fetchUserData() {
+    const userData = await getUserInfo();
+    setUser(userData);
+  }
+
   useEffect(() => {
-    // const token = localStorage.getItem("accessToken");
-    // const initAuth = async () => {
-    //   if (token) {
-    //     try {
-    //       setLoading(true);
-    //       const userData = await getUserInfo();
-    //       setUser(userData);
-    //     } catch (error) {
-    //       localStorage.removeItem("accessToken");
-    //       localStorage.removeItem("refreshToken");
-    //       setUser(null);
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   }
-    // };
-    // initAuth();
+    const accessToken = localStorage.getItem("accessToken");
+
+    const initAuth = async () => {
+      if (accessToken) {
+        try {
+          setLoading(true);
+          await fetchUserData();
+        } catch (error) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    initAuth();
   }, []);
 
   function handleLogin({ username, password }: LoginCredentials) {
@@ -89,12 +95,6 @@ const AuthProvider = () => {
     navigate("/login");
   };
 
-  if (!isLoginPage) {
-    if (isLoading || isPending) {
-      return <LoadingScreen />;
-    }
-  }
-
   return (
     <AuthContext.Provider
       value={{
@@ -103,6 +103,7 @@ const AuthProvider = () => {
         login: handleLogin,
         logout: handleLogout,
         isLoading: isLoading || isPending,
+        setLoading,
       }}>
       <Outlet />
     </AuthContext.Provider>

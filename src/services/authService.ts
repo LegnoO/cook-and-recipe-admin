@@ -2,28 +2,34 @@
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
-import { User } from "@/types/User";
+import { AuthTokens, User } from "@/types/Auth";
 
-export async function signIn(
-  username: string,
-  password: string,
-): Promise<User> {
-  const response = await AxiosInstance.post<User>("/auth/manager/login", {
+export async function signIn(username: string, password: string) {
+  const response = await AxiosInstance.post<AuthTokens>("/auth/manager/login", {
     username,
     password,
   });
-  console.log("🚀 ~ response.data:", response.data)
 
+  console.log("🚀 ~ signIn ~ response.data:", response.data);
   return response.data;
 }
 
-export async function getUserInfo(): Promise<User> {
-  const response = await AxiosInstance.post<User>("/auth/login");
+export async function getUserInfo() {
+  // const response = await AxiosInstance.post<User>("/auth/login");
 
-  return response.data;
+  // return response.data;
+
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    id: "66c616b0dffdbea4fea8ff20",
+    fullName: "Admin",
+    email: "admin123@gmail.com",
+    dateOfBirth: null,
+  };
 }
 
-export async function refreshToken(): Promise<User> {
+export async function refreshToken() {
   const response = await AxiosInstance.post<User>("/auth/login");
 
   return response.data;

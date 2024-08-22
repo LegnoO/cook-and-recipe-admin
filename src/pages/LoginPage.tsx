@@ -40,7 +40,6 @@ import {
   LoginFormSchema,
 } from "@/lib/schema-validate/loginForm";
 
-
 // ** Styled Components
 const StyledForm = styled("form")(() => ({
   display: "flex",
@@ -82,9 +81,9 @@ const LoginPage = () => {
     setShowPassword((prev) => !prev);
   }
 
+
   return (
     <>
-     
       <Box
         sx={{
           mt: "1.5rem",

@@ -22,6 +22,7 @@ import { ModeType } from "@/context/ModeProvider";
 
 // ** Hooks
 import { useMode } from "@/hooks/useMode";
+import { hexToRGBA } from "@/utils/color";
 
 // ** Styled Components
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
@@ -64,9 +65,8 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
   }
 
   function handleDropdownClose(url?: string) {
-    if (url) {
-      navigate(url);
-    }
+    if (url) navigate(url);
+
     setAnchorEl(null);
   }
 
@@ -77,12 +77,13 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
 
   useEffect(() => {
     if (modeTogglerRef.current) {
-      const buttonRect = modeTogglerRef.current.getBoundingClientRect();
+      const { left, right, top, bottom } =
+        modeTogglerRef.current.getBoundingClientRect();
       setConstraints({
-        left: -buttonRect.left + 50,
-        right: window.innerWidth - buttonRect.right - 50,
-        top: -buttonRect.top + 50,
-        bottom: window.innerHeight - buttonRect.bottom - 50,
+        left: -left + 50,
+        right: window.innerWidth - right - 50,
+        top: -top + 50,
+        bottom: window.innerHeight - bottom - 50,
       });
     }
   }, []);
@@ -95,7 +96,18 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
           drag
           dragConstraints={constraints}
           style={{ position: "absolute", bottom: "20%", right: " 5%" }}>
-          <IconButton onClick={handleDropdownOpen}>
+          <IconButton
+            sx={{
+              "&": {
+                backgroundColor: (theme) =>
+                  hexToRGBA(theme.palette.secondary.main, 0.04),
+              },
+              "&:hover": {
+                backgroundColor: (theme) =>
+                  hexToRGBA(theme.palette.secondary.main, 0.1),
+              },
+            }}
+            onClick={handleDropdownOpen}>
             <Icon
               fontSize="1.625rem"
               icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}

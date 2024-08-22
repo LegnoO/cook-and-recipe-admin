@@ -25,12 +25,14 @@ const wavePulse = keyframes`
 `;
 
 const LayoutWrapper = styled(Box)({
+  position: "relative",
   display: "flex",
   flex: 1,
   justifyContent: "center",
   alignItems: "center",
   width: "100%",
-  height: "100%",
+  height: "100vh",
+  zIndex: 2001,
 });
 const LayoutContent = styled(Box)({
   position: "relative",

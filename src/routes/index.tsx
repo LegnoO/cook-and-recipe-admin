@@ -11,6 +11,10 @@ import {
 // ** Context
 import AuthProvider from "@/context/AuthProvider";
 
+// ** Components
+import LoadingScreen from "@/components/layouts/LoadingScreen";
+import Suspense from "@/components/Suspense";
+
 // ** Layout
 import DefaultLayout from "@/layouts/DefaultLayout";
 import BlankLayout from "@/layouts/BlankLayout";
@@ -19,8 +23,7 @@ import Loading from "@/components/ui/Loading";
 
 // ** Routes
 import ProtectedRoute from "./ProtectedRoute";
-import LoadingScreen from "@/components/layouts/LoadingScreen";
-import Suspense from "@/components/Suspense";
+import PublicRoute from "./PublicRoute";
 
 // ** Pages
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
@@ -40,10 +43,12 @@ const router = createBrowserRouter(
           </Route>
         </Route>
 
-        <Route element={<BlankLayout />}>
-          <Route element={<Suspense fallback={<LoadingScreen />} />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/test" element={<LoadingScreen />} />
+        <Route element={<PublicRoute />}>
+          <Route element={<BlankLayout />}>
+            <Route element={<Suspense fallback={<LoadingScreen />} />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/test" element={<LoadingScreen />} />
+            </Route>
           </Route>
         </Route>
       </Route>
