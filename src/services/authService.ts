@@ -8,10 +8,11 @@ export async function signIn(
   username: string,
   password: string,
 ): Promise<User> {
-  const response = await AxiosInstance.post<User>("/auth/login", {
+  const response = await AxiosInstance.post<User>("/auth/manager/login", {
     username,
     password,
   });
+  console.log("🚀 ~ response.data:", response.data)
 
   return response.data;
 }

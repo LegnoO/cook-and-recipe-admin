@@ -36,7 +36,7 @@ const AuthProvider = () => {
   const isLoginPage = window.location.pathname.includes("/login");
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any | null>(null);
-  const [isLoading, _setLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const { mutate, isPending } = useMutation<
     User,

@@ -3,6 +3,7 @@ import { useState, MouseEvent } from "react";
 
 // ** Library
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 // ** MUI Imports
 import { Typography, IconButton } from "@mui/material";
@@ -42,7 +43,7 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   },
 }));
 
-const ModeToggler = () => {
+const ModeToggler = ({ drag }: { drag?: boolean }) => {
   const navigate = useNavigate();
   const { mode, setMode } = useMode();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -69,12 +70,27 @@ const ModeToggler = () => {
 
   return (
     <>
-      <IconButton onClick={handleDropdownOpen}>
-        <Icon
-          fontSize="1.625rem"
-          icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
-        />
-      </IconButton>
+      {drag ? (
+        <motion.div
+          drag
+          style={{ position: "absolute", bottom: "20%", right: " 5%" }}>
+          <IconButton onClick={handleDropdownOpen}>
+            <Icon
+              fontSize="1.625rem"
+              icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
+            />
+          </IconButton>
+        </motion.div>
+      ) : (
+        <>
+          <IconButton onClick={handleDropdownOpen}>
+            <Icon
+              fontSize="1.625rem"
+              icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
+            />
+          </IconButton>
+        </>
+      )}
       <Menu
         className="menu"
         sx={{
