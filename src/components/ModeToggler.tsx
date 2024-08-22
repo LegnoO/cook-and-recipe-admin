@@ -93,7 +93,6 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
         <motion.div
           ref={modeTogglerRef}
           drag
-          dragMomentum={false}
           dragConstraints={constraints}
           style={{ position: "absolute", bottom: "20%", right: " 5%" }}>
           <IconButton onClick={handleDropdownOpen}>

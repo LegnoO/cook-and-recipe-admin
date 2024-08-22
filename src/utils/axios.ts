@@ -4,8 +4,6 @@ import { STATUS_CODES } from "@/constants/statusCodes";
 const AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_DATABASE_URL,
   headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Credentials": true,
     "Content-Type": "application/json",
   },
 });
