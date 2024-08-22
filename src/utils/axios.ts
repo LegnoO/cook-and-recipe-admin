@@ -1,11 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { STATUS_CODES } from "@/constants/statusCodes";
 
-const BASE_URL = import.meta.env.VITE_DATABASE_URL;
+const BASE_URL =
+  import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;
+  
 if (!BASE_URL) console.log("Wrong Backend URL!");
-
-console.log("1 ",import.meta.env.VITE_VERCEL_DATABASE_URL);
-console.log("2 ",process.env.VITE_VERCEL_DATABASE_URL);
 
 const AxiosInstance = axios.create({
   baseURL: BASE_URL,
