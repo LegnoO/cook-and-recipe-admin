@@ -4,6 +4,8 @@ import { STATUS_CODES } from "@/constants/statusCodes";
 const BASE_URL = import.meta.env.VITE_DATABASE_URL;
 if (!BASE_URL) console.log("Wrong Backend URL!");
 
+console.log(process.env);
+
 const AxiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
