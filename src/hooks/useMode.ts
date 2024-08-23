@@ -4,7 +4,7 @@ import { ModeContext } from "@/context/ModeProvider";
 export const useMode = () => {
   const context = useContext(ModeContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error("useMode must be used within an ModeProvider");
   }
   return context;
 };

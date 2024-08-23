@@ -5,11 +5,12 @@ import {
   createContext,
   useState,
   useEffect,
+  ReactNode,
 } from "react";
 
 // ** Library
 import { useMutation } from "@tanstack/react-query";
-import { useSearchParams, useNavigate, Outlet } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 // ** Services
 import { getUserInfo, signIn } from "@/services/authService";
@@ -26,10 +27,14 @@ export interface IAuthContext {
   login: ({ username, password }: LoginCredentials) => void;
 }
 
+type Props = {
+  children: ReactNode;
+};
+
 // ** Create Context
 export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
-const AuthProvider = () => {
+const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
@@ -106,7 +111,7 @@ const AuthProvider = () => {
         isLoading: isLoading || isPending,
         setLoading,
       }}>
-      <Outlet />
+      {children}
     </AuthContext.Provider>
   );
 };

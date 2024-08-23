@@ -60,6 +60,16 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
   }),
 );
 
+const Wrapper = styled(Box)(({ theme }) => ({
+  mt: "1.5rem",
+  alignSelf: "center",
+  maxWidth: "400px",
+  width: "100%",
+  [theme.breakpoints.down("xs")]: {
+    maxWidth: "100%",
+  },
+}));
+
 const LoginPage = () => {
   const { login, isLoading } = useAuth();
 
@@ -81,16 +91,9 @@ const LoginPage = () => {
     setShowPassword((prev) => !prev);
   }
 
-
   return (
     <>
-      <Box
-        sx={{
-          mt: "1.5rem",
-          alignSelf: "center",
-          maxWidth: "450px",
-          width: "100%",
-        }}>
+      <Wrapper className="LoginPage-Wrapper">
         <Card
           sx={{
             display: "flex",
@@ -100,7 +103,7 @@ const LoginPage = () => {
             boxShadow: (theme) => theme.shadows[3],
             overflow: "hidden",
             transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-            width: "400px",
+      
           }}>
           <CardContent
             sx={{
@@ -214,7 +217,7 @@ const LoginPage = () => {
             </StyledForm>
           </CardContent>
         </Card>
-      </Box>
+      </Wrapper>
       <ModeToggler drag />
     </>
   );

@@ -12,12 +12,10 @@ const ProtectedRoute = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-  
     return <LoadingScreen />;
   }
 
   if (user && !isLoading) {
-
     return <Outlet />;
   }
 

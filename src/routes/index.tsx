@@ -8,12 +8,12 @@ import {
   Route,
 } from "react-router-dom";
 
-// ** Context
-import AuthProvider from "@/context/AuthProvider";
-
 // ** Components
 import LoadingScreen from "@/components/layouts/LoadingScreen";
 import Suspense from "@/components/Suspense";
+
+// ** Context
+import GlobalProvider from "@/context";
 
 // ** Layout
 import DefaultLayout from "@/layouts/DefaultLayout";
@@ -33,7 +33,7 @@ const App = lazy(() => import("@/App"));
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorBoundary />}>
-      <Route element={<AuthProvider />}>
+      <Route element={<GlobalProvider />}>
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route element={<Suspense fallback={<Loading layout />} />}>

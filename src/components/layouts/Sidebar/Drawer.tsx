@@ -1,5 +1,5 @@
 // ** React
-import { ReactNode } from "react";
+import {  ReactNode } from "react";
 
 // ** MUI Imports
 import { styled } from "@mui/material/styles";
@@ -26,7 +26,16 @@ export const StyledDrawer = styled("div")(({ theme }) => ({
 }));
 
 const Drawer = ({ children }: { children: ReactNode }) => {
-  return <StyledDrawer className="drawer">{children}</StyledDrawer>;
+  // const [toggleDrawer, setToggleDrawer] = useState(false);
+  return (
+    <StyledDrawer
+      // sx={{
+      //   width: toggleDrawer ? "260px" : 0,
+      // }}
+      className="drawer">
+      {children}
+    </StyledDrawer>
+  );
 };
 
 export default Drawer;
