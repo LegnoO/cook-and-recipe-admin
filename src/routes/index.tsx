@@ -12,9 +12,6 @@ import {
 import LoadingScreen from "@/components/layouts/LoadingScreen";
 import Suspense from "@/components/Suspense";
 
-// ** Context
-import GlobalProvider from "@/context";
-
 // ** Layout
 import DefaultLayout from "@/layouts/DefaultLayout";
 import BlankLayout from "@/layouts/BlankLayout";
@@ -28,16 +25,19 @@ import PublicRoute from "./PublicRoute";
 // ** Pages
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
-const App = lazy(() => import("@/App"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
+
+// ** App
+import App from "@/App";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorBoundary />}>
-      <Route element={<GlobalProvider />}>
+      <Route element={<App />}>
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route element={<Suspense fallback={<Loading layout />} />}>
-              <Route index path="/" element={<App />} />
+              <Route index path="/" element={<HomePage />} />
               <Route index path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
