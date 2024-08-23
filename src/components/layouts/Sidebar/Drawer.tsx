@@ -1,5 +1,5 @@
 // ** React
-import { ReactNode } from "react";
+import { ReactNode, MouseEvent } from "react";
 
 // ** MUI Imports
 import { Backdrop, useMediaQuery } from "@mui/material";
@@ -31,7 +31,8 @@ const Drawer = ({ children }: { children: ReactNode }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { toggleDrawer, setToggleDrawer } = useSettings();
 
-  function handleCloseBackdrop() {
+  function handleCloseBackdrop(event: MouseEvent) {
+    event.stopPropagation();
     setToggleDrawer(false);
   }
 
@@ -42,6 +43,9 @@ const Drawer = ({ children }: { children: ReactNode }) => {
         open={toggleDrawer && isSmallScreen}
         onClick={handleCloseBackdrop}>
         <StyledDrawer
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
           sx={(theme) => ({
             [theme.breakpoints.down("md")]: {
               width: toggleDrawer ? "260px" : 0,
