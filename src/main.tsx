@@ -14,6 +14,6 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />,
-  </StrictMode>,
+    <RouterProvider router={router} />
+  </StrictMode>
 );

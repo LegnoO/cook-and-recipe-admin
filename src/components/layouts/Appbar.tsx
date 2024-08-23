@@ -1,12 +1,16 @@
 // ** MUI Imports
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps } from "@mui/material/AppBar";
 import MuiToolbar, { ToolbarProps } from "@mui/material/Toolbar";
 
 // ** Components
+import Icon from "@/components/ui/Icon";
 import UserDropDown from "@/components/UserDropDown";
 import ModeToggler from "@/components/ModeToggler";
+
+// ** Hooks
+import { useSettings } from "@/hooks/useSettings";
 
 // ** Utils
 import { hexToRGBA } from "@/utils/color";
@@ -25,6 +29,7 @@ const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
     //   [theme.breakpoints.down("sm")]: {
     //     paddingLeft: theme.spacing(4),
     //     paddingRight: theme.spacing(4),
+    // }
   },
   // "&:before": {
   //   content: '""',
@@ -41,18 +46,38 @@ const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
 
 const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
   width: "100%",
-  padding: "0.5rem 1rem",
   alignItems: "stretch",
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[2],
   minHeight: theme.mixins.toolbar.minHeight,
-  justifyContent: "flex-end",
+  justifyContent: "space-between",
+  paddingInline: "1rem !important",
 }));
 
 const AppBar = () => {
+  const { setToggleDrawer } = useSettings();
   return (
     <StyledAppBar className="app-bar" position="sticky" elevation={0}>
       <Toolbar>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}>
+          <IconButton
+            sx={(theme) => ({
+              display: "none",
+              [theme.breakpoints.down("md")]: {
+                display: "flex",
+              },
+            })}
+            onClick={() => {
+              setToggleDrawer((prev) => !prev);
+            }}>
+            <Icon icon="iconamoon:menu-burger-horizontal" />
+          </IconButton>
+        </Box>
         <Box
           sx={{
             display: "flex",

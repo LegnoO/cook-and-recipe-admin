@@ -61,7 +61,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
 );
 
 const Wrapper = styled(Box)(({ theme }) => ({
-  mt: "1.5rem",
+  marginTop: "1.5rem",
   alignSelf: "center",
   maxWidth: "400px",
   width: "100%",

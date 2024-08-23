@@ -1,8 +1,12 @@
 // ** React
-import {  ReactNode } from "react";
+import { ReactNode } from "react";
 
 // ** MUI Imports
-import { styled } from "@mui/material/styles";
+import { Backdrop, useMediaQuery } from "@mui/material";
+import { styled, useTheme } from "@mui/material/styles";
+
+// ** Hooks
+import { useSettings } from "@/hooks/useSettings";
 
 // ** Styled Components
 export const StyledDrawer = styled("div")(({ theme }) => ({
@@ -14,9 +18,6 @@ export const StyledDrawer = styled("div")(({ theme }) => ({
   flex: "1 0 auto",
   height: "100%",
   width: "260px",
-  [theme.breakpoints.down("md")]: {
-    width: 0,
-  },
   backgroundColor: theme.palette.background.paper,
   boxShadow: theme.shadows[3],
   zIndex: theme.zIndex.drawer,
@@ -26,16 +27,34 @@ export const StyledDrawer = styled("div")(({ theme }) => ({
 }));
 
 const Drawer = ({ children }: { children: ReactNode }) => {
-  // const [toggleDrawer, setToggleDrawer] = useState(false);
-  return (
-    <StyledDrawer
-      // sx={{
-      //   width: toggleDrawer ? "260px" : 0,
-      // }}
-      className="drawer">
-      {children}
-    </StyledDrawer>
-  );
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const { toggleDrawer, setToggleDrawer } = useSettings();
+
+  function handleCloseBackdrop() {
+    setToggleDrawer(false);
+  }
+
+  if (isSmallScreen) {
+    return (
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={toggleDrawer && isSmallScreen}
+        onClick={handleCloseBackdrop}>
+        <StyledDrawer
+          sx={(theme) => ({
+            [theme.breakpoints.down("md")]: {
+              width: toggleDrawer ? "260px" : 0,
+            },
+          })}
+          className="drawer">
+          {children}
+        </StyledDrawer>
+      </Backdrop>
+    );
+  }
+
+  return <StyledDrawer className="drawer">{children}</StyledDrawer>;
 };
 
 export default Drawer;
