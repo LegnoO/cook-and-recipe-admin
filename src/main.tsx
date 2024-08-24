@@ -1,5 +1,5 @@
 // ** React
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 // ** Library
@@ -13,7 +13,7 @@ import "./styles/globals.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <RouterProvider router={router} />
-  </StrictMode>
+  // </StrictMode>
 );

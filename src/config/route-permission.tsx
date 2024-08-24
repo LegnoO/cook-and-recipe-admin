@@ -11,10 +11,6 @@ export const test = [
     page: "home",
     actions: ["create", "read", "update", "delete"],
   },
-  {
-    page: "profile",
-    actions: ["create", "read", "update", "delete"],
-  },
 ];
 
 export const protectedRoute = [
@@ -33,10 +29,3 @@ export const publicRoute = [
     path: "/login",
   },
 ];
-
-export const ALL_URL_PROTECTED_ROUTE = protectedRoute.map(
-  (route) => route.path,
-);
-export const ALL_URL_PUBLIC_ROUTE = publicRoute.map((route) => route.path);
-
-export const ALL_URL = [...ALL_URL_PROTECTED_ROUTE, ...ALL_URL_PUBLIC_ROUTE];

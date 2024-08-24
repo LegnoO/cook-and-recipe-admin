@@ -3,11 +3,13 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
+  Navigate,
 } from "react-router-dom";
 
 // ** Components
 import LoadingScreen from "@/components/layouts/LoadingScreen";
 import Suspense from "@/components/Suspense";
+import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 
 // ** Layout
 import DefaultLayout from "@/layouts/DefaultLayout";
@@ -28,8 +30,9 @@ import { test, protectedRoute, publicRoute } from "@/config/route-permission";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorBoundary />}>
-      {/* <Route path="*" element={<Navigate to="/" />} /> */}
       <Route element={<App />}>
+        <Route path="*" element={<Navigate to="/notfound" />} />
+        <Route index path={"/notfound"} element={<NotFoundScreen />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route element={<Suspense fallback={<Loading layout />} />}>
@@ -55,7 +58,6 @@ const router = createBrowserRouter(
             </Route>
           </Route>
         </Route>
-
         <Route element={<PublicRoute />}>
           <Route element={<BlankLayout />}>
             <Route element={<Suspense fallback={<LoadingScreen />} />}>
