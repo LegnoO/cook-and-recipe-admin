@@ -49,7 +49,7 @@ export const supportColors = {
     contrastText: commonColors.white,
   },
   success: {
-    main: "#28C76F",
+    main: "#24B364",
     dark: "#37d77f",
     contrastText: commonColors.white,
   },

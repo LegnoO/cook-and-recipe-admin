@@ -71,7 +71,7 @@ const Wrapper = styled(Box)(({ theme }) => ({
 }));
 
 const LoginPage = () => {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error } = useAuth();
 
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
@@ -103,7 +103,6 @@ const LoginPage = () => {
             boxShadow: (theme) => theme.shadows[3],
             overflow: "hidden",
             transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-      
           }}>
           <CardContent
             sx={{
@@ -206,13 +205,20 @@ const LoginPage = () => {
                   <Loading />
                 </Button>
               ) : (
-                <Button
-                  sx={{ fontWeight: 500 }}
-                  fullWidth
-                  type="submit"
-                  variant="contained">
-                  Login
-                </Button>
+                <Box>
+                  {error && (
+                    <Typography sx={{ mb: 1.75 }} color="error">
+                      {error}
+                    </Typography>
+                  )}
+                  <Button
+                    sx={{ fontWeight: 500 }}
+                    fullWidth
+                    type="submit"
+                    variant="contained">
+                    Login
+                  </Button>
+                </Box>
               )}
             </StyledForm>
           </CardContent>

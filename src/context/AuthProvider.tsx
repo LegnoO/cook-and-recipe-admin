@@ -15,8 +15,15 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 // ** Services
 import { getUserInfo, signIn } from "@/services/authService";
 
+// // ** Utils
+// import { isUrlMatching } from "@/utils/url";
+
+// // ** Config
+// import { ALL_URL } from "@/config/route-permission";
+
 // ** Types
 import { LoginCredentials, User, AuthTokens } from "@/types/Auth";
+import { AxiosError } from "axios";
 
 export interface IAuthContext {
   user: User | null;
@@ -25,6 +32,7 @@ export interface IAuthContext {
   setLoading: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
   login: ({ username, password }: LoginCredentials) => void;
+  error: string | null;
 }
 
 type Props = {
@@ -38,7 +46,9 @@ const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
+  // const currentHref = window.location.href;
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 
   const { mutate, isPending } = useMutation<
@@ -57,7 +67,9 @@ const AuthProvider = ({ children }: Props) => {
       navigate(redirectUrl);
     },
     onError: (error) => {
-      console.error("Login failed:", error);
+      if (error instanceof AxiosError && error.response) {
+        setError(error.response.data.message);
+      }
     },
   });
 
@@ -101,6 +113,16 @@ const AuthProvider = ({ children }: Props) => {
     navigate("/login");
   };
 
+  // function checkAccessRoute() {
+  //   if (isUrlMatching(currentHref, ALL_URL)) {
+
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   checkAccessRoute();
+  // }, [currentHref]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -110,6 +132,7 @@ const AuthProvider = ({ children }: Props) => {
         logout: handleLogout,
         isLoading: isLoading || isPending,
         setLoading,
+        error,
       }}>
       {children}
     </AuthContext.Provider>

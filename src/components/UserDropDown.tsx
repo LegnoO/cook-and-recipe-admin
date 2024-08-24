@@ -38,6 +38,7 @@ const MenuItemContent = styled(Box)<BoxProps>({
   display: "flex",
   alignItems: "center",
   gap: "0.75rem",
+  width: "100%",
 });
 
 const ButtonLogout = styled(Button)<ButtonProps>(({ theme }) => ({
@@ -108,20 +109,20 @@ const UserDropDown = () => {
           </Box>
         </Box>
         <Divider sx={{ my: "0.25rem" }} />
-        <MenuItem className="menu-item">
-          <MenuItemContent
-            className="menu-item-content"
-            onClick={() => handleDropdownClose("/profile")}>
+        <MenuItem
+          className="menu-item"
+          onClick={() => handleDropdownClose("/profile")}>
+          <MenuItemContent className="menu-item-content">
             <Icon icon="tabler:user-check" />
             <Typography sx={{ fontSize: 15 }} variant="subtitle2">
               My Profile
             </Typography>
           </MenuItemContent>
         </MenuItem>
-        <MenuItem className="menu-item">
-          <MenuItemContent
-            className="menu-item-content"
-            onClick={() => handleDropdownClose("/settings")}>
+        <MenuItem
+          className="menu-item"
+          onClick={() => handleDropdownClose("/settings")}>
+          <MenuItemContent className="menu-item-content">
             <Icon icon="tabler:settings" />
             <Typography sx={{ fontSize: 15 }} variant="subtitle2">
               Settings
