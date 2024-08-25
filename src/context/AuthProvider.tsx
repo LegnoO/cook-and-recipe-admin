@@ -13,7 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 // ** Services
-import { getUserInfo, signIn } from "@/services/authService";
+import { getUserInfo, getUserPermission, signIn } from "@/services/authService";
 
 // ** Types
 import { LoginCredentials, User, AuthTokens } from "@/types/Auth";
@@ -26,7 +26,7 @@ export interface IAuthContext {
   setLoading: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
   login: ({ username, password }: LoginCredentials) => void;
-  error: string | null;
+  loadingError: string | null;
 }
 
 type Props = {
@@ -40,7 +40,7 @@ const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 
   const { mutate, isPending } = useMutation<
@@ -60,17 +60,21 @@ const AuthProvider = ({ children }: Props) => {
     },
     onError: (error) => {
       if (error instanceof AxiosError && error.response) {
-        setError(error.response.data.message);
+        setLoadingError(error.response.data.message);
       }
     },
   });
 
   async function fetchUserData() {
-    const userData = await getUserInfo();
-    setUser(userData);
+    const [userInfo, userPermission] = await Promise.all([
+      getUserInfo(),
+      getUserPermission(),
+    ]);
+    setUser({ ...userInfo, permission: userPermission });
   }
 
   useEffect(() => {
+    console.log("initAuth")
     const accessToken = localStorage.getItem("accessToken");
 
     const initAuth = async () => {
@@ -114,7 +118,7 @@ const AuthProvider = ({ children }: Props) => {
         logout: handleLogout,
         isLoading: isLoading || isPending,
         setLoading,
-        error,
+        loadingError,
       }}>
       {children}
     </AuthContext.Provider>

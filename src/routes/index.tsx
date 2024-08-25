@@ -25,35 +25,31 @@ import PublicRoute from "./PublicRoute";
 import App from "@/App";
 
 // ** Routes
-import { test, protectedRoute, publicRoute } from "@/config/route-permission";
+import {
+  homeRoute,
+  protectedRoute,
+  publicRoute,
+} from "@/config/route-permission";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorBoundary />}>
       <Route element={<App />}>
+        <Route index path="/" element={<Navigate to={homeRoute} />} />
         <Route path="*" element={<Navigate to="/notfound" />} />
         <Route index path={"/notfound"} element={<NotFoundScreen />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
             <Route element={<Suspense fallback={<Loading layout />} />}>
               {protectedRoute.map((route, index) => {
-                const routeExists = test.findIndex(
-                  (data) =>
-                    data.page === route.page && data.actions.includes("read"),
+                return (
+                  <Route
+                    index
+                    key={index}
+                    path={route.path}
+                    element={route.component}
+                  />
                 );
-
-                if (routeExists !== -1) {
-                  return (
-                    <Route
-                      index
-                      key={index}
-                      path={route.path}
-                      element={route.component}
-                    />
-                  );
-                }
-
-                return null;
               })}
             </Route>
           </Route>

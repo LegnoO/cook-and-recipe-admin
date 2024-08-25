@@ -71,7 +71,7 @@ const Wrapper = styled(Box)(({ theme }) => ({
 }));
 
 const LoginPage = () => {
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, loadingError } = useAuth();
 
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
@@ -206,9 +206,9 @@ const LoginPage = () => {
                 </Button>
               ) : (
                 <Box>
-                  {error && (
+                  {loadingError && (
                     <Typography sx={{ mb: 1.75 }} color="error">
-                      {error}
+                      {loadingError}
                     </Typography>
                   )}
                   <Button

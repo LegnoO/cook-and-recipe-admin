@@ -1,4 +1,5 @@
 // ** React
+
 import { lazy } from "react";
 
 // ** Pages
@@ -6,25 +7,40 @@ const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 
-export const test = [
-  {
-    page: "home",
-    actions: ["create", "read", "update", "delete"],
-  },
-];
+// ** Types
+import { ProtectedRoute, PublicRoute } from "@/types/Routes";
 
-export const protectedRoute = [
+export const homeRoute: string = "/home";
+
+export const protectedRoute: ProtectedRoute[] = [
   {
-    page: "home",
+    path: homeRoute,
     component: <HomePage />,
-    path: "/",
+    permission: {
+      page: "user",
+      action: "read",
+    },
   },
-  { page: "profile", component: <ProfilePage />, path: "/profile" },
+  {
+    path: `${homeRoute}/:id`,
+    component: <HomePage />,
+    permission: {
+      page: "home",
+      action: "read",
+    },
+  },
+  {
+    path: "/profile",
+    component: <ProfilePage />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
 ];
 
-export const publicRoute = [
+export const publicRoute: PublicRoute[] = [
   {
-    page: "home",
     component: <LoginPage />,
     path: "/login",
   },
