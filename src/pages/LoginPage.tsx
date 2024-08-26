@@ -1,5 +1,5 @@
 // ** React
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 
 // ** MUI
 import MuiFormControlLabel, {
@@ -33,6 +33,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // ** Hooks
 import { useAuth } from "@/hooks/useAuth";
+import { useSettings } from "@/hooks/useSettings";
 
 // ** Schema Validate
 import {
@@ -72,7 +73,7 @@ const Wrapper = styled(Box)(({ theme }) => ({
 
 const LoginPage = () => {
   const { login, isLoading, loadingError } = useAuth();
-
+  const { rememberMe, setRememberMe } = useSettings();
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
       username: "admin123",
@@ -90,7 +91,11 @@ const LoginPage = () => {
   function handleClickShowPassword() {
     setShowPassword((prev) => !prev);
   }
-
+  const handleChangeRememberMe = (event: ChangeEvent<HTMLInputElement>) => {
+    const isChecked = event.target.checked;
+    localStorage.setItem("rememberMe", isChecked.toString());
+    setRememberMe(isChecked);
+  };
   return (
     <>
       <Wrapper className="LoginPage-Wrapper">
@@ -193,7 +198,15 @@ const LoginPage = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}>
-                <FormControlLabel control={<Checkbox />} label="Remember Me" />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={rememberMe}
+                      onChange={handleChangeRememberMe}
+                    />
+                  }
+                  label="Remember Me"
+                />
                 <Typography
                   component={LinkStyled}
                   to="/pages/auth/forgot-password-v1">

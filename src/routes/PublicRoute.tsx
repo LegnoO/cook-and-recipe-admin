@@ -4,6 +4,9 @@ import { Outlet, Navigate } from "react-router-dom";
 // ** Hooks
 import { useAuth } from "@/hooks/useAuth";
 
+// ** Config
+import { homeRoute } from "@/config/route-permission";
+
 // ** Components
 // import LoadingScreen from "@/components/layouts/LoadingScreen";
 
@@ -25,7 +28,7 @@ const PublicRoute = () => {
     //     ? `/login?returnUrl=${location.pathname}`
     //     : "/login";
 
-    return <Navigate to={"/"} />;
+    return <Navigate to={homeRoute} />;
   }
 
   // return <Outlet />;

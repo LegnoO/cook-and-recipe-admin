@@ -1,8 +1,14 @@
+// ** Library
+import cookies from "js-cookie";
+
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
 import { AuthTokens, User, IRoutePermission } from "@/types/Auth";
+
+export const isRememberMeEnabled =
+  localStorage.getItem("rememberMe") === "true";
 
 export async function signIn(username: string, password: string) {
   const response = await AxiosInstance.post<AuthTokens>("/auth/manager/login", {
@@ -20,13 +26,13 @@ export async function getUserInfo() {
 }
 
 export async function getUserPermission() {
-  const response = await AxiosInstance.get<IRoutePermission[]>("/permission");
+  const response = await AxiosInstance.get<IRoutePermission[]>("/permissions");
 
   return response.data;
 }
 
-export async function refreshToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
+export async function handleRefreshToken() {
+  const refreshToken = cookies.get("refreshToken");
 
   if (!refreshToken) {
     throw new Error("Invalid Refresh Token!");
@@ -35,9 +41,11 @@ export async function refreshToken() {
   const response = await AxiosInstance.post<AuthTokens>("/auth/refresh", {
     refreshToken,
   });
+
   const { accessToken, refreshToken: newRefreshToken } = response.data;
   localStorage.setItem("accessToken", accessToken);
-  localStorage.setItem("refreshToken", newRefreshToken);
+  const cookieOptions = isRememberMeEnabled ? { expires: 30 } : undefined;
+  cookies.set("refreshToken", newRefreshToken, cookieOptions);
 
   return response.data;
 }

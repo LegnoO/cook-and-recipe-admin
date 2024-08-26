@@ -18,48 +18,44 @@ const ProtectedRoute = () => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
   const currentPathname = location.pathname;
- 
+  const allowedRoutes = protectedRoute
+    .filter((route) =>
+      user?.permission.some(
+        (perm) =>
+          perm.page === route.permission.page &&
+          perm.actions.includes(route.permission.action),
+      ),
+    )
+    .map((route) => route.path);
+  // function getAllowedRoutes() {
+  //   const allowedRoutes = protectedRoute.map((route) => {
+  //     if (
+  //       user &&
+  //       user.permission.some(
+  //         (perm) =>
+  //           perm.page === route.permission.page &&
+  //           perm.actions.includes(route.permission.action),
+  //       )
+  //     ) {
+  //       return route.path;
+  //     }
+  //   });
 
-  function getAllowedRoutes() {
-    const allowedUrls = protectedRoute.map((route) => {
-      if (
-        user &&
-        user.permission.some(
-          (perm) =>
-            perm.page === route.permission.page &&
-            perm.actions.includes(route.permission.action),
-        )
-      ) {
-        return route.path;
-      }
-    });
+  //   return allowedRoutes.filter((url): url is string => url !== undefined);
+  // }
 
-    return allowedUrls.filter((url): url is string => url !== undefined);
-  }
+  if (isLoading) return <LoadingScreen />;
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
-  if (
-    user &&
-    !isLoading &&
-    isUrlPatternMatched(currentPathname, getAllowedRoutes())
-  ) {
-    return <Outlet />;
-  }
-
-  if (
-    !user &&
-    !isLoading &&
-    !isUrlPatternMatched(currentPathname, getAllowedRoutes())
-  ) {
+  if (!user && !isUrlPatternMatched(currentPathname, allowedRoutes)) {
     const redirectToLogin =
       location.pathname !== homeRoute
         ? `/login?returnUrl=${location.pathname}`
         : "/login";
-
     return <Navigate to={redirectToLogin} />;
+  }
+
+  if (user && isUrlPatternMatched(currentPathname, allowedRoutes)) {
+    return <Outlet />;
   }
 
   return <NotFoundScreen />;

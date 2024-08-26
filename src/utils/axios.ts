@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 import { STATUS_CODES } from "@/constants/statusCodes";
 
 // ** Services
-import { refreshToken } from "@/services/authService";
+import { handleRefreshToken } from "@/services/authService";
 
 const BASE_URL: string =
   import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;
@@ -46,7 +46,7 @@ AxiosInstance.interceptors.response.use(
       !error.response?.config?.url?.includes("/login")
     ) {
       try {
-        const newToken = await refreshToken();
+        const newToken = await handleRefreshToken();
         error.config.headers.Authorization = `Bearer ${newToken.accessToken}`;
 
         return axios.request(error.config);

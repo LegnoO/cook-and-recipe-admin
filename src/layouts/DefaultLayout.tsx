@@ -9,7 +9,7 @@ import Sidebar from "@/components/layouts/Sidebar";
 import AppBar from "@/components/layouts/Appbar";
 
 // ** Nav Items
-import { verticalNavItems } from "@/lib/navigation/vertical";
+import { verticalNavItems } from "@/config/navigation/vertical";
 
 // ** Styled Components
 const LayoutWrapper = styled("div")(({ theme }: { theme: Theme }) => ({

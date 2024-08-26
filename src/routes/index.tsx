@@ -36,7 +36,7 @@ const router = createBrowserRouter(
     <Route errorElement={<ErrorBoundary />}>
       <Route element={<App />}>
         <Route index path="/" element={<Navigate to={homeRoute} />} />
-        <Route path="*" element={<Navigate to="/notfound" />} />
+        <Route path="*" element={<Navigate to="/notfound" replace />} />
         <Route index path={"/notfound"} element={<NotFoundScreen />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
@@ -44,7 +44,6 @@ const router = createBrowserRouter(
               {protectedRoute.map((route, index) => {
                 return (
                   <Route
-                    index
                     key={index}
                     path={route.path}
                     element={route.component}
@@ -60,7 +59,6 @@ const router = createBrowserRouter(
               {publicRoute.map((route, index) => {
                 return (
                   <Route
-                    index
                     key={index}
                     path={route.path}
                     element={route.component}

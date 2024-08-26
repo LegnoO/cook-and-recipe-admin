@@ -11,9 +11,16 @@ import {
 // ** Library
 import { useMutation } from "@tanstack/react-query";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import cookies from "js-cookie";
 
 // ** Services
-import { getUserInfo, getUserPermission, signIn } from "@/services/authService";
+import {
+  isRememberMeEnabled,
+  getUserInfo,
+  getUserPermission,
+  signIn,
+  handleRefreshToken,
+} from "@/services/authService";
 
 // ** Types
 import { LoginCredentials, User, AuthTokens } from "@/types/Auth";
@@ -49,14 +56,12 @@ const AuthProvider = ({ children }: Props) => {
     { username: string; password: string }
   >({
     mutationFn: ({ username, password }) => signIn(username, password),
-    onSuccess: async (data) => {
-      const { accessToken, refreshToken } = data;
+    onSuccess: async ({ accessToken, refreshToken }) => {
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      const cookieOptions = { expires: isRememberMeEnabled ? 30 : 1 };
+      cookies.set("refreshToken", refreshToken, cookieOptions);
       await fetchUserData();
-      const returnUrl = searchParams.get("returnUrl");
-      const redirectUrl = returnUrl ? returnUrl : "/";
-      navigate(redirectUrl);
+      navigate(searchParams.get("returnUrl") || "/");
     },
     onError: (error) => {
       if (error instanceof AxiosError && error.response) {
@@ -66,34 +71,50 @@ const AuthProvider = ({ children }: Props) => {
   });
 
   async function fetchUserData() {
-    const [userInfo, userPermission] = await Promise.all([
-      getUserInfo(),
-      getUserPermission(),
-    ]);
-    setUser({ ...userInfo, permission: userPermission });
+    try {
+      const [userInfo, userPermission] = await Promise.all([
+        getUserInfo(),
+        getUserPermission(),
+      ]);
+      setUser({ ...userInfo, permission: userPermission });
+    } catch {
+      handleLogout();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function refreshUserData() {
+    try {
+      await handleRefreshToken();
+      await fetchUserData();
+    } catch {
+      handleLogout();
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    console.log("initAuth")
-    const accessToken = localStorage.getItem("accessToken");
+    const accessTokenSession = localStorage.getItem("accessToken");
+    const refreshTokenSession = cookies.get("refreshToken");
+    // async function initializeAuth() {
+    //   try {
+    //     await fetchUserData();
+    //   } catch {
+    //     handleLogout();
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // }
 
-    const initAuth = async () => {
-      if (accessToken) {
-        try {
-          setLoading(true);
-          await fetchUserData();
-        } catch (error) {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-    initAuth();
+    if (accessTokenSession && refreshTokenSession) {
+      fetchUserData();
+    } else if (!accessTokenSession && refreshTokenSession) {
+      refreshUserData();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   function handleLogin({ username, password }: LoginCredentials) {
@@ -104,7 +125,7 @@ const AuthProvider = ({ children }: Props) => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    cookies.remove("refreshToken");
     setUser(null);
     navigate("/login");
   };

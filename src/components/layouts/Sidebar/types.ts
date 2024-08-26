@@ -1,22 +1,22 @@
 export interface INavSectionTitle {
   sectionTitle: string;
-  action?: string;
-  subject?: string;
+  page: string;
+  action: string;
 }
 
 export type INavLink = {
   icon?: string;
   path?: string;
   title: string;
-  action?: string;
-  subject?: string;
+  page: string;
+  action: string;
 };
 
 export interface INavGroup {
   icon?: string;
   title: string;
-  action?: string;
-  subject?: string;
+  page: string;
+  action: string;
   children?: (INavGroup | INavLink)[];
 }
 

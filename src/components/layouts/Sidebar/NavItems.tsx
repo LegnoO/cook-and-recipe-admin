@@ -5,6 +5,7 @@ import { Fragment, Dispatch, SetStateAction } from "react";
 import NavLink from "./NavLink";
 import NavSectionTitle from "./NavSectionTitle";
 import NavGroup from "./NavGroup";
+import CanViewNavItem from "./CanViewNavItem";
 
 // ** Types
 import {
@@ -40,38 +41,38 @@ const NavItems = (props: Props) => {
     (navItem: INavGroup | INavLink | INavSectionTitle, index: number) => {
       if ((navItem as INavGroup).children) {
         return (
-          // <CanViewNavItem key={index} navItem={navItem}>
-          <NavGroup
-            key={index}
-            rootGroupActive={rootGroupActive}
-            setRootGroupActive={setRootGroupActive}
-            childGroupActive={childGroupActive}
-            setChildGroupActive={setChildGroupActive}
-            item={navItem as INavGroup}
-            isRootParent={isRootParent}
-          />
-          // </CanViewNavItem>
+          <CanViewNavItem key={index} navItem={navItem}>
+            <NavGroup
+              key={index}
+              rootGroupActive={rootGroupActive}
+              setRootGroupActive={setRootGroupActive}
+              childGroupActive={childGroupActive}
+              setChildGroupActive={setChildGroupActive}
+              item={navItem as INavGroup}
+              isRootParent={isRootParent}
+            />
+          </CanViewNavItem>
         );
       }
 
       if ((navItem as INavSectionTitle).sectionTitle) {
         return (
-          // <CanViewNavItem key={index} navItem={navItem}>
-          <NavSectionTitle key={index} item={navItem as INavSectionTitle} />
-          // </CanViewNavItem>
+          <CanViewNavItem key={index} navItem={navItem}>
+            <NavSectionTitle key={index} item={navItem as INavSectionTitle} />
+          </CanViewNavItem>
         );
       }
 
       if ((navItem as INavLink).path) {
         return (
-          // <CanViewNavItem key={index} navItem={navItem}>
-          <NavLink
-            key={index}
-            setRootGroupActive={setRootGroupActive}
-            navParent={navParent}
-            item={navItem as INavLink}
-          />
-          // </CanViewNavItem>
+          <CanViewNavItem key={index} navItem={navItem}>
+            <NavLink
+              key={index}
+              setRootGroupActive={setRootGroupActive}
+              navParent={navParent}
+              item={navItem as INavLink}
+            />
+          </CanViewNavItem>
         );
       }
     },

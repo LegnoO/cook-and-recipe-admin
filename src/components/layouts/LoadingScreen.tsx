@@ -53,7 +53,7 @@ const LoadingScreen = () => {
             },
             "& .logo": { animation: `${wavePulse} 1.83s 0.4s infinite` },
           }}>
-          <Logo logoSize={80} hideLabel />
+          <Logo hideLabel />
         </Box>
         <Image src={WaveAnimationGif} alt="wave-animation" />
       </LayoutContent>

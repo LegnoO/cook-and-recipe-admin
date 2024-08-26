@@ -120,9 +120,7 @@ const NavLink = (props: Props) => {
           />
         </IconWrapper>
 
-        <Label className={"label"}>
-          {item.title} {item.path}
-        </Label>
+        <Label className={"label"}>{item.title}</Label>
       </StyledLink>
     </MenuNavLink>
   );
