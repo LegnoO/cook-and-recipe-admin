@@ -26,7 +26,7 @@ AxiosInstance.interceptors.request.use(
     if (accessToken && config.headers && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-console.log(config.headers)
+
     return config;
   },
   (error: AxiosError) => {

@@ -35,6 +35,8 @@ export async function handleRefreshToken() {
   const refreshToken = cookies.get("refreshToken");
 
   if (!refreshToken) {
+    localStorage.removeItem("accessToken");
+    window.location.href = "/login";
     throw new Error("Invalid Refresh Token!");
   }
 

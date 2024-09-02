@@ -33,7 +33,7 @@ export const protectedRoute: ProtectedRoute[] = [
     path: "/profile",
     component: <ProfilePage />,
     permission: {
-      page: "null",
+      page: "user",
       action: "read",
     },
   },

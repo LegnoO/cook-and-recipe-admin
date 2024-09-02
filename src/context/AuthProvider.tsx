@@ -72,13 +72,10 @@ const AuthProvider = ({ children }: Props) => {
 
   async function fetchUserData() {
     try {
-      const [userInfo, userPermission] = await Promise.all([
-        getUserInfo(),
-        getUserPermission(),
-      ]);
+      const userInfo = await getUserInfo();
+      const userPermission = await getUserPermission();
+
       setUser({ ...userInfo, permission: userPermission });
-    } catch {
-      handleLogout();
     } finally {
       setLoading(false);
     }
@@ -140,6 +137,7 @@ const AuthProvider = ({ children }: Props) => {
         isLoading: isLoading || isPending,
         setLoading,
         loadingError,
+        test: fetchUserData,
       }}>
       {children}
     </AuthContext.Provider>

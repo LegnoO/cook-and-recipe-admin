@@ -27,9 +27,9 @@ const StyledNavHeader = styled("div")({
 const NavHeader = () => {
   return (
     <StyledNavHeader className="nav-header">
-      <Link to="/layout">
+      {/* <Link to="/layout"> */}
         <Logo />
-      </Link>
+      {/* </Link> */}
     </StyledNavHeader>
   );
 };

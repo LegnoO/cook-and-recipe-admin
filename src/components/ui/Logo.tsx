@@ -1,5 +1,8 @@
 // ** MUI Imports
+import { useAuth } from "@/hooks/useAuth";
 import { styled, useTheme } from "@mui/material/styles";
+import test from "node:test";
+import { Navigate } from "react-router-dom";
 
 // ** Styled Components
 const LogoLabel = styled("span")(({ theme }) => ({
@@ -27,7 +30,7 @@ interface IProps {
 
 const Logo = ({ logoSize = 40, hideLabel }: IProps) => {
   const theme = useTheme();
-
+  const { test } = useAuth();
   const LogoIcon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +43,7 @@ const Logo = ({ logoSize = 40, hideLabel }: IProps) => {
   );
 
   return (
-    <StyledLogo className="logo">
+    <StyledLogo onClick={async() => await test() } className="logo">
       {LogoIcon}
       {!hideLabel && (
         <LogoLabel className="logo-label">Cook & Recipe</LogoLabel>
