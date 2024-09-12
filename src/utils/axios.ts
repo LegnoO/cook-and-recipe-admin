@@ -1,11 +1,11 @@
 // ** Library
 import axios, { AxiosError } from "axios";
 
+// ** Services
+import { handleRefresh } from "@/services/authService";
+
 // ** Constants
 import { STATUS_CODES } from "@/constants/statusCodes";
-
-// ** Services
-import { handleRefreshToken } from "@/services/authService";
 
 const BASE_URL: string =
   import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;
@@ -17,11 +17,12 @@ const AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 AxiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken: string = localStorage.getItem("accessToken")!;
+    const accessToken: string = localStorage.getItem("access-token")!;
 
     if (accessToken && config.headers && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -43,16 +44,17 @@ AxiosInstance.interceptors.response.use(
       error.config &&
       error.response &&
       error.response.status === STATUS_CODES.UNAUTHORIZED &&
-      !error.response?.config?.url?.includes("/login")
+      !error.response?.config?.url?.includes("/login") &&
+      !error.request.responseURL.includes("/api/auth/refresh") &&
+      !error.request.responseURL.includes("/auth/logout")
     ) {
-      try {
-        const newToken = await handleRefreshToken();
-        error.config.headers.Authorization = `Bearer ${newToken.accessToken}`;
-
-        return axios.request(error.config);
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
-      }
+      const newToken = await handleRefresh(
+        localStorage.getItem("rememberMe")
+          ? JSON.parse(localStorage.getItem("rememberMe")!)
+          : false,
+      );
+      error.config.headers.Authorization = `Bearer ${newToken}`;
+      return axios.request(error.config);
     }
 
     return Promise.reject(error);

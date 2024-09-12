@@ -43,7 +43,7 @@ const ProtectedRoute = () => {
 
   //   return allowedRoutes.filter((url): url is string => url !== undefined);
   // }
-
+  return <Outlet />;
   if (isLoading) return <LoadingScreen />;
 
   if (!user && !isUrlPatternMatched(currentPathname, allowedRoutes)) {

@@ -30,7 +30,7 @@ import { Checkbox, Typography, TablePagination } from "@mui/material";
 import Image from "@/components/Image";
 import Icon from "@/components/ui/Icon";
 
-// import { User } from "./types/User";
+// import { UserInfo } from "./types/UserInfo";
 
 function HomePage() {
   const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
@@ -42,6 +42,7 @@ function HomePage() {
   const handleToggleTooltip = (id: number) => {
     setActiveTooltip(id);
   };
+
   // const loadingBar = useRef(null);
   // <LoadingBar ref={loadingBar} color="#f11946" />
   // console.log(import.meta.env.VITE_BASE_URL);

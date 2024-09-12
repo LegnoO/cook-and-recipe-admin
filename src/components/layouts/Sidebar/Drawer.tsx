@@ -29,6 +29,7 @@ export const StyledDrawer = styled("div")(({ theme }) => ({
 const Drawer = ({ children }: { children: ReactNode }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const { toggleDrawer, setToggleDrawer } = useSettings();
 
   function handleCloseBackdrop(event: MouseEvent) {

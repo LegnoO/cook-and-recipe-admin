@@ -15,6 +15,7 @@ import { useSettings } from "@/hooks/useSettings";
 // ** Utils
 import { hexToRGBA } from "@/utils/color";
 
+
 // ** Styled Components
 const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   "&": {
@@ -55,7 +56,9 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 }));
 
 const AppBar = () => {
-  const { setToggleDrawer } = useSettings();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { setToggleDrawer} = useSettings()
+
   return (
     <StyledAppBar className="app-bar" position="sticky" elevation={0}>
       <Toolbar>

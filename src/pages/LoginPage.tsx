@@ -33,13 +33,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // ** Hooks
 import { useAuth } from "@/hooks/useAuth";
-import { useSettings } from "@/hooks/useSettings";
 
 // ** Schema Validate
 import {
   LoginFormData,
   LoginFormSchema,
 } from "@/lib/schema-validate/loginForm";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 // ** Styled Components
 const StyledForm = styled("form")(() => ({
@@ -73,29 +73,33 @@ const Wrapper = styled(Box)(({ theme }) => ({
 
 const LoginPage = () => {
   const { login, isLoading, loadingError } = useAuth();
-  const { rememberMe, setRememberMe } = useSettings();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useLocalStorage<boolean>(
+    "rememberMe",
+    false,
+  );
+
   const { handleSubmit, control } = useForm<LoginFormData>({
     defaultValues: {
       username: "admin123",
       password: "admin1234",
+      rememberMe: rememberMe,
     },
     resolver: zodResolver(LoginFormSchema),
   });
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  function onSubmit({ username, password }: LoginFormData) {
-    login({ username, password });
-  }
-
   function handleClickShowPassword() {
     setShowPassword((prev) => !prev);
   }
-  const handleChangeRememberMe = (event: ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked;
-    localStorage.setItem("rememberMe", isChecked.toString());
-    setRememberMe(isChecked);
+
+  const handleChangeRememberMe = (
+    event: ChangeEvent<HTMLInputElement>,
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  ) => {
+    onChange(event);
+    setRememberMe(event.target.checked);
   };
+
   return (
     <>
       <Wrapper className="LoginPage-Wrapper">
@@ -131,24 +135,23 @@ const LoginPage = () => {
             <StyledForm
               noValidate
               autoComplete="off"
-              onSubmit={handleSubmit(onSubmit)}>
+              onSubmit={handleSubmit(login)}>
               <Controller
                 name="username"
                 control={control}
                 rules={{ required: true }}
-                render={({
-                  field: { onChange, value },
-                  fieldState: { error },
-                }) => (
+                render={({ field, fieldState }) => (
                   <CustomTextField
                     fullWidth
                     label="username"
                     placeholder="Enter your username"
                     variant="outlined"
-                    value={value}
-                    onChange={onChange}
-                    error={Boolean(error)}
-                    helperText={error ? error.message : null}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={Boolean(fieldState.error)}
+                    helperText={
+                      fieldState.error ? fieldState.error.message : null
+                    }
                   />
                 )}
               />
@@ -156,20 +159,19 @@ const LoginPage = () => {
                 name="password"
                 control={control}
                 rules={{ required: true }}
-                render={({
-                  field: { onChange, value },
-                  fieldState: { error },
-                }) => (
+                render={({ field, fieldState }) => (
                   <CustomTextField
                     variant="outlined"
                     fullWidth
                     label="Password"
-                    onChange={onChange}
-                    value={value}
+                    onChange={field.onChange}
+                    value={field.value}
                     placeholder="············"
                     type={showPassword ? "text" : "password"}
-                    error={!!error}
-                    helperText={error ? error.message : null}
+                    error={!!fieldState.error}
+                    helperText={
+                      fieldState.error ? fieldState.error.message : null
+                    }
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
@@ -198,15 +200,24 @@ const LoginPage = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={rememberMe}
-                      onChange={handleChangeRememberMe}
+                <Controller
+                  name="rememberMe"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value}
+                          onChange={(event) =>
+                            handleChangeRememberMe(event, field.onChange)
+                          }
+                        />
+                      }
+                      label="Remember Me"
                     />
-                  }
-                  label="Remember Me"
+                  )}
                 />
+
                 <Typography
                   component={LinkStyled}
                   to="/pages/auth/forgot-password-v1">

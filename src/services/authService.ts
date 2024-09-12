@@ -1,26 +1,47 @@
-// ** Library
-import cookies from "js-cookie";
-
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
-import { AuthTokens, User, IRoutePermission } from "@/types/Auth";
+import {
+  AuthTokens,
+  UserInfo,
+  IRoutePermission,
+  LoginCredentials,
+  Messages,
+  UserProfile,
+} from "@/types/Auth";
 
 export const isRememberMeEnabled =
-  localStorage.getItem("rememberMe") === "true";
+  JSON.parse(localStorage.getItem("rememberMe")!) === "true";
 
-export async function signIn(username: string, password: string) {
+export async function signIn({
+  username,
+  password,
+  rememberMe,
+}: LoginCredentials) {
   const response = await AxiosInstance.post<AuthTokens>("/auth/manager/login", {
     username,
     password,
+    rememberMe,
   });
 
   return response.data;
 }
 
+export async function signOut() {
+  const response = await AxiosInstance.post<Messages>("/auth/logout");
+
+  return response.data;
+}
+
 export async function getUserInfo() {
-  const response = await AxiosInstance.get<User>("/users/info");
+  const response = await AxiosInstance.get<UserInfo>("/employees/info");
+
+  return response.data;
+}
+
+export async function getUserProfile() {
+  const response = await AxiosInstance.get<UserProfile>("/employees/profile");
 
   return response.data;
 }
@@ -31,23 +52,13 @@ export async function getUserPermission() {
   return response.data;
 }
 
-export async function handleRefreshToken() {
-  const refreshToken = cookies.get("refreshToken");
-
-  if (!refreshToken) {
-    localStorage.removeItem("accessToken");
-    window.location.href = "/login";
-    throw new Error("Invalid Refresh Token!");
-  }
-
+export async function handleRefresh(rememberMe: string) {
   const response = await AxiosInstance.post<AuthTokens>("/auth/refresh", {
-    refreshToken,
+    rememberMe,
   });
 
-  const { accessToken, refreshToken: newRefreshToken } = response.data;
-  localStorage.setItem("accessToken", accessToken);
-  const cookieOptions = isRememberMeEnabled ? { expires: 30 } : undefined;
-  cookies.set("refreshToken", newRefreshToken, cookieOptions);
+  const newToken = response.data;
+  localStorage.setItem("access-token", newToken);
 
   return response.data;
 }

@@ -1,7 +1,8 @@
-const rgbTupleRegex = /^\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
+// const rgbTupleRegex = /^\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
 const cssRgbRegex = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
-const cssRgbaRegex =
-  /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|1|0?\.\d+)\s*\)$/;
+// const cssRgbaRegex =
+//   /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|1|0?\.\d+)\s*\)$/;
+// const hexColorRegex = /^#([A-Fa-f0-9]{3}){1,2}$/;
 const hexColorRegex = /^#([A-Fa-f0-9]{3}){1,2}$/;
 
 export function hexToRGBA(
@@ -69,19 +70,5 @@ export function adjustRgbColor(
     return `rgb(${r}, ${g}, ${b})`;
   } else {
     throw new Error("Invalid type");
-  }
-}
-
-export function logColor(inputColor: string) {
-  if (rgbTupleRegex.test(inputColor)) {
-    console.log(`%c${inputColor} ▇▇▇▇▇▇▇▇▇ `, `color: rgb(${inputColor})`);
-  } else if (cssRgbRegex.test(inputColor)) {
-    console.log(`%c${inputColor} ▇▇▇▇▇▇▇▇▇`, `color: ${inputColor}`);
-  } else if (cssRgbaRegex.test(inputColor)) {
-    console.log(`%c${inputColor} ▇▇▇▇▇▇▇▇▇`, `color: ${inputColor}`);
-  } else if (hexColorRegex.test(inputColor)) {
-    console.log(`%c${inputColor} ▇▇▇▇▇▇▇▇▇`, `color: ${inputColor}`);
-  } else {
-    throw new Error("Invalid input color!");
   }
 }

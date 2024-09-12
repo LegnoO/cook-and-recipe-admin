@@ -7,15 +7,10 @@ import {
   SetStateAction,
 } from "react";
 
-// ** Services
-import { isRememberMeEnabled } from "@/services/authService";
-
 // ** Types
 export interface ISettingsContext {
   toggleDrawer: boolean;
   setToggleDrawer: Dispatch<SetStateAction<boolean>>;
-  rememberMe: boolean;
-  setRememberMe: Dispatch<SetStateAction<boolean>>;
 }
 
 type Props = {
@@ -29,11 +24,10 @@ export const SettingsContext = createContext<ISettingsContext | undefined>(
 
 const SettingsProvider = ({ children }: Props) => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
-  const [rememberMe, setRememberMe] = useState(isRememberMeEnabled);
+  console.table({ toggleDrawer });
 
   return (
-    <SettingsContext.Provider
-      value={{ toggleDrawer, setToggleDrawer, rememberMe, setRememberMe }}>
+    <SettingsContext.Provider value={{ toggleDrawer, setToggleDrawer }}>
       {children}
     </SettingsContext.Provider>
   );
