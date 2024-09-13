@@ -1,7 +1,7 @@
-// ** React
+// ** React Imports
 import { useState, ChangeEvent } from "react";
 
-// ** MUI
+// ** MUI Imports
 import MuiFormControlLabel, {
   FormControlLabelProps,
 } from "@mui/material/FormControlLabel";
@@ -35,10 +35,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
 
 // ** Schema Validate
-import {
-  LoginFormData,
-  LoginFormSchema,
-} from "@/lib/schema-validate/loginForm";
+import { LoginFormData, LoginFormSchema } from "@/utils/validations";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
 // ** Styled Components

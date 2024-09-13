@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import MuiTooltip, { TooltipProps } from "@mui/material/Tooltip";
 
 // ** Utils
-import { hexToRGBA } from "@/utils/color";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Styled Components
 const ToBeStyledTooltip = ({ className, ...rest }: TooltipProps) => {

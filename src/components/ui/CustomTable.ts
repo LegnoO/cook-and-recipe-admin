@@ -9,7 +9,7 @@ import {
   TableFooter as MuiTableFooter,
   TableRow as MuiTableRow,
 } from "@mui/material";
-import { hexToRGBA } from "@/utils/color";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Styled Components
 export const Table = styled(MuiTable)({});

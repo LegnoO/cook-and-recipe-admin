@@ -22,7 +22,7 @@ import { ModeType } from "@/context/ModeProvider";
 
 // ** Hooks
 import { useMode } from "@/hooks/useMode";
-import { hexToRGBA } from "@/utils/color";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Styled Components
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({

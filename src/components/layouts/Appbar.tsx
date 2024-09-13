@@ -13,8 +13,7 @@ import ModeToggler from "@/components/ModeToggler";
 import { useSettings } from "@/hooks/useSettings";
 
 // ** Utils
-import { hexToRGBA } from "@/utils/color";
-
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Styled Components
 const StyledAppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
@@ -57,7 +56,7 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 
 const AppBar = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setToggleDrawer} = useSettings()
+  const { setToggleDrawer } = useSettings();
 
   return (
     <StyledAppBar className="app-bar" position="sticky" elevation={0}>

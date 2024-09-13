@@ -1,5 +1,5 @@
 // ** Util Import
-import { hexToRGBA } from "@/utils/color";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** MUI Imports
 import { Components, Theme } from "@mui/material/styles";

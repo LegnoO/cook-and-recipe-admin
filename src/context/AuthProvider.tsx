@@ -18,7 +18,7 @@ import {
   getUserPermission,
   signIn,
   signOut,
-} from "@/services/authService";
+} from "@/utils/services/authService";
 
 // ** Types
 import { LoginCredentials, UserInfo, AuthTokens } from "@/types/Auth";

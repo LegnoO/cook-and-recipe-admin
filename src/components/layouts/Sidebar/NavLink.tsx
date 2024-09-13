@@ -11,7 +11,7 @@ import { styled } from "@mui/material/styles";
 import Icon from "@/components/ui/Icon";
 
 // ** Utils
-import { hexToRGBA } from "@/utils/color";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Library
 import clsx from "clsx";

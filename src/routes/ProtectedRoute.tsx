@@ -12,7 +12,7 @@ import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 import { homeRoute, protectedRoute } from "@/config/route-permission";
 
 // ** Utils
-import { isUrlPatternMatched } from "@/utils/url";
+import { isUrlPatternMatched } from "@/utils/helpers";
 
 const ProtectedRoute = () => {
   const { user, isLoading } = useAuth();

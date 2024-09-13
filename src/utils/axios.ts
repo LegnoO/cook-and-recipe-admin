@@ -2,10 +2,10 @@
 import axios, { AxiosError } from "axios";
 
 // ** Services
-import { handleRefresh } from "@/services/authService";
+import { handleRefresh } from "@/utils/services/authService";
 
 // ** Constants
-import { STATUS_CODES } from "@/constants/statusCodes";
+import { STATUS_CODES } from "@/utils/constants/statusCodes";
 
 const BASE_URL: string =
   import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;

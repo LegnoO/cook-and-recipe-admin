@@ -30,11 +30,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs, { Dayjs } from "dayjs";
 
 // ** Services
-import { getUserProfile } from "@/services/authService";
+import { getUserProfile } from "@/utils/services/authService";
 
 // ** Schemas
-import { ProfileFormSchema } from "@/lib/schema-validate/profileForm";
-
+import { ProfileFormSchema } from "@/utils/validations";
 
 // ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -222,15 +221,15 @@ export default function ProfilePage() {
       <Container>
         <StyledPaper>
           <Stack
-            direction="row"
+            direction={{ xs: "column", sm: "row" }}
             spacing={4}
             alignItems="center"
             padding="1.5rem">
             <Box
               onClick={handleZoomToggle}
               sx={{
-                height: 100,
-                width: 100,
+                height: { xs: 175, sm: 100 },
+                width: { xs: 175, sm: 100 },
                 overflow: "hidden",
                 cursor: "pointer",
                 borderRadius: (theme) => `${theme.shape.borderRadius}px`,
@@ -272,12 +271,15 @@ export default function ProfilePage() {
               </Modal>
             </Box>
             <Stack direction="column" spacing={2}>
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack
+                direction="row"
+                justifyContent={{ xs: "center", sm: "start" }}
+                spacing={2}
+                alignItems="center">
                 <Button
                   disabled={isLoading}
-                  sx={{ maxWidth: 180, fontWeight: 500 }}
+                  sx={{ maxWidth: 220, fontWeight: 500 }}
                   onClick={triggerAvatarSelect}
-                  startIcon={<Icon icon="mdi-light:cloud-upload" />}
                   variant="contained">
                   Change Avatar
                 </Button>
@@ -362,20 +364,25 @@ export default function ProfilePage() {
               </Grid>
 
               <Stack
-                sx={{ mt: 4 }}
+                sx={{ mt: 6 }}
                 direction="row"
                 spacing={2}
+                justifyContent="end"
                 alignItems="center">
                 <Button
                   disabled={isLoading}
                   type="submit"
-                  sx={{ mt: 4, fontWeight: "bold" }}
+                  sx={{
+                    width: { xs: "100%", md: "auto" },
+                    mt: 4,
+                    fontWeight: "bold",
+                  }}
                   variant="contained">
                   Save changes
                 </Button>
                 <Button
                   disabled={isLoading}
-                  sx={{ fontWeight: 500 }}
+                  sx={{ width: { xs: "100%", md: "auto" }, fontWeight: 500 }}
                   onClick={resetAllFields}
                   color="secondary"
                   variant="contained">

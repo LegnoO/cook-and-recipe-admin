@@ -8,7 +8,7 @@ import {
   backgroundColors,
   textColors,
   supportColors,
-} from "@/constants";
+} from "@/utils/constants";
 
 // ** Types
 interface newCustomPalette {
