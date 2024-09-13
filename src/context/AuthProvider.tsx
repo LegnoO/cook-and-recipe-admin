@@ -49,7 +49,7 @@ const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
-  console.table({ user });
+  // console.table({ user });
   const { mutate, isPending } = useMutation<
     AuthTokens,
     Error,

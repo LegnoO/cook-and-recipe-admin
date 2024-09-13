@@ -24,7 +24,7 @@ export const SettingsContext = createContext<ISettingsContext | undefined>(
 
 const SettingsProvider = ({ children }: Props) => {
   const [toggleDrawer, setToggleDrawer] = useState(false);
-  console.table({ toggleDrawer });
+  // console.table({ toggleDrawer });
 
   return (
     <SettingsContext.Provider value={{ toggleDrawer, setToggleDrawer }}>

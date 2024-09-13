@@ -3,9 +3,9 @@ import { useState, useRef, ChangeEvent, useEffect } from "react";
 
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
+
 import {
   Box,
-  Container,
   Grid,
   Paper,
   Avatar,
@@ -14,24 +14,27 @@ import {
   Stack,
   InputAdornment,
   IconButton,
+  Modal,
 } from "@mui/material";
 
 // ** Components
 import Icon from "@/components/ui/Icon";
-import CustomTextField from "@/components/ui/TextField";
+import TextField from "@/components/ui/TextField";
+import DatePicker from "@/components/ui/DatePicker";
+import Container from "@/components/ui/Container";
 
 // ** Library
 import { useQuery } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs, { Dayjs } from "dayjs";
 
 // ** Services
 import { getUserProfile } from "@/services/authService";
 
 // ** Schemas
 import { ProfileFormSchema } from "@/lib/schema-validate/profileForm";
-import AxiosInstance from "@/utils/axios";
-import { isObjectEmpty } from "@/utils/helpers";
+
 
 // ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -44,17 +47,9 @@ const StyledForm = styled("form")({
   textAlign: "right",
 });
 
-// ** Types
-interface FormValues {
-  fullName: string;
-  username: string;
-  email: string;
-  group: string;
-}
-
 export default function ProfilePage() {
   const {
-    // isLoading,
+    isLoading,
     // isError,
     // error,
     data: userProfile,
@@ -65,6 +60,20 @@ export default function ProfilePage() {
   });
 
   const FIELDS = [
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "",
+      icon: "carbon:email",
+      disabled: true,
+    },
+    {
+      name: "group",
+      label: "Role",
+      placeholder: "",
+      icon: "la:user-cog",
+      disabled: true,
+    },
     {
       name: "fullName",
       label: "Full name",
@@ -78,30 +87,18 @@ export default function ProfilePage() {
       icon: "material-symbols:person-outline-rounded",
     },
     {
-      name: "email",
-      label: "Email",
-      placeholder: "",
-      icon: "material-symbols:person-outline-rounded",
+      name: "dateOfBirth",
+      label: "Date of Birth",
+      type: "date",
     },
-    {
-      name: "group",
-      label: "Role",
-      placeholder: "",
-      icon: "material-symbols:person-outline-rounded",
-    },
-    // {
-    //   name: "dateOfBirth",
-    //   label: "Date of birth",
-    //   placeholder: "Enter your birthday",
-    //   icon: "material-symbols:person-outline-rounded",
-    // },
   ];
 
-  const { reset, control, handleSubmit, getValues } = useForm<FormValues>({
+  const { reset, control, handleSubmit } = useForm<ProfileFormSchema>({
     resolver: zodResolver(ProfileFormSchema),
   });
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
+  const [zoomAvatar, setZoomAvatar] = useState(false);
 
   function handleReviewAvatar(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) return;
@@ -117,25 +114,24 @@ export default function ProfilePage() {
       fileReader.readAsDataURL(file);
       fileReader.onload = () => {
         const bufferImage = fileReader.result as string;
-        console.log("🚀 ~ handleReviewAvatar ~ bufferImage:", bufferImage);
 
         setImage(bufferImage);
       };
     }
   }
 
-  async function handleUploadAvatar() {
-    const formData = new FormData();
-    formData.append("file", image!);
+  // async function handleAvatarUpload() {
+  //   const formData = new FormData();
+  //   formData.append("file", image!);
 
-    const res = await AxiosInstance.post(
-      "https://e-learming-be.onrender.com/upload-image",
-      formData,
-    );
-    console.log("🚀 ~ handleUploadAvatar ~ res:", res);
-  }
+  //   const res = await AxiosInstance.post(
+  //     "https://e-learming-be.onrender.com/upload-image",
+  //     formData,
+  //   );
+  //   console.log("🚀 ~ handleAvatarUpload ~ res:", res);
+  // }
 
-  function handleSelectAvatar() {
+  function triggerAvatarSelect() {
     if (!avatarInputRef.current) {
       return;
     }
@@ -144,11 +140,18 @@ export default function ProfilePage() {
     avatarInputRef.current.click();
   }
 
-  function handleResetAvatar() {
+  function resetAllFields() {
     if (image) setImage(null);
+    const profileData =
+      sessionStorage.getItem("profile-data") &&
+      JSON.parse(sessionStorage.getItem("profile-data")!);
+
+    if (profileData) {
+      reset({ ...userProfile, ...profileData });
+    }
   }
 
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: ProfileFormSchema) {
     console.log("🚀 ~ onSubmit ~ data:", data);
     // const { email, password } = data;
     // auth.login({ email, password, rememberMe }, () => {
@@ -158,24 +161,46 @@ export default function ProfilePage() {
     //   });
     // });
 
-    await handleUploadAvatar();
+    // await handleAvatarUpload();
   }
 
   useEffect(() => {
-    const formValues = getValues();
+    if (userProfile) {
+      const updatedValues = FIELDS.reduce((acc, field) => {
+        const value = userProfile[field.name as keyof ProfileFormSchema];
+        const key = field.name as keyof ProfileFormSchema;
 
-    if (!isObjectEmpty(formValues) && userProfile) {
-      const updatedValues: Partial<FormValues> = {};
-      FIELDS.forEach((field) => {
-        updatedValues[field.name as keyof FormValues] =
-          userProfile[field.name as keyof FormValues];
-      });
+        if (key !== "dateOfBirth" && typeof value === "string") {
+          acc[key] = value;
+        }
+
+        if (key === "dateOfBirth") {
+          acc[key] = value ? dayjs(value).toISOString() : null;
+        }
+
+        return acc;
+      }, {} as Partial<ProfileFormSchema>);
+      const { email, group, ...rest } = updatedValues;
+      sessionStorage.setItem("profile-data", JSON.stringify({ ...rest }));
       reset(updatedValues);
     }
   }, [userProfile]);
 
-  console.table({ userProfile });
+  // console.table({ userProfile });
 
+  // useEffect(() => {
+  //   function beforeUnload(event: BeforeUnloadEvent) {}
+
+  //   window.addEventListener("beforeunload", beforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", beforeUnload);
+  //   };
+  // }, []);
+
+  function handleZoomToggle() {
+    setZoomAvatar((prev) => !prev);
+  }
   return (
     <>
       <input
@@ -184,7 +209,7 @@ export default function ProfilePage() {
         type="file"
         name="avatar"
         accept=".jpeg, .png, .webp"
-        style={{ width: 0, height: 0 }}
+        style={{ display: "none" }}
       />
       <Box sx={{ mb: 2.5 }}>
         <Typography
@@ -194,7 +219,7 @@ export default function ProfilePage() {
           Account Information
         </Typography>
       </Box>
-      <Container sx={{ padding: "0px !important" }}>
+      <Container>
         <StyledPaper>
           <Stack
             direction="row"
@@ -202,10 +227,12 @@ export default function ProfilePage() {
             alignItems="center"
             padding="1.5rem">
             <Box
+              onClick={handleZoomToggle}
               sx={{
                 height: 100,
                 width: 100,
                 overflow: "hidden",
+                cursor: "pointer",
                 borderRadius: (theme) => `${theme.shape.borderRadius}px`,
               }}>
               <Avatar
@@ -215,26 +242,44 @@ export default function ProfilePage() {
                   borderRadius: "inherit",
                   objectFit: "cover",
                 }}
-                alt={`Avatar ${userProfile?.username}` || "Avatar default"}
-                src={image ? image : userProfile?.avatar || undefined}
+                alt={`Avatar ${userProfile?.username ?? "default"}`}
+                src={image || userProfile?.avatar || undefined}
               />
+              <Modal
+                onClick={(event) => event.stopPropagation()}
+                open={zoomAvatar}
+                onClose={handleZoomToggle}>
+                <Box
+                  sx={{
+                    position: "absolute" as "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    bgcolor: "background.paper",
+                    boxShadow: 24,
+                  }}>
+                  <Avatar
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "inherit",
+                      objectFit: "cover",
+                    }}
+                    alt={`Avatar ${userProfile?.username ?? "default"}`}
+                    src={image || userProfile?.avatar || undefined}
+                  />
+                </Box>
+              </Modal>
             </Box>
             <Stack direction="column" spacing={2}>
               <Stack direction="row" spacing={2} alignItems="center">
                 <Button
-                  sx={{ fontWeight: 500 }}
-                  onClick={handleSelectAvatar}
+                  disabled={isLoading}
+                  sx={{ maxWidth: 180, fontWeight: 500 }}
+                  onClick={triggerAvatarSelect}
                   startIcon={<Icon icon="mdi-light:cloud-upload" />}
                   variant="contained">
-                  Upload New Photo
-                </Button>
-                <Button
-                  sx={{ fontWeight: 500 }}
-                  onClick={handleResetAvatar}
-                  color="secondary"
-                  // startIcon={<Icon icon="mdi-light:cloud-upload" />}
-                  variant="contained">
-                  Reset
+                  Change Avatar
                 </Button>
               </Stack>
 
@@ -244,53 +289,99 @@ export default function ProfilePage() {
             </Stack>
           </Stack>
           <Box sx={{ padding: "1.5rem" }}>
-            <StyledForm
-              sx={{ display: "flex", flexWrap: "wrap" }}
-              noValidate
-              autoComplete="off"
-              onSubmit={handleSubmit(onSubmit)}>
+            <StyledForm onSubmit={handleSubmit(onSubmit)}>
               <Grid container rowSpacing={3} columnSpacing={3}>
                 {FIELDS.map((field, index) => (
                   <Grid key={index} item md={6} xs={12}>
-                    <Controller
-                      name={field.name as keyof FormValues}
-                      control={control}
-                      rules={{ required: true }}
-                      render={({
-                        field: { onChange, value },
-                        fieldState: { error },
-                      }) => (
-                        <CustomTextField
-                          fullWidth
-                          placeholder={field.placeholder}
-                          label={field.label}
-                          variant="outlined"
-                          value={value || ""}
-                          onChange={onChange}
-                          error={Boolean(error)}
-                          helperText={error ? error.message : null}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton edge="end">
-                                  <Icon
-                                    fontSize="1.25rem"
-                                    icon={field.icon || ""}
-                                  />
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
+                    {field.type === "date" ? (
+                      <Controller
+                        name={field.name as keyof ProfileFormSchema}
+                        control={control}
+                        rules={{ required: false }}
+                        render={({
+                          field: { onChange, value },
+                          fieldState: { error },
+                        }) => (
+                          <DatePicker
+                            value={value ? dayjs(value) : null}
+                            onChange={(date: Dayjs | null) => {
+                              onChange(date ? date.toISOString() : null);
+                            }}
+                            fullWidth
+                            slots={{
+                              textField: TextField,
+                            }}
+                            slotProps={{
+                              textField: {
+                                label: field.label,
+                                fullWidth: true,
+                                helperText: error ? error.message : null,
+                                error: !!error,
+                              },
+                            }}
+                          />
+                        )}
+                      />
+                    ) : (
+                      <Controller
+                        name={field.name as keyof ProfileFormSchema}
+                        control={control}
+                        rules={{ required: true }}
+                        render={({
+                          field: { onChange, value },
+                          fieldState: { error },
+                        }) => (
+                          <TextField
+                            fullWidth
+                            placeholder={field.placeholder || ""}
+                            label={field.label}
+                            disabled={field.disabled}
+                            variant="outlined"
+                            value={value || ""}
+                            onChange={onChange}
+                            error={Boolean(error)}
+                            helperText={error ? error.message : null}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton edge="end">
+                                    <Icon
+                                      fontSize="1.25rem"
+                                      icon={field.icon || ""}
+                                    />
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
+                    )}
                   </Grid>
                 ))}
               </Grid>
 
-              <Button sx={{ mt: 4, fontWeight: "bold" }} variant="contained">
-                Save changes
-              </Button>
+              <Stack
+                sx={{ mt: 4 }}
+                direction="row"
+                spacing={2}
+                alignItems="center">
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  sx={{ mt: 4, fontWeight: "bold" }}
+                  variant="contained">
+                  Save changes
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  sx={{ fontWeight: 500 }}
+                  onClick={resetAllFields}
+                  color="secondary"
+                  variant="contained">
+                  Reset
+                </Button>
+              </Stack>
             </StyledForm>
           </Box>
         </StyledPaper>

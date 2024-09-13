@@ -29,7 +29,7 @@ const ModeProvider = ({ children }: Props) => {
   const [mode, setMode] = useState<ModeType>(
     (modeStorage as ModeType) || (darkScheme ? "dark" : "light"),
   );
-  console.table({ mode });
+  // console.table({ mode });
   function handleChangeMode(newMode: ModeType): void {
     if (newMode === "system") {
       localStorage.setItem(

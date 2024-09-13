@@ -23,7 +23,7 @@ import {
 import Icon from "@/components/ui/Icon";
 import Logo from "@/components/ui/Logo";
 import Loading from "@/components/ui/Loading";
-import CustomTextField from "@/components/ui/TextField";
+import TextField from "@/components/ui/TextField";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Library
@@ -141,7 +141,7 @@ const LoginPage = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
-                  <CustomTextField
+                  <TextField
                     fullWidth
                     label="username"
                     placeholder="Enter your username"
@@ -160,7 +160,7 @@ const LoginPage = () => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field, fieldState }) => (
-                  <CustomTextField
+                  <TextField
                     variant="outlined"
                     fullWidth
                     label="Password"

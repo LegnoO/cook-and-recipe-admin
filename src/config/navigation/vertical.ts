@@ -9,4 +9,11 @@ export const verticalNavItems: IVerticalNavItemsType = [
     action: "read",
     page: "user",
   },
+  {
+    title: "Settings",
+    icon: "uil:setting",
+    path: "/profile",
+    action: "read",
+    page: "user",
+  },
 ];
