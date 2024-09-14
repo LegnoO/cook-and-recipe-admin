@@ -8,7 +8,7 @@ import {
   IRoutePermission,
   LoginCredentials,
   Messages,
-  UserProfile,
+  IUserProfile,
 } from "@/types/Auth";
 
 export const isRememberMeEnabled =
@@ -41,7 +41,7 @@ export async function getUserInfo() {
 }
 
 export async function getUserProfile() {
-  const response = await AxiosInstance.get<UserProfile>("/employees/profile");
+  const response = await AxiosInstance.get<IUserProfile>("/employees/profile");
 
   return response.data;
 }

@@ -14,26 +14,33 @@ import {
   Stack,
   InputAdornment,
   IconButton,
-  Modal,
 } from "@mui/material";
 
 // ** Components
-import Icon from "@/components/ui/Icon";
-import TextField from "@/components/ui/TextField";
-import DatePicker from "@/components/ui/DatePicker";
-import Container from "@/components/ui/Container";
+import {
+  Icon,
+  TextField,
+  DatePicker,
+  Container,
+  Modal,
+  Image,
+} from "@/components/ui";
 
 // ** Library
+import dayjs, { Dayjs } from "dayjs";
 import { useQuery } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs, { Dayjs } from "dayjs";
 
 // ** Services
 import { getUserProfile } from "@/utils/services/authService";
 
 // ** Schemas
 import { ProfileFormSchema } from "@/utils/validations";
+
+// ** Types
+import { IProfileFormSchema } from "@/types/Schema";
+import { updateEmployeeProfile } from "@/utils/services/userService";
 
 // ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -51,54 +58,83 @@ export default function ProfilePage() {
     isLoading,
     // isError,
     // error,
+    // isFetched,
     data: userProfile,
   } = useQuery({
     queryKey: ["user-profile"],
     queryFn: getUserProfile,
     retry: false,
+
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  const FIELDS = [
+  const { reset, control, handleSubmit } = useForm<IProfileFormSchema>({
+    resolver: zodResolver(ProfileFormSchema),
+  });
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [zoomAvatar, setZoomAvatar] = useState(false);
+  const formFields = [
     {
       name: "email",
       label: "Email",
       placeholder: "",
-      icon: "carbon:email",
       disabled: true,
+      icon: "carbon:email",
     },
     {
       name: "group",
       label: "Role",
       placeholder: "",
-      icon: "la:user-cog",
       disabled: true,
+      icon: "la:user-cog",
     },
     {
       name: "fullName",
       label: "Full name",
-      placeholder: "Enter full name",
+      placeholder: "Enter your full name",
       icon: "material-symbols:person-outline-rounded",
     },
     {
       name: "username",
       label: "User name",
-      placeholder: "Enter user name",
+      placeholder: "Enter your user name",
       icon: "material-symbols:person-outline-rounded",
     },
     {
-      name: "dateOfBirth",
-      label: "Date of Birth",
-      type: "date",
+      name: "number",
+      label: "Number",
+      placeholder: "Enter your number",
+      icon: "material-symbols:phonelink-ring",
+    },
+    {
+      name: "city",
+      label: "City address",
+      placeholder: "Enter city address",
+      icon: "fluent:city-24-regular",
+    },
+    {
+      name: "street",
+      label: "Street address",
+      placeholder: "Enter street address",
+      icon: "fluent:location-16-regular",
+    },
+    {
+      name: "ward",
+      label: "Ward address",
+      placeholder: "Enter ward address",
+      icon: "fluent:location-16-regular",
+    },
+    {
+      name: "district",
+      label: "District address",
+      placeholder: "Enter district address",
+      icon: "fluent:location-16-regular",
     },
   ];
-
-  const { reset, control, handleSubmit } = useForm<ProfileFormSchema>({
-    resolver: zodResolver(ProfileFormSchema),
-  });
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState<string | null>(null);
-  const [zoomAvatar, setZoomAvatar] = useState(false);
-
   function handleReviewAvatar(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) return;
     const fileReader = new FileReader();
@@ -109,26 +145,13 @@ export default function ProfilePage() {
       if (file.size > 2000000) {
         throw new Error("Upload failed: File size exceeds the 2MB limit.");
       }
-
-      fileReader.readAsDataURL(file);
+      setFile(file);
       fileReader.onload = () => {
-        const bufferImage = fileReader.result as string;
-
-        setImage(bufferImage);
+        setImage(fileReader.result as string);
       };
+      fileReader.readAsDataURL(file);
     }
   }
-
-  // async function handleAvatarUpload() {
-  //   const formData = new FormData();
-  //   formData.append("file", image!);
-
-  //   const res = await AxiosInstance.post(
-  //     "https://e-learming-be.onrender.com/upload-image",
-  //     formData,
-  //   );
-  //   console.log("🚀 ~ handleAvatarUpload ~ res:", res);
-  // }
 
   function triggerAvatarSelect() {
     if (!avatarInputRef.current) {
@@ -141,6 +164,8 @@ export default function ProfilePage() {
 
   function resetAllFields() {
     if (image) setImage(null);
+    if (file) setFile(null);
+
     const profileData =
       sessionStorage.getItem("profile-data") &&
       JSON.parse(sessionStorage.getItem("profile-data")!);
@@ -150,56 +175,46 @@ export default function ProfilePage() {
     }
   }
 
-  async function onSubmit(data: ProfileFormSchema) {
+  async function onSubmit(data: IProfileFormSchema) {
     console.log("🚀 ~ onSubmit ~ data:", data);
-    // const { email, password } = data;
-    // auth.login({ email, password, rememberMe }, () => {
-    //   setError("email", {
-    //     type: "manual",
-    //     message: "Email or Password is invalid",
-    //   });
-    // });
+    const { number, phone, district, ward, street } = data;
 
-    // await handleAvatarUpload();
+    const formData = new FormData();
+
+    formData.append("fullName", data.fullName);
+    formData.append("avatar", file!);
+    formData.append("phone", phone!);
+    formData.append("dateOfBirth", data.dateOfBirth!);
+    formData.append(
+      "address",
+      JSON.stringify({ number, phone, district, ward, street }),
+    );
+
+    try {
+      await updateEmployeeProfile(formData);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
     if (userProfile) {
-      const updatedValues = FIELDS.reduce((acc, field) => {
-        const value = userProfile[field.name as keyof ProfileFormSchema];
-        const key = field.name as keyof ProfileFormSchema;
-
-        if (key !== "dateOfBirth" && typeof value === "string") {
-          acc[key] = value;
-        }
-
-        if (key === "dateOfBirth") {
-          acc[key] = value ? dayjs(value).toISOString() : null;
-        }
-
-        return acc;
-      }, {} as Partial<ProfileFormSchema>);
-      const { email, group, ...rest } = updatedValues;
-      sessionStorage.setItem("profile-data", JSON.stringify({ ...rest }));
+      const { address, ...userProfileRest } = userProfile;
+      const updatedValues = { ...address, ...userProfileRest };
       reset(updatedValues);
+
+      const { createdDate, group, email, ...updatedValuesRest } = updatedValues;
+      const saveDraft = { ...updatedValuesRest };
+      sessionStorage.setItem("profile-data", JSON.stringify(saveDraft));
     }
   }, [userProfile]);
 
-  // console.table({ userProfile });
-
-  // useEffect(() => {
-  //   function beforeUnload(event: BeforeUnloadEvent) {}
-
-  //   window.addEventListener("beforeunload", beforeUnload);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", beforeUnload);
-  //   };
-  // }, []);
+  console.table({ userProfile });
 
   function handleZoomToggle() {
     setZoomAvatar((prev) => !prev);
   }
+
   return (
     <>
       <input
@@ -248,26 +263,14 @@ export default function ProfilePage() {
                 onClick={(event) => event.stopPropagation()}
                 open={zoomAvatar}
                 onClose={handleZoomToggle}>
-                <Box
+                <Image
                   sx={{
-                    position: "absolute" as "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    bgcolor: "background.paper",
-                    boxShadow: 24,
-                  }}>
-                  <Avatar
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: "inherit",
-                      objectFit: "cover",
-                    }}
-                    alt={`Avatar ${userProfile?.username ?? "default"}`}
-                    src={image || userProfile?.avatar || undefined}
-                  />
-                </Box>
+                    maxHeight: "100dvh",
+                    maxWidth: "75dvh",
+                  }}
+                  alt={`Avatar ${userProfile?.username ?? "default"}`}
+                  src={image || userProfile?.avatar || undefined}
+                />
               </Modal>
             </Box>
             <Stack direction="column" spacing={2}>
@@ -293,64 +296,31 @@ export default function ProfilePage() {
           <Box sx={{ padding: "1.5rem" }}>
             <StyledForm onSubmit={handleSubmit(onSubmit)}>
               <Grid container rowSpacing={3} columnSpacing={3}>
-                {FIELDS.map((field, index) => (
-                  <Grid key={index} item md={6} xs={12}>
-                    {field.type === "date" ? (
+                {formFields.map(
+                  ({ name, label, placeholder, disabled, icon }) => (
+                    <Grid item md={6} xs={12} key={name}>
                       <Controller
-                        name={field.name as keyof ProfileFormSchema}
+                        name={name as keyof IProfileFormSchema}
                         control={control}
-                        rules={{ required: false }}
-                        render={({
-                          field: { onChange, value },
-                          fieldState: { error },
-                        }) => (
-                          <DatePicker
-                            value={value ? dayjs(value) : null}
-                            onChange={(date: Dayjs | null) => {
-                              onChange(date ? date.toISOString() : null);
-                            }}
-                            fullWidth
-                            slots={{
-                              textField: TextField,
-                            }}
-                            slotProps={{
-                              textField: {
-                                label: field.label,
-                                fullWidth: true,
-                                helperText: error ? error.message : null,
-                                error: !!error,
-                              },
-                            }}
-                          />
-                        )}
-                      />
-                    ) : (
-                      <Controller
-                        name={field.name as keyof ProfileFormSchema}
-                        control={control}
-                        rules={{ required: true }}
                         render={({
                           field: { onChange, value },
                           fieldState: { error },
                         }) => (
                           <TextField
                             fullWidth
-                            placeholder={field.placeholder || ""}
-                            label={field.label}
-                            disabled={field.disabled}
+                            label={label}
+                            placeholder={placeholder}
+                            disabled={disabled}
                             variant="outlined"
                             value={value || ""}
                             onChange={onChange}
                             error={Boolean(error)}
-                            helperText={error ? error.message : null}
+                            helperText={error?.message}
                             InputProps={{
                               endAdornment: (
                                 <InputAdornment position="end">
                                   <IconButton edge="end">
-                                    <Icon
-                                      fontSize="1.25rem"
-                                      icon={field.icon || ""}
-                                    />
+                                    <Icon fontSize="1.25rem" icon={icon} />
                                   </IconButton>
                                 </InputAdornment>
                               ),
@@ -358,9 +328,39 @@ export default function ProfilePage() {
                           />
                         )}
                       />
+                    </Grid>
+                  ),
+                )}
+                <Grid item md={6} xs={12}>
+                  <Controller
+                    name="dateOfBirth"
+                    control={control}
+                    rules={{ required: false }}
+                    render={({
+                      field: { onChange, value },
+                      fieldState: { error },
+                    }) => (
+                      <DatePicker
+                        value={value ? dayjs(value) : null}
+                        onChange={(date: Dayjs | null) => {
+                          onChange(date ? date.toISOString() : null);
+                        }}
+                        fullWidth
+                        slots={{
+                          textField: TextField,
+                        }}
+                        slotProps={{
+                          textField: {
+                            label: "Date of birth",
+                            fullWidth: true,
+                            helperText: error ? error.message : null,
+                            error: !!error,
+                          },
+                        }}
+                      />
                     )}
-                  </Grid>
-                ))}
+                  />
+                </Grid>
               </Grid>
 
               <Stack
@@ -371,22 +371,20 @@ export default function ProfilePage() {
                 alignItems="center">
                 <Button
                   disabled={isLoading}
-                  type="submit"
-                  sx={{
-                    width: { xs: "100%", md: "auto" },
-                    mt: 4,
-                    fontWeight: "bold",
-                  }}
-                  variant="contained">
-                  Save changes
-                </Button>
-                <Button
-                  disabled={isLoading}
-                  sx={{ width: { xs: "100%", md: "auto" }, fontWeight: 500 }}
+                  sx={{ width: { xs: "100%", md: "auto" } }}
                   onClick={resetAllFields}
                   color="secondary"
                   variant="contained">
                   Reset
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  sx={{
+                    width: { xs: "100%", md: "auto" },
+                  }}
+                  variant="contained">
+                  Save changes
                 </Button>
               </Stack>
             </StyledForm>

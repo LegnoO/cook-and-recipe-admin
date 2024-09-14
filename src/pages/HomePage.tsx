@@ -14,6 +14,7 @@ import {
   ClickAwayListener,
   Fade,
 } from "@mui/material";
+
 import {
   Table,
   TableBody,
@@ -22,12 +23,13 @@ import {
   TableHead,
   TableRow,
   TableFooter,
-} from "@/components/ui/CustomTable";
-import Tooltip from "@/components/ui/Tooltip";
+  Tooltip,
+} from "@/components/ui";
+
 // import Paper from "@mui/material/Paper";
 import { Checkbox, Typography, TablePagination } from "@mui/material";
 
-import Image from "@/components/Image";
+import Image from "@/components/ui/Image";
 import Icon from "@/components/ui/Icon";
 
 // import { UserInfo } from "./types/UserInfo";

@@ -8,14 +8,23 @@ export type UserInfo = {
   group: string;
 };
 
-export type UserProfile = {
+export interface IUserProfile {
+  group: string;
   email: string;
-  dateOfBirth: Date | null;
+  phone: string | null;
+  dateOfBirth: string | null;
   fullName: string;
   username: string;
-  group: string;
   avatar: string | null;
-};
+  createdDate: string;
+  address: {
+    number: string;
+    street: string;
+    ward: string;
+    district: string;
+    city: string;
+  };
+}
 
 export type AuthTokens = string;
 

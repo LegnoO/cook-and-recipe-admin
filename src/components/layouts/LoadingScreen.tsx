@@ -2,7 +2,7 @@
 import { Box, keyframes, styled } from "@mui/material";
 
 // ** Components
-import Image from "@/components/Image";
+import Image from "@/components/ui/Image";
 import Logo from "@/components/ui/Logo";
 
 // ** Images

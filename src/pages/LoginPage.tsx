@@ -2,12 +2,10 @@
 import { useState, ChangeEvent } from "react";
 
 // ** MUI Imports
+import { styled } from "@mui/material/styles";
 import MuiFormControlLabel, {
   FormControlLabelProps,
 } from "@mui/material/FormControlLabel";
-
-import { styled } from "@mui/material/styles";
-
 import {
   Box,
   CardContent,
@@ -20,11 +18,8 @@ import {
 } from "@mui/material";
 
 // ** Components
-import Icon from "@/components/ui/Icon";
-import Logo from "@/components/ui/Logo";
-import Loading from "@/components/ui/Loading";
-import TextField from "@/components/ui/TextField";
 import ModeToggler from "@/components/ModeToggler";
+import { Icon, Logo, Loading, TextField } from "@/components/ui/";
 
 // ** Library
 import { Link } from "react-router-dom";
@@ -33,10 +28,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // ** Hooks
 import { useAuth } from "@/hooks/useAuth";
+import useLocalStorage from "@/hooks/useLocalStorage";
+
+// ** Utils
+import { LoginFormSchema } from "@/utils/validations";
 
 // ** Schema Validate
-import { LoginFormData, LoginFormSchema } from "@/utils/validations";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { ILoginFormSchema } from "@/types/Schema";
 
 // ** Styled Components
 const StyledForm = styled("form")(() => ({
@@ -76,7 +74,7 @@ const LoginPage = () => {
     false,
   );
 
-  const { handleSubmit, control } = useForm<LoginFormData>({
+  const { handleSubmit, control } = useForm<ILoginFormSchema>({
     defaultValues: {
       username: "admin123",
       password: "admin1234",
