@@ -1,7 +1,7 @@
 // ** React
 import { useState, useEffect, createContext, ReactNode } from "react";
 
-// ** MUI Imports
+// ** Mui Imports
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 // ** Types

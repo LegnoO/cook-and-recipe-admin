@@ -8,8 +8,8 @@ export type INavLink = {
   icon?: string;
   path?: string;
   title: string;
-  page: string;
-  action: string;
+  page?: string;
+  action?: string;
 };
 
 export interface INavGroup {

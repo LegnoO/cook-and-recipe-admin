@@ -1,7 +1,7 @@
 // ** React Imports
 import { useState, ChangeEvent } from "react";
 
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 import MuiFormControlLabel, {
   FormControlLabelProps,
@@ -18,8 +18,8 @@ import {
 } from "@mui/material";
 
 // ** Components
+import { Icon, Logo, Loading, TextField } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
-import { Icon, Logo, Loading, TextField } from "@/components/ui/";
 
 // ** Library
 import { Link } from "react-router-dom";
@@ -34,7 +34,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { LoginFormSchema } from "@/utils/validations";
 
 // ** Schema Validate
-import { ILoginFormSchema } from "@/types/Schema";
+import { ILoginFormSchema } from "@/types/schemas";
 
 // ** Styled Components
 const StyledForm = styled("form")(() => ({

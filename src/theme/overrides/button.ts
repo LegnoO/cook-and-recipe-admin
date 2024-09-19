@@ -1,7 +1,7 @@
 // ** Util Import
 import { hexToRGBA } from "@/utils/helpers";
 
-// ** MUI Imports
+// ** Mui Imports
 import { Components, Theme } from "@mui/material/styles";
 
 // ** Types
@@ -23,7 +23,7 @@ const Button = (): Components<Omit<Theme, "components">> => {
           props: { variant: "text", color: "secondary" },
           style: ({ theme }: { theme: Theme }) => ({
             "&:hover": {
-              backgroundColor: hexToRGBA(theme.palette.secondary.main, 0.08),
+              backgroundColor: hexToRGBA(theme.palette.customColors.main, 0.08),
             },
           }),
         },
@@ -87,7 +87,7 @@ const Button = (): Components<Omit<Theme, "components">> => {
           props: { variant: "outlined", color: "secondary" },
           style: ({ theme }: { theme: Theme }) => ({
             "&:hover": {
-              backgroundColor: hexToRGBA(theme.palette.secondary.main, 0.08),
+              backgroundColor: hexToRGBA(theme.palette.customColors.main, 0.08),
             },
           }),
         },

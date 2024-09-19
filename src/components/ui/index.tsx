@@ -8,6 +8,9 @@ export { default as Modal } from "./Modal";
 export { default as TextField } from "./TextField";
 export { default as Tooltip } from "./Tooltip";
 export { default as Image } from "./Image";
+export { default as Paper } from "./Paper";
+export { default as ChipStatus } from "./ChipStatus";
+export { default as Form } from "./Form";
 export {
   Table,
   TableRow,

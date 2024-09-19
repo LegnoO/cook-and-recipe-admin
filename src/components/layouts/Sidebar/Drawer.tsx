@@ -1,7 +1,7 @@
 // ** React
 import { ReactNode, MouseEvent } from "react";
 
-// ** MUI Imports
+// ** Mui Imports
 import { Backdrop, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 

@@ -1,4 +1,4 @@
-// ** MUI Imports
+// ** Mui Imports
 import { Box, keyframes, styled } from "@mui/material";
 
 // ** Keyframes

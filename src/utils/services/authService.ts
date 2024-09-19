@@ -2,14 +2,14 @@
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
+import { IUserProfile } from "@/types/user";
 import {
   AuthTokens,
-  UserInfo,
   IRoutePermission,
+  IUserInfo,
   LoginCredentials,
   Messages,
-  IUserProfile,
-} from "@/types/Auth";
+} from "@/types/auth";
 
 export const isRememberMeEnabled =
   JSON.parse(localStorage.getItem("rememberMe")!) === "true";
@@ -35,7 +35,7 @@ export async function signOut() {
 }
 
 export async function getUserInfo() {
-  const response = await AxiosInstance.get<UserInfo>("/employees/info");
+  const response = await AxiosInstance.get<IUserInfo>("/employees/info");
 
   return response.data;
 }

@@ -9,7 +9,6 @@ import {
 } from "react";
 
 // ** Library
-import { useMutation } from "@tanstack/react-query";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 
 // ** Services
@@ -21,17 +20,18 @@ import {
 } from "@/utils/services/authService";
 
 // ** Types
-import { LoginCredentials, UserInfo, AuthTokens } from "@/types/Auth";
+import { LoginCredentials, IUserInfo } from "@/types/auth";
 import { AxiosError } from "axios";
 
 export interface IAuthContext {
-  user: UserInfo | null;
+  user: IUserInfo | null;
   isLoading: boolean;
-  setUser: Dispatch<SetStateAction<UserInfo | null>>;
+  setUser: Dispatch<SetStateAction<IUserInfo | null>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
   login: ({ username, password, rememberMe }: LoginCredentials) => void;
   loadingError: string | null;
+  refetchInfo: () => void;
 }
 
 type Props = {
@@ -46,27 +46,9 @@ const AuthProvider = ({ children }: Props) => {
   const currentPathname = location.pathname;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const [user, setUser] = useState<IUserInfo | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
-  console.table({ user });
-  const { mutate, isPending } = useMutation<
-    AuthTokens,
-    Error,
-    LoginCredentials
-  >({
-    mutationFn: (data) => signIn({ ...data }),
-    onSuccess: async (accessToken) => {
-      localStorage.setItem("access-token", accessToken);
-      await fetchUserData();
-      navigate(searchParams.get("returnUrl") || "/");
-    },
-    onError: (error) => {
-      if (error instanceof AxiosError && error.response) {
-        setLoadingError(error.response.data.message);
-      }
-    },
-  });
 
   async function fetchUserData() {
     const userInfo = await getUserInfo();
@@ -100,18 +82,30 @@ const AuthProvider = ({ children }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handleLogin(data: LoginCredentials) {
-    mutate(data);
+  async function handleLogin(data: LoginCredentials) {
+    try {
+      setLoading(true);
+      const accessToken = await signIn({ ...data });
+      localStorage.setItem("access-token", accessToken);
+      await fetchUserData();
+      navigate(searchParams.get("returnUrl") || "/");
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        setLoadingError(error.response.data.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleLogout = async () => {
     const isLoginPage = "/login";
     try {
       if (currentPathname !== isLoginPage) {
+        await signOut();
         navigate(isLoginPage);
         localStorage.removeItem("access-token");
         setUser(null);
-        await signOut();
       }
     } catch (error) {
       console.error(error);
@@ -125,9 +119,10 @@ const AuthProvider = ({ children }: Props) => {
         setUser,
         login: handleLogin,
         logout: handleLogout,
-        isLoading: isLoading || isPending,
+        isLoading: isLoading,
         setLoading,
         loadingError,
+        refetchInfo: refreshUserData,
       }}>
       {children}
     </AuthContext.Provider>

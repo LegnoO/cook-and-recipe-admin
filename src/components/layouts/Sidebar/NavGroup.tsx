@@ -4,7 +4,7 @@ import { useEffect, Dispatch, SetStateAction } from "react";
 // ** Next Imports
 import { useLocation } from "react-router-dom";
 
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 import { Collapse } from "@mui/material";
 

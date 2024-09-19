@@ -27,23 +27,7 @@ const ProtectedRoute = () => {
       ),
     )
     .map((route) => route.path);
-  // function getAllowedRoutes() {
-  //   const allowedRoutes = protectedRoute.map((route) => {
-  //     if (
-  //       user &&
-  //       user.permission.some(
-  //         (perm) =>
-  //           perm.page === route.permission.page &&
-  //           perm.actions.includes(route.permission.action),
-  //       )
-  //     ) {
-  //       return route.path;
-  //     }
-  //   });
 
-  //   return allowedRoutes.filter((url): url is string => url !== undefined);
-  // }
-  return <Outlet />;
   if (isLoading) return <LoadingScreen />;
 
   if (!user && !isUrlPatternMatched(currentPathname, allowedRoutes)) {

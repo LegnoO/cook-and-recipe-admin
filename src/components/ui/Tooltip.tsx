@@ -1,4 +1,4 @@
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 import MuiTooltip, { TooltipProps } from "@mui/material/Tooltip";
 

@@ -1,4 +1,4 @@
-// ** MUI Imports
+// ** Mui Imports
 import { Box, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps } from "@mui/material/AppBar";

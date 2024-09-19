@@ -1,4 +1,4 @@
-// ** MUI Imports
+// ** Mui Imports
 import { styled, Theme } from "@mui/material/styles";
 
 // ** Library

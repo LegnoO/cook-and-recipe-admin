@@ -1,7 +1,7 @@
 // ** React
 import { ReactNode } from "react";
 
-// ** MUI Imports
+// ** Mui Imports
 import { CssBaseline, Palette } from "@mui/material";
 import {
   ThemeProvider,

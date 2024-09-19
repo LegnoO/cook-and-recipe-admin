@@ -6,14 +6,18 @@ export const verticalNavItems: IVerticalNavItemsType = [
     title: "Home",
     icon: "tabler:mail",
     path: "/home",
-    action: "read",
-    page: "user",
   },
   {
     title: "Settings",
     icon: "uil:setting",
     path: "/profile",
-    action: "read",
-    page: "user",
+  },
+  {
+    title: "Employees",
+    icon: "lucide:user-round",
+    path: "/list-employee",
   },
 ];
+
+// action: "read",
+// page: "user",

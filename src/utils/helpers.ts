@@ -1,3 +1,5 @@
+import { Address } from "@/types/user";
+
 export function isObjectEmpty(objectName: Object) {
   return Object.keys(objectName).length === 0;
 }
@@ -83,6 +85,23 @@ export function isUrlPatternMatched(inputUrl: string, all_url: string[]) {
   return baseUrls.some((baseUrl) => baseUrl === inputBaseUrl);
 }
 
-export function delay<T>(time: number, value: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), time));
+export function delay<T>(time: number, value?: T): Promise<T> {
+  if (value)
+    return new Promise((resolve) => setTimeout(() => resolve(value), time));
+
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+export function formatAddress(address: Address, maxLength: number = 100) {
+  let formattedAddress = `${address.number}, ${address.street}, ${address.ward}, ${address.district}, ${address.city}`;
+
+  if (formattedAddress.length > maxLength) {
+    return formattedAddress.slice(0, maxLength - 3) + "...";
+  }
+
+  return formattedAddress;
+}
+
+export function isUndefined<T>(value: T) {
+  return value === undefined;
 }

@@ -4,7 +4,7 @@ import { useState, MouseEvent } from "react";
 // ** Library
 import { useNavigate } from "react-router-dom";
 
-// ** MUI Imports
+// ** Mui Imports
 import { Badge, Avatar, Typography, Divider } from "@mui/material";
 import MuiMenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 import Box, { BoxProps } from "@mui/material/Box";
@@ -57,7 +57,8 @@ const ButtonLogout = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const UserDropDown = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   function handleDropdownOpen(event: MouseEvent<HTMLElement>) {
@@ -95,7 +96,11 @@ const UserDropDown = () => {
         }}>
         <Box sx={{ px: "1.5rem", py: "0.4375rem" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Avatar alt="Avatar" sx={{ width: "2.5rem", height: "2.5rem" }} />
+            <Avatar
+              src={user?.avatar}
+              alt="Avatar"
+              sx={{ width: "2.5rem", height: "2.5rem" }}
+            />
             <Box
               sx={{
                 display: "flex",
@@ -103,8 +108,8 @@ const UserDropDown = () => {
                 alignItems: "flex-start",
                 flexDirection: "column",
               }}>
-              <Typography sx={{ fontWeight: 500 }}>Legno</Typography>
-              <Typography variant="body2">Admin</Typography>
+              <Typography sx={{ fontWeight: 500 }}>{user?.fullName}</Typography>
+              <Typography variant="body2">{user?.group}</Typography>
             </Box>
           </Box>
         </Box>
@@ -160,6 +165,7 @@ const UserDropDown = () => {
         <Avatar
           onClick={handleDropdownOpen}
           sx={{ width: 38, height: 38 }}
+          src={user?.avatar}
           alt="Avatar"
         />
         <MenuDropdown />

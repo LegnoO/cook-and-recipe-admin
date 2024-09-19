@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// ** MUI Imports
+// ** Mui Imports
 import { Typography, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiMenuItem, { MenuItemProps } from "@mui/material/MenuItem";
@@ -100,11 +100,11 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
             sx={{
               "&": {
                 backgroundColor: (theme) =>
-                  hexToRGBA(theme.palette.secondary.main, 0.04),
+                  hexToRGBA(theme.palette.customColors.main, 0.04),
               },
               "&:hover": {
                 backgroundColor: (theme) =>
-                  hexToRGBA(theme.palette.secondary.main, 0.1),
+                  hexToRGBA(theme.palette.customColors.main, 0.1),
               },
             }}
             onClick={handleDropdownOpen}>

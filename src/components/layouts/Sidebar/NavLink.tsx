@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, MouseEvent } from "react";
 // ** Next Imports
 import { Link, useLocation } from "react-router-dom";
 
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 
 // ** Components

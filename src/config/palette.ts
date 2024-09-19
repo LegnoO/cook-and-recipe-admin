@@ -1,11 +1,29 @@
+import { hexToRGBA } from "@/utils/helpers";
+
+export const defaultTextColor = {
+  light: "#212636",
+  dark: "#e1def5",
+};
+
 export const textColors = {
-  light: "47, 43, 61",
-  dark: "208, 212, 241",
+  primary: {
+    light: "#212636",
+    dark: hexToRGBA(defaultTextColor.dark, 0.9),
+  },
+  secondary: {
+    light: "#667085",
+    dark: hexToRGBA(defaultTextColor.dark, 0.7),
+  },
 };
 
 export const commonColors = {
   white: "#fff",
   black: "#040316",
+};
+
+export const borderColors = {
+  light: "#2F2B3D",
+  dark: hexToRGBA(defaultTextColor.dark, 0.12),
 };
 
 export const backgroundColors = {

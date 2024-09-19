@@ -1,7 +1,7 @@
 // ** React
 import { forwardRef } from "react";
 
-// ** MUI
+// ** Mui
 import { styled } from "@mui/material/styles";
 import MuiTextField, { TextFieldProps } from "@mui/material/TextField";
 
@@ -18,7 +18,7 @@ const StyledTextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
   "& .MuiInputBase-root": {
     borderRadius: theme.shape.borderRadius,
     backgroundColor: "transparent !important",
-    border: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`,
+    border: `1px solid ${theme.palette.customColors.borderColor}`,
     transition: theme.transitions.create(["border-color", "box-shadow"], {
       duration: theme.transitions.duration.shorter,
     }),

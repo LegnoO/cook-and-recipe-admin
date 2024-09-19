@@ -6,9 +6,10 @@ import { lazy } from "react";
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const EmployeeListPage = lazy(() => import("@/pages/EmployeeListPage/"));
 
 // ** Types
-import { ProtectedRoute, PublicRoute } from "@/types/Routes";
+import { ProtectedRoute, PublicRoute } from "@/types/routes";
 
 export const homeRoute: string = "/home";
 
@@ -32,6 +33,14 @@ export const protectedRoute: ProtectedRoute[] = [
   {
     path: "/profile",
     component: <ProfilePage />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
+  {
+    path: "/list-employee",
+    component: <EmployeeListPage />,
     permission: {
       page: "user",
       action: "read",

@@ -1,7 +1,7 @@
 // ** React
 import { useState, memo } from "react";
 
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 
 // ** Library

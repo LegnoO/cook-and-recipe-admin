@@ -1,14 +1,17 @@
-// ** MUI Imports
+// ** Mui Imports
 import { Palette } from "@mui/material";
 
 // ** Constants
 import {
   mainColors,
+  defaultTextColor,
   commonColors,
   backgroundColors,
   textColors,
   supportColors,
-} from "@/utils/constants";
+  borderColors,
+} from "@/config/palette";
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Types
 interface newCustomPalette {
@@ -22,6 +25,7 @@ interface newCustomPalette {
   avatarBg: string;
   tableHeaderBg: string;
   backdrop: string;
+  borderColor: string;
   grey500: string;
 }
 
@@ -55,12 +59,18 @@ declare module "@mui/material/Button" {
 }
 
 const DefaultPalette = (mode: Palette["mode"]): Palette => {
-  const textColor = mode === "light" ? textColors.light : textColors.dark;
+  const textPrimary =
+    mode === "light" ? textColors.primary.light : textColors.primary.dark;
+  const textSecondary =
+    mode === "light" ? textColors.secondary.light : textColors.secondary.dark;
+  const borderColor = mode === "light" ? borderColors.light : borderColors.dark;
+  const mainTextColor =
+    mode === "light" ? defaultTextColor.light : defaultTextColor.dark;
 
   const customColors = {
-    dark: textColors.dark,
-    main: textColor,
-    light: textColors.light,
+    dark: textColors.primary.dark,
+    main: mainTextColor,
+    light: textColors.primary.light,
     lightPaperBg: commonColors.white,
     darkPaperBg:
       mode === "light"
@@ -71,6 +81,7 @@ const DefaultPalette = (mode: Palette["mode"]): Palette => {
     avatarBg: mode === "light" ? "#DBDADE" : "#4A5072",
     tableHeaderBg: mode === "light" ? "#F6F6F7" : "#4A5072",
     backdrop: "#2f2b3d80",
+    borderColor,
   };
 
   return {
@@ -102,11 +113,11 @@ const DefaultPalette = (mode: Palette["mode"]): Palette => {
       ...supportColors.success,
     },
     text: {
-      primary: `rgba(${textColor}, 0.78)`,
-      secondary: `rgba(${textColor}, 0.68)`,
-      disabled: `rgba(${textColor}, 0.42)`,
+      primary: textPrimary,
+      secondary: textSecondary,
+      disabled: hexToRGBA(mainTextColor, 0.4),
     },
-    divider: `rgba(${textColor}, 0.16)`,
+    divider: borderColor,
     background: {
       paper:
         mode === "light"
@@ -118,13 +129,13 @@ const DefaultPalette = (mode: Palette["mode"]): Palette => {
           : backgroundColors.body.dark,
     },
     action: {
-      active: `rgba(${textColor}, 0.54)`,
-      hover: `rgba(${textColor}, 0.04)`,
-      selected: `rgba(${textColor}, 0.06)`,
+      active: hexToRGBA(mainTextColor, 0.54),
+      selected: hexToRGBA(mainTextColor, 0.06),
+      hover: hexToRGBA(mainTextColor, 0.06),
+      disabled: hexToRGBA(mainTextColor, 0.26),
+      disabledBackground: hexToRGBA(mainTextColor, 0.12),
+      focus: hexToRGBA(mainTextColor, 0.12),
       selectedOpacity: 0.06,
-      disabled: `rgba(${textColor}, 0.26)`,
-      disabledBackground: `rgba(${textColor}, 0.12)`,
-      focus: `rgba(${textColor}, 0.12)`,
       hoverOpacity: 0.04,
       disabledOpacity: 0.38,
       focusOpacity: 0.12,

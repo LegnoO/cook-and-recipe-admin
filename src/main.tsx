@@ -11,9 +11,10 @@ import router from "./routes";
 // ** CSS
 import "./styles/globals.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
+import "react-toastify/dist/ReactToastify.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-    <RouterProvider router={router} />
+  <RouterProvider router={router} />,
   // </StrictMode>
 );

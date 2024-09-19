@@ -1,6 +1,4 @@
-
-
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 import Logo from "@/components/ui/Logo";
 
@@ -27,7 +25,7 @@ const NavHeader = () => {
   return (
     <StyledNavHeader className="nav-header">
       {/* <Link to="/layout"> */}
-        <Logo />
+      <Logo />
       {/* </Link> */}
     </StyledNavHeader>
   );

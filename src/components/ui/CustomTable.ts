@@ -1,4 +1,4 @@
-// ** MUI Imports
+// ** Mui Imports
 import { styled } from "@mui/material/styles";
 import {
   Table as MuiTable,
@@ -22,7 +22,8 @@ export const TableRow = styled(MuiTableRow)({
 
 export const TableContainer = styled(MuiTableContainer)(({ theme }) => ({
   boxShadow: theme.shadows[2],
-  borderRadius: theme.shape.borderRadius,
+  borderBottomRightRadius: `${theme.shape.borderRadius}px`,
+  borderBottomLeftRadius: `${theme.shape.borderRadius}px`,
 }));
 
 export const TableHead = styled(MuiTableHead)(({ theme }) => ({
@@ -36,28 +37,28 @@ export const TableBody = styled(MuiTableBody)(({ theme }) => ({
   "&": {
     backgroundColor: theme.palette.background.paper,
   },
-  "& .MuiTableRow-root .MuiTableCell-root:has(.no-data-found)": {
-    background: "red",
-  },
+  "& .MuiTableRow-root .MuiTableCell-root:has(.no-data-found)": {},
 }));
 
 export const TableCell = styled(MuiTableCell)(({ theme }) => ({
   "&": {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
     lineHeight: "1.5",
   },
   "&.MuiTableCell-head": {
     fontSize: theme.typography.subtitle2.fontSize,
-    fontWeight: 600,
+    fontWeight: 500,
     borderBottom: 0,
     padding: "1.25rem",
   },
   "&.MuiTableCell-body": {
-    padding: "0.75rem",
-    borderBottom: `1px dashed ${theme.palette.divider} !important`,
+    paddingBlock: "0.75rem",
+    paddingInline: "1.25rem",
+    borderBottom: `1px solid ${theme.palette.divider} !important`,
   },
   "&.MuiTableCell-footer": {
     padding: "0.5rem",
+    borderBottom: 0,
   },
   "&:has(.MuiCheckbox-root)": {
     padding: "0 0 0 0.5rem",
