@@ -5,10 +5,10 @@ import AxiosInstance from "@/utils/axios";
 import { IUserProfile } from "@/types/user";
 import {
   AuthTokens,
-  IRoutePermission,
+  Messages,
   IUserInfo,
   LoginCredentials,
-  Messages,
+  IRoutePermission,
 } from "@/types/auth";
 
 export const isRememberMeEnabled =
