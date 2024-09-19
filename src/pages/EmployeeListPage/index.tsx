@@ -58,7 +58,7 @@ import AddEmployee from "./AddEmployee";
 import { useSettings } from "@/hooks/useSettings";
 
 // ** Types
-import { ListEmployees } from "@/types/user";
+import { ListEmployees } from "@/types/User";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 const EmployeeListPage = () => {
@@ -265,7 +265,7 @@ const EmployeeListPage = () => {
                     <IconButton onClick={() => handleOpenModal(row.id)}>
                       <Icon icon="heroicons:pencil-solid" />
                       <Modal
-                        open={listModal .includes(row.id)}
+                        open={listModal.includes(row.id)}
                         onClose={() => handleCloseModal(row.id)}>
                         <UpdateEmployee
                           closeMenu={() => handleCloseModal(row.id)}

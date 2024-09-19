@@ -12,7 +12,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { Controller, Control } from "react-hook-form";
 
 // ** Types
-import { FormField, ResponsiveSize } from "@/types/form-field";
+import { FormField, ResponsiveSize } from "@/types/FormField";
 
 type RenderFieldsProps = {
   field: FormField;

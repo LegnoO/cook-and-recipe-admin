@@ -1,4 +1,4 @@
-import { Address } from "@/types/user";
+import { Address } from "@/types/User";
 
 export function isObjectEmpty(objectName: Object) {
   return Object.keys(objectName).length === 0;

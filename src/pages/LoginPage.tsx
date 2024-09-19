@@ -34,7 +34,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { LoginFormSchema } from "@/utils/validations";
 
 // ** Schema Validate
-import { ILoginFormSchema } from "@/types/schemas";
+import { ILoginFormSchema } from "@/types/Schemas";
 
 // ** Styled Components
 const StyledForm = styled("form")(() => ({

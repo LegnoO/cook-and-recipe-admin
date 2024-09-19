@@ -2,14 +2,14 @@
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
-import { IUserProfile } from "@/types/user";
+import { IUserProfile } from "@/types/User";
 import {
   AuthTokens,
   Messages,
   IUserInfo,
   LoginCredentials,
   IRoutePermission,
-} from "@/types/auth";
+} from "@/types/Auth";
 
 export const isRememberMeEnabled =
   JSON.parse(localStorage.getItem("rememberMe")!) === "true";

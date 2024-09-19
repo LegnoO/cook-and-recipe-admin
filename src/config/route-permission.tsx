@@ -9,7 +9,7 @@ const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeeListPage = lazy(() => import("@/pages/EmployeeListPage/"));
 
 // ** Types
-import { ProtectedRoute, PublicRoute } from "@/types/routes";
+import { ProtectedRoute, PublicRoute } from "@/types/Routes";
 
 export const homeRoute: string = "/home";
 

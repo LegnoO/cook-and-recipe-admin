@@ -2,7 +2,7 @@
 import AxiosInstance from "@/utils/axios";
 
 // ** Types
-import { ListEmployees } from "@/types/user";
+import { ListEmployees } from "@/types/User";
 
 export async function updateEmployeeProfile(formData: FormData) {
   const response = await AxiosInstance.put<any>(

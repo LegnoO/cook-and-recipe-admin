@@ -1,4 +1,4 @@
-import { FormField } from "@/types/form-field";
+import { FormField } from "@/types/FormField";
 
 export const addEmployeeField: FormField[] = [
   {

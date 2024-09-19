@@ -43,7 +43,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 import { updateEmployeeProfile } from "@/utils/services/userService";
 
 // ** Types
-import { IProfileFormSchema } from "@/types/schemas";
+import { IProfileFormSchema } from "@/types/Schemas";
 import { useAuth } from "@/hooks/useAuth";
 
 // ** Styled Components
