@@ -1,4 +1,4 @@
-export interface ProtectedRoute {
+ interface ProtectedRoute {
   path: string;
   component: JSX.Element;
   permission: {
@@ -7,7 +7,7 @@ export interface ProtectedRoute {
   };
 }
 
-export interface PublicRoute {
+ interface PublicRoute {
   path: string;
   component: JSX.Element;
 }

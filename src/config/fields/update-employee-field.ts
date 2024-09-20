@@ -1,5 +1,3 @@
-import { FormField } from "@/types/FormField";
-
 export const updateEmployeeField: FormField[] = [
   {
     name: "test",

@@ -8,11 +8,8 @@ import { Grid, InputAdornment, IconButton, MenuItem } from "@mui/material";
 import { Icon, TextField, DatePicker } from "@/components/ui";
 
 // ** Library
-import dayjs, { Dayjs } from "dayjs";
 import { Controller, Control } from "react-hook-form";
-
-// ** Types
-import { FormField, ResponsiveSize } from "@/types/FormField";
+import dayjs, { Dayjs } from "dayjs";
 
 type RenderFieldsProps = {
   field: FormField;

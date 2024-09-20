@@ -1,8 +1,8 @@
 type Action = "create" | "read" | "update" | "delete";
-export type AuthTokens = string;
-export type Messages = string;
+type AuthTokens = string;
+type Messages = string;
 
-export interface IUserInfo {
+interface IUserInfo {
   id: string;
   fullName: string;
   email: string;
@@ -12,13 +12,13 @@ export interface IUserInfo {
   group: string;
 }
 
-export type LoginCredentials = {
+type LoginCredentials = {
   username: string;
   password: string;
   rememberMe: boolean;
 };
 
-export interface IRoutePermission {
+interface IRoutePermission {
   page: string;
   actions: Action;
 }

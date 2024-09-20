@@ -1,5 +1,4 @@
 // ** React
-
 import { lazy } from "react";
 
 // ** Pages
@@ -7,9 +6,6 @@ const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeeListPage = lazy(() => import("@/pages/EmployeeListPage/"));
-
-// ** Types
-import { ProtectedRoute, PublicRoute } from "@/types/routes";
 
 export const homeRoute: string = "/home";
 

@@ -40,13 +40,6 @@ import Switches from "@/components/Switches";
 // ** Assets
 import NoDataIcon from "@/assets/ic-content.svg";
 
-// ** Utils
-import {
-  getFilterEmployee,
-  toggleStatusEmployee,
-} from "@/utils/services/userService";
-import { formatAddress } from "@/utils/helpers";
-
 // ** Config
 import { queryOptions } from "@/config/query-options";
 
@@ -57,8 +50,12 @@ import AddEmployee from "./AddEmployee";
 // ** Hooks
 import { useSettings } from "@/hooks/useSettings";
 
-// ** Types
-import { ListEmployees } from "@/types/User";
+// ** Utils
+import {
+  getFilterEmployee,
+  toggleStatusEmployee,
+} from "@/utils/services/userService";
+import { formatAddress } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 const EmployeeListPage = () => {

@@ -22,7 +22,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 import { EmployeeDetailFormSchema } from "@/utils/validations";
 
 // ** Types
-import { IEmployeeDetailFormSchema } from "@/types/Schemas";
+import { IEmployeeDetailFormSchema } from "@/types/schemas";
 
 type Props = {
   closeMenu: () => void;

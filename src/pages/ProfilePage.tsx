@@ -37,14 +37,14 @@ import { queryOptions } from "@/config/query-options";
 
 // ** Hooks
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/hooks/useAuth";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
 import { updateEmployeeProfile } from "@/utils/services/userService";
 
 // ** Types
-import { IProfileFormSchema } from "@/types/Schemas";
-import { useAuth } from "@/hooks/useAuth";
+import { IProfileFormSchema } from "@/types/schemas";
 
 // ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({

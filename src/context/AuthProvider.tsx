@@ -20,7 +20,6 @@ import {
 } from "@/utils/services/authService";
 
 // ** Types
-import { LoginCredentials, IUserInfo } from "@/types/Auth";
 import { AxiosError } from "axios";
 
 export interface IAuthContext {

@@ -1,9 +1,9 @@
-export interface ResponsiveSize {
+interface ResponsiveSize {
   md?: number;
   xs?: number;
 }
 
-export interface FormField {
+interface FormField {
   name?: string;
   label?: string;
   placeholder?: string;

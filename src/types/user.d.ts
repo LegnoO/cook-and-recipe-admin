@@ -1,4 +1,4 @@
-export type ListEmployees = {
+type ListEmployees = {
   address: Address;
   avatar: string;
   dateOfBirth: string | null;
@@ -10,7 +10,7 @@ export type ListEmployees = {
   status: boolean;
 };
 
-export interface IUserProfile {
+interface IUserProfile {
   group: string;
   email: string;
   phone: string | null;
@@ -23,7 +23,7 @@ export interface IUserProfile {
   address: Address;
 }
 
-export type Address = {
+type Address = {
   number: string;
   street: string;
   ward: string;
