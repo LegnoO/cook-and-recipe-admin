@@ -1,12 +1,5 @@
 export const updateEmployeeField: FormField[] = [
   {
-    name: "test",
-    label: "test",
-
-    type: "select",
-    size: { md: 6 },
-  },
-  {
     name: "fullName",
     label: "Full name",
     placeholder: "Enter your full name",

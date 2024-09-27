@@ -1,7 +1,12 @@
 type ListEmployees = {
+  data: Employee[];
+  paginate: Paginate;
+};
+
+type Employee = {
   address: Address;
   avatar: string;
-  dateOfBirth: string | null;
+  dateOfBirth: Date | null;
   email: string;
   fullName: string;
   group: string;
@@ -10,18 +15,23 @@ type ListEmployees = {
   status: boolean;
 };
 
-interface IUserProfile {
+interface UserProfile {
   group: string;
   email: string;
   phone: string | null;
-  dateOfBirth: string | null;
+  dateOfBirth: Date | null;
   fullName: string;
   username: string;
   avatar: string;
-  createdDate: string;
+  createdDate: Date | null;
   gender?: "Male" | "Female" | "Other";
   address: Address;
 }
+
+type UserProfileDraft = Omit<
+  UserProfile,
+  "group" | "email" | "avatar" | "gender" | "address" | "username"
+>;
 
 type Address = {
   number: string;
@@ -29,4 +39,10 @@ type Address = {
   ward: string;
   district: string;
   city: string;
+};
+
+type Paginate = {
+  index: number;
+  size: number;
+  total: number;
 };

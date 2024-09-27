@@ -1,5 +1,5 @@
 // ** Mui Imports
-import { Box } from "@mui/material";
+import { Box, SxProps } from "@mui/material";
 
 // ** Utils
 import { hexToRGBA } from "@/utils/helpers";
@@ -8,9 +8,10 @@ import { hexToRGBA } from "@/utils/helpers";
 type Props = {
   label?: string;
   variant?: "error" | "success";
+  sx?: SxProps;
 };
 
-const ChipStatus = ({ label, variant = "success" }: Props) => {
+const ChipStatus = ({ sx, label, variant = "success" }: Props) => {
   return (
     <Box
       sx={{
@@ -23,6 +24,7 @@ const ChipStatus = ({ label, variant = "success" }: Props) => {
         backgroundColor: (theme) =>
           hexToRGBA(theme.palette[variant].main, 0.25),
         color: (theme) => theme.palette[variant].main,
+        ...sx,
       }}>
       {label}
     </Box>

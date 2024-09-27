@@ -2,7 +2,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 
 // ** Hooks
-import { useAuth } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 
 // ** Config
 import { homeRoute } from "@/config/route-permission";

@@ -45,7 +45,7 @@ interface IProps {
   layout?: boolean;
 }
 
-const Loading = ({ layout }: IProps) => {
+const BouncingDotsLoader = ({ layout }: IProps) => {
   const Dots = (
     <Loader>
       <Dot
@@ -81,4 +81,4 @@ const Loading = ({ layout }: IProps) => {
   return Dots;
 };
 
-export default Loading;
+export default BouncingDotsLoader;

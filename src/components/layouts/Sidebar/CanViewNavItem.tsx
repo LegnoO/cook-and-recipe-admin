@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 
 // ** Hooks
-import { useAuth } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import { isUndefined } from "@/utils/helpers";

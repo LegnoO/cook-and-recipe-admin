@@ -1,22 +1,25 @@
 // ** React Imports
-import { ReactNode, memo, Fragment } from "react";
+import { ReactNode, memo } from "react";
 
 // ** Mui Imports
-import { Grid, InputAdornment, IconButton, MenuItem } from "@mui/material";
+import { Grid, InputAdornment, IconButton } from "@mui/material";
 
 // ** Components
-import { Icon, TextField, DatePicker } from "@/components/ui";
+import { Icon, TextField, DatePicker, Select } from "@/components/ui";
+import { RenderIf } from "@/components";
 
-// ** Library
+// ** Library Imports
 import { Controller, Control } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
 
+// ** Types
 type RenderFieldsProps = {
+  id: string;
   field: FormField;
   control: Control<any>;
 };
 
-const Fields = ({ field, control }: RenderFieldsProps) => {
+const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
   const {
     name,
     type,
@@ -26,7 +29,8 @@ const Fields = ({ field, control }: RenderFieldsProps) => {
     icon,
     children,
     size,
-    space,
+    menuItems,
+    required,
   } = field;
 
   const renderGridItem = (content: ReactNode) => {
@@ -37,13 +41,19 @@ const Fields = ({ field, control }: RenderFieldsProps) => {
     );
   };
 
-  const SpaceField = () => {
-    if (!space) {
-      return <></>;
-    }
-
-    const { md, xs } = space as ResponsiveSize;
-    return <Grid item md={md} xs={xs} />;
+  const Children = () => {
+    return (
+      <RenderIf condition={Boolean(children)} fallback={<></>}>
+        {children?.map((field, index) => (
+          <RenderFieldsControlled
+            key={String(index)}
+            field={field}
+            control={control}
+            id={String(index)}
+          />
+        ))}
+      </RenderIf>
+    );
   };
 
   const DateField = () => {
@@ -67,6 +77,7 @@ const Fields = ({ field, control }: RenderFieldsProps) => {
                 fullWidth: true,
                 helperText: error ? error.message : null,
                 error: !!error,
+                required,
               },
             }}
           />
@@ -82,6 +93,8 @@ const Fields = ({ field, control }: RenderFieldsProps) => {
         control={control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <TextField
+            required={required}
+            id={id}
             fullWidth
             label={label}
             placeholder={placeholder}
@@ -112,54 +125,30 @@ const Fields = ({ field, control }: RenderFieldsProps) => {
         name={name as string}
         control={control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <TextField
-            select
+          <Select
             fullWidth
+            required={required}
             label={label}
-            placeholder={placeholder}
             disabled={disabled}
+            value={value || ""}
+            onChange={onChange}
             error={Boolean(error)}
             helperText={error?.message}
-            SelectProps={{
-              value: value || "",
-              onChange,
-            }}>
-            <MenuItem value={value.label}>{value.value}</MenuItem>
-          </TextField>
+            menuItems={menuItems}
+          />
         )}
       />,
     );
   };
 
-  if (type === "space") {
-    return <SpaceField />;
-  }
+  const types = {
+    date: <DateField />,
+    input: <InputField />,
+    select: <SelectField />,
+    children: <Children />,
+  };
 
-  if (type === "date") {
-    return <DateField />;
-  }
-
-  if (type === "input") {
-    return <InputField />;
-  }
-
-  if (type === "select") {
-    return <SelectField />;
-  }
-
-  if (type === "children" && children) {
-    return (
-      <>
-        {children.map((field, index) => (
-          <Fragment key={index}>
-            <Fields field={field} control={control} />
-          </Fragment>
-        ))}
-      </>
-    );
-  }
-
-  return null;
+  return types[type];
 };
 
-export default memo(Fields);
+export default memo(RenderFieldsControlled);

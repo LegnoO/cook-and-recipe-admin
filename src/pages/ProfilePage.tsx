@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
@@ -15,18 +15,17 @@ import {
 } from "@mui/material";
 
 // ** Components
-import UploadImageButton from "@/components/UploadImageButton";
-import Fields from "@/components/Fields";
+import { UploadImageButton, RenderFieldsControlled } from "@/components/";
 import { Container, Modal, Image, Form } from "@/components/ui";
 
-// ** Library
+// ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 
 // ** Services
-import { getUserProfile } from "@/utils/services/authService";
+import { getUserProfile } from "@/services/authService";
 
 // ** Schemas
 import { ProfileFormSchema } from "@/utils/validations";
@@ -36,15 +35,16 @@ import { profileFields } from "@/config/fields/profile-field";
 import { queryOptions } from "@/config/query-options";
 
 // ** Hooks
-import { useSettings } from "@/hooks/useSettings";
-import { useAuth } from "@/hooks/useAuth";
+import useStorage from "@/hooks/useStorage";
+import useSettings from "@/hooks/useSettings";
+import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { updateEmployeeProfile } from "@/utils/services/userService";
+import { updateEmployeeProfile } from "@/services/userService";
 
 // ** Types
-import { IProfileFormSchema } from "@/types/schemas";
+import { IProfileFormSchema } from "@/utils/validations";
 
 // ** Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -54,76 +54,90 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export default function ProfilePage() {
-  const [isLoading, setLoading] = useState(false);
   const { refetchInfo } = useAuth();
-  const { listModal, handleOpenModal, handleCloseModal } = useSettings();
-  const { isLoading: isProfileLoading, data: userProfile } = useQuery({
+  const { activeIds, addId, removeId } = useSettings();
+  const [isLoading, setLoading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const [profileDataDraft, setProfileDataDraft] = useStorage<UserProfileDraft>(
+    "profile-data-draft",
+    null,
+    "session",
+  );
+
+  const { data: userProfile, isLoading: isProfileLoading } = useQuery({
     queryKey: ["user-profile"],
     queryFn: getUserProfile,
     ...queryOptions,
   });
 
-  const { reset, control, handleSubmit } = useForm<IProfileFormSchema>({
+  const { setValue, control, handleSubmit } = useForm<IProfileFormSchema>({
     resolver: zodResolver(ProfileFormSchema),
   });
 
-  const [file, setFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (userProfile) {
+      const { avatar, ...userProfileRest } = userProfile;
+      Object.entries(userProfile).forEach(([key, value]) => {
+        console.log({ key, value });
+        setValue(key as keyof IProfileFormSchema, value, {
+          shouldValidate: true,
+        });
+      });
 
-  const handleFileSelect = (file: File | null, imageDataUrl: string | null) => {
-    if (file) {
-      setFile(file);
-      setAvatarPreview(imageDataUrl);
+      const { username, group, email, ...userProfileDraft } = userProfileRest;
+      setProfileDataDraft(userProfileDraft);
     }
-  };
+  }, [userProfile]);
 
-  function resetAllFields() {
-    if (avatarPreview) setAvatarPreview(null);
-    if (file) setFile(null);
+  function handleFileSelect(file: File | null, imageDataUrl: string | null) {
+    if (file) {
+      setAvatarFile(file);
+      setAvatarUrl(imageDataUrl);
+    }
+  }
 
-    const profileData =
-      sessionStorage.getItem("profile-data") &&
-      JSON.parse(sessionStorage.getItem("profile-data")!);
+  function handleResetFields() {
+    if (avatarUrl) setAvatarUrl(null);
+    if (avatarFile) setAvatarFile(null);
 
-    if (profileData) {
-      reset({ ...userProfile, ...profileData });
+    if (profileDataDraft) {
+      Object.entries({ ...userProfile, ...profileDataDraft }).forEach(
+        ([key, value]) => {
+          setValue(key as keyof IProfileFormSchema, value, {
+            shouldValidate: true,
+          });
+        },
+      );
     }
   }
 
   async function onSubmit(data: IProfileFormSchema) {
+    const toastLoading = toast.loading("Loading...");
     try {
       setLoading(true);
       const formData = new FormData();
       formData.append("fullName", data.fullName);
       if (data.address)
         formData.append("address", JSON.stringify(data.address));
-      if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
-      if (file) formData.append("avatar", file);
+      if (data.dateOfBirth)
+        formData.append("dateOfBirth", String(data.dateOfBirth));
+      if (avatarFile) formData.append("avatar", avatarFile);
       if (data.phone) formData.append("phone", data.phone);
 
-      await updateEmployeeProfile(formData);
+      const newData = await updateEmployeeProfile(formData);
+      const { group, email, avatar, ...restNewData } = newData;
+      setProfileDataDraft(restNewData);
+      refetchInfo();
+      toast.success("Update successfully");
     } catch (error) {
       handleAxiosError(error);
     } finally {
-      refetchInfo();
-      toast.success("Update successfully");
       setLoading(false);
+      toast.dismiss(toastLoading);
     }
   }
-
-  useEffect(() => {
-    if (userProfile) {
-      const { avatar, ...userProfileRest } = userProfile;
-      const updatedValues = {
-        ...userProfileRest,
-      };
-      reset(updatedValues);
-
-      const { group, email, ...updatedValuesRest } = updatedValues;
-      const saveDraft = { ...updatedValuesRest };
-      sessionStorage.setItem("profile-data", JSON.stringify(saveDraft));
-    }
-  }, [userProfile]);
 
   return (
     <>
@@ -151,7 +165,7 @@ export default function ProfilePage() {
                 borderRadius: (theme) => `${theme.shape.borderRadius}px`,
               }}>
               <Avatar
-                onClick={() => handleOpenModal("zoom-avatar")}
+                onClick={() => addId("zoom-avatar")}
                 sx={{
                   width: "100%",
                   height: "100%",
@@ -159,18 +173,19 @@ export default function ProfilePage() {
                   objectFit: "cover",
                 }}
                 alt={`Avatar ${userProfile?.username ?? "default"}`}
-                src={avatarPreview || userProfile?.avatar || undefined}
+                src={avatarUrl || userProfile?.avatar || undefined}
               />
               <Modal
-                open={listModal.includes("zoom-avatar")}
-                onClose={() => handleCloseModal("zoom-avatar")}>
+                scrollVertical
+                open={activeIds.includes("zoom-avatar")}
+                onClose={() => removeId("zoom-avatar")}>
                 <Image
                   sx={{
                     maxHeight: "100dvh",
                     maxWidth: "75dvh",
                   }}
                   alt={`Avatar ${userProfile?.username ?? "default"}`}
-                  src={avatarPreview || userProfile?.avatar || undefined}
+                  src={avatarUrl || userProfile?.avatar || undefined}
                 />
               </Modal>
             </Box>
@@ -178,12 +193,11 @@ export default function ProfilePage() {
               <Stack
                 direction="row"
                 justifyContent={{ xs: "center", sm: "start" }}
-                spacing={2}
                 alignItems="center">
                 <UploadImageButton
                   name="avatar"
                   disabled={isProfileLoading || isLoading}
-                  sx={{ maxWidth: 220, fontWeight: 500 }}
+                  sx={{ width: 180, fontWeight: 500 }}
                   onFileSelect={handleFileSelect}>
                   Change Avatar
                 </UploadImageButton>
@@ -198,9 +212,12 @@ export default function ProfilePage() {
             <Form onSubmit={handleSubmit(onSubmit)}>
               <Grid container rowSpacing={3} columnSpacing={3}>
                 {profileFields.map((field, index) => (
-                  <Fragment key={index}>
-                    <Fields field={field} control={control} />
-                  </Fragment>
+                  <RenderFieldsControlled
+                    key={String(index)}
+                    field={field}
+                    control={control}
+                    id={String(index)}
+                  />
                 ))}
               </Grid>
               <Stack
@@ -212,7 +229,7 @@ export default function ProfilePage() {
                 <Button
                   disabled={isProfileLoading || isLoading}
                   sx={{ width: { xs: "100%", md: "auto" } }}
-                  onClick={resetAllFields}
+                  onClick={handleResetFields}
                   color="secondary"
                   variant="contained">
                   Reset

@@ -15,7 +15,7 @@ import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import BlankLayout from "@/layouts/BlankLayout";
 import ErrorBoundary from "@/layouts/ErrorBoundary";
-import Loading from "@/components/ui/Loading";
+import BouncingDotsLoader from "@/components/ui/BouncingDotsLoader";
 
 // ** Routes
 import ProtectedRoute from "./ProtectedRoute";
@@ -40,7 +40,8 @@ const router = createBrowserRouter(
         <Route index path={"/notfound"} element={<NotFoundScreen />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<DefaultLayout />}>
-            <Route element={<Suspense fallback={<Loading layout />} />}>
+            <Route
+              element={<Suspense fallback={<BouncingDotsLoader layout />} />}>
               {protectedRoute.map((route, index) => {
                 return (
                   <Route

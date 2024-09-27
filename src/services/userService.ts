@@ -15,14 +15,17 @@ export async function updateEmployeeProfile(formData: FormData) {
   return response.data;
 }
 
-export async function getFilterEmployee() {
-  const response = await AxiosInstance.get<ListEmployees[]>("/employees");
+export async function getFilterEmployee(paginate: Paginate) {
+  const { index, size } = paginate;
+  const response = await AxiosInstance.get<ListEmployees>(
+    `/employees?index=${index}&size=${size}`,
+  );
 
   return response.data;
 }
 
-export async function updateEmployeeData(employeeData: any) {
-  console.log("🚀 ~ updateEmployeeData ~ employeeData:", employeeData);
+export async function updateEmployee(employeeData: any) {
+  console.log("🚀 ~ updateEmployee ~ employeeData:", employeeData);
   const { id, avatar, createdDate, username, ...rest } = employeeData;
 
   const response = await AxiosInstance.put<any>(
@@ -31,6 +34,16 @@ export async function updateEmployeeData(employeeData: any) {
       ...rest,
     },
   );
+
+  return response.data;
+}
+
+export async function addEmployee(formData: any) {
+  const response = await AxiosInstance.post<any>(`/employees`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return response.data;
 }

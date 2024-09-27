@@ -35,7 +35,7 @@ export const protectedRoute: ProtectedRoute[] = [
     },
   },
   {
-    path: "/list-employee",
+    path: "/employees",
     component: <EmployeeListPage />,
     permission: {
       page: "user",

@@ -10,7 +10,7 @@ import UserDropDown from "@/components/UserDropDown";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Hooks
-import { useSettings } from "@/hooks/useSettings";
+import useSettings from "@/hooks/useSettings";
 
 // ** Utils
 import { hexToRGBA } from "@/utils/helpers";
@@ -56,7 +56,7 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 
 const AppBar = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setToggleDrawer } = useSettings();
+  const { toggleId } = useSettings();
 
   return (
     <StyledAppBar className="app-bar" position="sticky" elevation={0}>
@@ -75,7 +75,7 @@ const AppBar = () => {
               },
             })}
             onClick={() => {
-              setToggleDrawer((prev) => !prev);
+              toggleId("toggle-drawer");
             }}>
             <Icon icon="iconamoon:menu-burger-horizontal" />
           </IconButton>

@@ -1,19 +1,12 @@
 // ** React
-import {
-  useState,
-  createContext,
-  ReactNode,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { useState, createContext, ReactNode } from "react";
 
 // ** Types
 export interface ISettingsContext {
-  toggleDrawer: boolean;
-  setToggleDrawer: Dispatch<SetStateAction<boolean>>;
-  listModal: string[];
-  handleOpenModal: (id: string) => void;
-  handleCloseModal: (id: string) => void;
+  activeIds: string[];
+  addId: (id: string) => void;
+  removeId: (id: string) => void;
+  toggleId: (id: string) => void;
 }
 
 type Props = {
@@ -26,29 +19,33 @@ export const SettingsContext = createContext<ISettingsContext | undefined>(
 );
 
 const SettingsProvider = ({ children }: Props) => {
-  const [toggleDrawer, setToggleDrawer] = useState(false);
-  const [listModal, setToggleModal] = useState<string[]>([]);
+  const [activeIds, setActiveIds] = useState<string[]>([]);
 
-  function handleOpenModal(modalId: string) {
-    setToggleModal((prevId) =>
+  function toggleId(modalId: string) {
+    setActiveIds((prevId) =>
       prevId.includes(modalId)
         ? prevId.filter((id) => id !== modalId)
         : [...prevId, modalId],
     );
   }
 
-  function handleCloseModal(modalId: string) {
-    setToggleModal((prev) => prev.filter((id) => id !== modalId));
+  function addId(id: string) {
+    if (!activeIds.includes(id)) {
+      setActiveIds((prevIds) => [...prevIds, id]);
+    }
+  }
+
+  function removeId(modalId: string) {
+    setActiveIds((prev) => prev.filter((id) => id !== modalId));
   }
 
   return (
     <SettingsContext.Provider
       value={{
-        listModal,
-        toggleDrawer,
-        setToggleDrawer,
-        handleOpenModal,
-        handleCloseModal,
+        activeIds,
+        addId,
+        removeId,
+        toggleId,
       }}>
       {children}
     </SettingsContext.Provider>

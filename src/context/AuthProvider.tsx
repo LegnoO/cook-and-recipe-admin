@@ -17,15 +17,15 @@ import {
   getUserPermission,
   signIn,
   signOut,
-} from "@/utils/services/authService";
+} from "@/services/authService";
 
 // ** Types
 import { AxiosError } from "axios";
 
 export interface IAuthContext {
-  user: IUserInfo | null;
+  user: UserInfo | null;
   isLoading: boolean;
-  setUser: Dispatch<SetStateAction<IUserInfo | null>>;
+  setUser: Dispatch<SetStateAction<UserInfo | null>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
   login: ({ username, password, rememberMe }: LoginCredentials) => void;
@@ -45,7 +45,7 @@ const AuthProvider = ({ children }: Props) => {
   const currentPathname = location.pathname;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [user, setUser] = useState<IUserInfo | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 

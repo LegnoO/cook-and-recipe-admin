@@ -1,22 +1,17 @@
-// ** React
-import { useState, MouseEvent, useEffect } from "react";
-
-// ** Third Pary Imports
-import { useQuery } from "@tanstack/react-query";
+// ** React Imports
+import { ChangeEvent, useState, useEffect } from "react";
 
 // ** Mui Imports
 import {
   Box,
   IconButton,
-  MenuItem,
   Stack,
   Avatar,
   Skeleton,
-  Checkbox,
   Typography,
-  TablePagination,
-  Fade,
   Button,
+  Pagination,
+  Tooltip,
 } from "@mui/material";
 
 // ** Components
@@ -28,17 +23,20 @@ import {
   TableHead,
   TableRow,
   TableFooter,
-  Menu,
   Image,
   Icon,
   Modal,
   Paper,
+  Select,
+  Switch,
 } from "@/components/ui";
-import RenderIf from "@/components/RenderIf";
-import Switches from "@/components/Switches";
+import { RenderIf, Repeat } from "@/components";
 
 // ** Assets
 import NoDataIcon from "@/assets/ic-content.svg";
+
+// ** Library Imports
+import { useQuery } from "@tanstack/react-query";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -48,135 +46,77 @@ import UpdateEmployee from "./UpdateEmployee";
 import AddEmployee from "./AddEmployee";
 
 // ** Hooks
-import { useSettings } from "@/hooks/useSettings";
+import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import {
-  getFilterEmployee,
-  toggleStatusEmployee,
-} from "@/utils/services/userService";
 import { formatAddress } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
+// ** Services
+import {
+  getFilterEmployee,
+  toggleStatusEmployee,
+} from "@/services/userService";
+
+// ** Types
+type EmployeeStatus = {
+  id: string;
+  status: boolean;
+};
 const EmployeeListPage = () => {
-  const { listModal, handleOpenModal, handleCloseModal } = useSettings();
-  const [activeMenuAction, setActiveMenuAction] = useState<string | null>(null);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const pageSizeOptions = ["10", "20", "25"];
+  const { activeIds, addId, removeId } = useSettings();
+  const [employees, setEmployees] = useState<Employee[] | null>(null);
+  const [employeeStatus, setEmployeeStatus] = useState<EmployeeStatus[]>([]);
+  const [paginate, setPaginate] = useState<Paginate>({
+    total: 0,
+    index: 1,
+    size: Number(pageSizeOptions[0]),
+  });
+
   const { isLoading, data: dataEmployee } = useQuery({
-    queryKey: ["list-employee"],
-    queryFn: getFilterEmployee,
+    queryKey: ["list-employee", paginate.index, paginate.size],
+    queryFn: () => getFilterEmployee(paginate),
     ...queryOptions,
   });
 
-  const [checkedStatus, setCheckedStatus] = useState<string[]>([]);
-
-  const createRowData = (employeeList: ListEmployees) => ({
-    ...employeeList,
-  });
-
-  const rows = dataEmployee
-    ? dataEmployee.map((data) => createRowData(data))
-    : [];
-
-  function handleCloseMenu(event: MouseEvent<HTMLElement>) {
-    event.stopPropagation();
-    setActiveMenuAction(null);
-  }
-
-  function handleToggleMenu(event: MouseEvent<HTMLElement>, id: string) {
-    setAnchorEl(event.currentTarget);
-
-    setActiveMenuAction((prevId) => (prevId === id ? null : id));
-  }
-
   async function handleChangeStatus(employeeId: string) {
     try {
+      addId(`loading-switch-${employeeId}`);
       await toggleStatusEmployee(employeeId);
-      setCheckedStatus((prev) =>
-        prev.includes(employeeId)
-          ? prev.filter((id) => id !== employeeId)
-          : [...prev, employeeId],
-      );
+      setEmployeeStatus((prev) => {
+        return prev.map((employee) =>
+          employee.id === employeeId
+            ? { ...employee, status: !employee.status }
+            : employee,
+        );
+      });
     } catch (error) {
-      setCheckedStatus((prev) => prev.filter((id) => id !== employeeId));
       handleAxiosError(error);
+    } finally {
+      removeId(`loading-switch-${employeeId}`);
     }
   }
 
-  function handleChangePage() {}
-  function handleChangeRowsPerPage() {}
+  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
+    setPaginate((prev) => ({ ...prev, index: value }));
+  }
+
+  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
+    const newSize = event.target.value;
+    setPaginate((prev) => ({ ...prev, size: Number(newSize) }));
+  }
 
   useEffect(() => {
     if (dataEmployee) {
-      setCheckedStatus(dataEmployee.map((data) => data.id));
+      setEmployees(dataEmployee.data);
+      setEmployeeStatus(
+        dataEmployee.data.map((data) => ({ id: data.id, status: data.status })),
+      );
+
+      setPaginate((prev) => ({ ...prev, ...dataEmployee.paginate }));
     }
   }, [dataEmployee]);
-
-  const ActionMenu = ({ id }: { id: string }) => (
-    <Menu
-      TransitionComponent={Fade}
-      closeAfterTransition
-      TransitionProps={{
-        timeout: {
-          enter: 350,
-          exit: 350,
-        },
-      }}
-      onClose={handleCloseMenu}
-      anchorEl={anchorEl}
-      open={Boolean(anchorEl) && activeMenuAction === id}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}>
-      <MenuItem
-        sx={{
-          borderRadius: (theme) => `${theme.shape.borderRadius}px`,
-          marginInline: "0.5rem",
-          paddingInline: "1rem",
-          paddingBlock: "0.5rem",
-          gap: "0.5rem",
-        }}>
-        <Typography
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            fontSize: 15,
-            gap: "0.5rem",
-          }}
-          variant="caption"
-          color="text.secondary">
-          <Icon icon="tabler-edit" />
-          Edit
-        </Typography>
-      </MenuItem>
-      <MenuItem
-        sx={{
-          borderRadius: (theme) => `${theme.shape.borderRadius}px`,
-          marginInline: "0.5rem",
-          paddingInline: "1rem",
-          paddingBlock: "0.5rem",
-          gap: "0.5rem",
-        }}>
-        <Typography
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            fontSize: 15,
-            gap: "0.5rem",
-          }}
-          variant="caption"
-          color="error">
-          <Icon icon="tabler-trash" />
-          Delete
-        </Typography>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <TableContainer>
@@ -185,23 +125,29 @@ const EmployeeListPage = () => {
           direction="row"
           justifyContent="space-between"
           alignItems="center">
-          <Box>
-            <Button variant="contained">test</Button>
+          <Box sx={{ width: 58 }}>
+            <Select
+              fullWidth
+              disabled={isLoading}
+              onChange={handleChangeRowPageSelector}
+              value={paginate.size}
+              menuItems={pageSizeOptions}
+            />
           </Box>
 
           <Box>
             <Button
+              disabled={isLoading}
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
-              onClick={() => handleOpenModal("new-employee")}>
+              onClick={() => addId("new-employee")}>
               Add New Employee
               <Modal
-                open={listModal.includes("new-employee")}
-                onClose={() => handleCloseModal("new-employee")}>
-                <AddEmployee
-                  closeMenu={() => handleCloseModal("new-employee")}
-                />
+                scrollVertical
+                open={activeIds.includes("new-employee")}
+                onClose={() => removeId("new-employee")}>
+                <AddEmployee closeMenu={() => removeId("new-employee")} />
               </Modal>
             </Button>
           </Box>
@@ -210,9 +156,6 @@ const EmployeeListPage = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ width: 0, paddingRight: 0 }}>
-              <Checkbox />
-            </TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Phone number</TableCell>
             <TableCell>Location</TableCell>
@@ -222,19 +165,19 @@ const EmployeeListPage = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          <RenderIf condition={!isLoading && rows.length > 0}>
-            {rows.map((row, index) => (
+          <RenderIf
+            condition={
+              !isLoading && employees !== null && employees.length > 0
+            }>
+            {employees?.map((row, index) => (
               <TableRow
                 key={index}
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}>
-                <TableCell sx={{ width: 0, paddingRight: 0 }}>
-                  <Checkbox />
-                </TableCell>
                 <TableCell component="th" scope="row">
                   <Stack direction="row" spacing={2} alignItems={"center"}>
-                    <Avatar src={row.avatar} alt="test" />
+                    <Avatar src={row.avatar} alt="Avatar user" />
                     <Stack direction="column">
                       <Typography fontWeight="500" color="text.primary">
                         {row.fullName}
@@ -246,70 +189,63 @@ const EmployeeListPage = () => {
                   </Stack>
                 </TableCell>
                 <TableCell>{row.phone}</TableCell>
-                <TableCell>{formatAddress(row.address, 26)}</TableCell>
+                <TableCell>
+                  <Tooltip
+                    title={
+                      <Typography>{formatAddress(row.address)}</Typography>
+                    }>
+                    <Typography>{formatAddress(row.address, 26)}</Typography>
+                  </Tooltip>
+                </TableCell>
                 <TableCell>{row.group}</TableCell>
                 <TableCell>
-                  <Switches
-                    onChange={async () => {
-                      await handleChangeStatus(row.id);
+                  <Switch
+                    color="success"
+                    onChange={() => {
+                      handleChangeStatus(row.id);
                     }}
-                    checked={checkedStatus.includes(row.id)}
-                    color={"success"}
+                    disabled={activeIds.includes(`loading-switch-${row.id}`)}
+                    checked={
+                      employeeStatus?.find((status) => status.id === row.id)
+                        ?.status || false
+                    }
                   />
                 </TableCell>
                 <TableCell>
                   <Stack direction="row" spacing={0}>
-                    <IconButton onClick={() => handleOpenModal(row.id)}>
+                    <IconButton onClick={() => addId(row.id)}>
                       <Icon icon="heroicons:pencil-solid" />
                       <Modal
-                        open={listModal.includes(row.id)}
-                        onClose={() => handleCloseModal(row.id)}>
+                        open={activeIds.includes(row.id)}
+                        onClose={() => removeId(row.id)}>
                         <UpdateEmployee
-                          closeMenu={() => handleCloseModal(row.id)}
+                          closeMenu={() => removeId(row.id)}
                           employeeData={row}
                         />
                       </Modal>
                     </IconButton>
-                    <IconButton
-                      onClick={(event: MouseEvent<HTMLElement>) =>
-                        handleToggleMenu(event, row.id)
-                      }>
-                      <Icon icon="mingcute:more-2-fill" />
-                    </IconButton>
                   </Stack>
-                  <ActionMenu id={row.id} />
                 </TableCell>
               </TableRow>
             ))}
           </RenderIf>
 
           <RenderIf condition={isLoading}>
-            <TableRow>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-              <TableCell align="right">
-                <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              </TableCell>
-            </TableRow>
+            <Repeat times={paginate.size}>
+              <TableRow>
+                <Repeat times={6}>
+                  <TableCell sx={{ height: 68.5 }}>
+                    <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
+                  </TableCell>
+                </Repeat>
+              </TableRow>
+            </Repeat>
           </RenderIf>
 
-          <RenderIf condition={!isLoading && rows.length === 0}>
+          <RenderIf
+            condition={
+              !isLoading && employees !== null && employees.length === 0
+            }>
             <TableRow>
               <TableCell colSpan={99} align="center">
                 <Box
@@ -344,15 +280,22 @@ const EmployeeListPage = () => {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={99}>
-              <TablePagination
-                rowsPerPageOptions={[4, 10, 25]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={4}
-                page={0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
+              <Stack
+                sx={{ padding: "0.78125rem 0.5625rem" }}
+                direction="row"
+                justifyContent={"space-between"}
+                alignItems={"center"}>
+                <Pagination
+                  sx={{ marginLeft: "auto" }}
+                  color="primary"
+                  disabled={isLoading}
+                  count={paginate.total}
+                  page={paginate.index || 0}
+                  onChange={handleChangePage}
+                  showFirstButton
+                  showLastButton
+                />
+              </Stack>
             </TableCell>
           </TableRow>
         </TableFooter>

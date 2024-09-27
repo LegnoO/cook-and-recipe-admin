@@ -103,3 +103,39 @@ export function formatAddress(address: Address, maxLength: number = 100) {
 export function isUndefined<T>(value: T) {
   return value === undefined;
 }
+
+export function uuid(length = 36) {
+  return crypto.randomUUID().substring(0, length);
+}
+
+export function removeDuplicates<T>(data: T[]): T[] {
+  const uniqueArray = [];
+  const stringifiedElements = [];
+  for (let i = 0; i < data.length; i++) {
+    const stringified = JSON.stringify(data[i]);
+    if (stringifiedElements.indexOf(stringified) === -1) {
+      uniqueArray.push(data[i]);
+      stringifiedElements.push(stringified);
+    }
+  }
+
+  return uniqueArray;
+}
+
+export function formatPhoneNumber(number: string) {
+  // const vnRegex = /^(0[9|8|7|3|5|4][0-9]{8}|(0[1-9]{1}[0-9]{8}))$/;
+  let splitNumber = number.split("");
+
+  if (splitNumber.length >= 4 && splitNumber[4] !== " ") {
+    splitNumber.push(" ");
+  }
+  if (splitNumber.length >= 8 && splitNumber[8] !== " ") {
+    splitNumber.push(" ");
+  }
+
+  return splitNumber.join("");
+}
+
+export function removeWhiteSpace(input: string) {
+  return input.replace(/\s+/g, "");
+}

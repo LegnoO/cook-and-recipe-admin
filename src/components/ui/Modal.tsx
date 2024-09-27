@@ -10,10 +10,18 @@ interface Props {
   children: ReactNode;
   onClick?: MouseEventHandler<HTMLDivElement>;
   open: boolean;
+  scrollVertical?: boolean;
   onClose: () => void;
 }
 
-const Modal = ({ children, onClick, open, onClose, ...rest }: Props) => {
+const Modal = ({
+  scrollVertical = false,
+  children,
+  onClick,
+  open,
+  onClose,
+  ...rest
+}: Props) => {
   return (
     <MuiModal
       closeAfterTransition
@@ -39,6 +47,8 @@ const Modal = ({ children, onClick, open, onClose, ...rest }: Props) => {
             left: "50%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
+            height: scrollVertical ? "99dvh" : "auto",
+            overflowY: scrollVertical ? "auto" : "hidden",
           }}>
           {children}
         </Box>

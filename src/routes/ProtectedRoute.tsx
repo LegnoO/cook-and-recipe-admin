@@ -2,7 +2,7 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 
 // ** Hooks
-import { useAuth } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 
 // ** Components
 import LoadingScreen from "@/components/layouts/LoadingScreen";

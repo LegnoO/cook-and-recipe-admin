@@ -1,4 +1,7 @@
+// ** React Imports
 import { ReactNode, useRef, useState, ChangeEvent } from "react";
+
+// ** Mui Imports
 import { Button, SxProps } from "@mui/material";
 
 interface Props {
@@ -52,7 +55,7 @@ const UploadImageButton = ({
   };
 
   return (
-    <div>
+    <>
       <input
         name={name || ""}
         type="file"
@@ -61,14 +64,15 @@ const UploadImageButton = ({
         accept={accept || "image/*"}
         onChange={handleReviewImage}
       />
+
       <Button
-        sx={{ maxWidth: 220, fontWeight: 500, ...sx }}
+        sx={{ width: "fit-content", fontWeight: 500, ...sx }}
         onClick={triggerSelect}
         variant="contained"
         {...rest}>
         {children}
       </Button>
-    </div>
+    </>
   );
 };
 

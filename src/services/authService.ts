@@ -25,19 +25,19 @@ export async function signOut() {
 }
 
 export async function getUserInfo() {
-  const response = await AxiosInstance.get<IUserInfo>("/employees/info");
+  const response = await AxiosInstance.get<UserInfo>("/employees/info");
 
   return response.data;
 }
 
 export async function getUserProfile() {
-  const response = await AxiosInstance.get<IUserProfile>("/employees/profile");
+  const response = await AxiosInstance.get<UserProfile>("/employees/profile");
 
   return response.data;
 }
 
 export async function getUserPermission() {
-  const response = await AxiosInstance.get<IRoutePermission[]>("/permissions");
+  const response = await AxiosInstance.get<RoutePermission[]>("/permissions");
 
   return response.data;
 }

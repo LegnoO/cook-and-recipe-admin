@@ -1,29 +1,19 @@
-// ** React Imports
-import { ReactNode } from "react";
-
 // ** Mui Imports
-import MuiPaper from "@mui/material/Paper";
-import { SxProps } from "@mui/material";
+import MuiPaper, { PaperProps } from "@mui/material/Paper";
 
 // ** Types
-type Scrollable = {
-  vertical: boolean;
-};
-
 type Props = {
-  scrollable?: Scrollable;
-  children?: ReactNode;
-  sx: SxProps;
-};
+  scrollVertical?: boolean;
+} & PaperProps;
 
-const Paper = ({ sx, scrollable, children, ...rest }: Props) => {
+const Paper = ({ sx, scrollVertical, children, ...rest }: Props) => {
   return (
     <MuiPaper
       sx={{
         background: (theme) => theme.palette.background.paper,
         padding: "1.5rem",
-        overflowY: scrollable ? "auto" : "hidden",
-        maxHeight: scrollable ? "95dvh" : "auto",
+        overflowY: scrollVertical ? "auto" : "hidden",
+        maxHeight: scrollVertical ? "99dvh" : "auto",
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
         ...sx,
       }}

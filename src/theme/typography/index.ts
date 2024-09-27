@@ -1,18 +1,21 @@
 const typography = {
-  fontFamily: [
-    "Public Sans Variable",
-    "sans-serif",
-    "-apple-system",
-    "BlinkMacSystemFont",
-    '"Segoe UI"',
-    "Roboto",
-    '"Helvetica Neue"',
-    "Arial",
-    "sans-serif",
-    '"Apple Color Emoji"',
-    '"Segoe UI Emoji"',
-    '"Segoe UI Symbol"',
-  ].join(","),
+  allVariants: {
+    fontFamily: [
+      "Public Sans Variable",
+      "sans-serif",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+  },
+
   fontSize: 13.125,
   h1: {
     fontWeight: 500,

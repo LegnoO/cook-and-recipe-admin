@@ -16,7 +16,7 @@ import Menu from "@/components/ui/Menu";
 import Icon from "@/components/ui/Icon";
 
 // ** Hooks
-import { useAuth } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 
 // ** Styled Components
 const BadgeContentSpan = styled("span")(({ theme }) => ({

@@ -1,7 +1,7 @@
 export { default as Icon } from "./Icon";
 export { default as DatePicker } from "./DatePicker";
 export { default as Container } from "./Container";
-export { default as Loading } from "./Loading";
+export { default as BouncingDotsLoader } from "./BouncingDotsLoader";
 export { default as Logo } from "./Logo";
 export { default as Menu } from "./Menu";
 export { default as Modal } from "./Modal";
@@ -11,6 +11,9 @@ export { default as Image } from "./Image";
 export { default as Paper } from "./Paper";
 export { default as ChipStatus } from "./ChipStatus";
 export { default as Form } from "./Form";
+export { default as Select } from "./Select";
+export { default as Switch } from "./Switch";
+
 export {
   Table,
   TableRow,

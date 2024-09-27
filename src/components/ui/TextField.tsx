@@ -100,7 +100,9 @@ const StyledTextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
       color: theme.palette.error.main,
     },
   },
-
+  "& .MuiFormLabel-root .MuiFormLabel-asterisk": {
+    color: `${theme.palette.error.dark} !important`,
+  },
   // ** Select
   "& .MuiSelect-select:focus, & .MuiNativeSelect-select:focus": {
     backgroundColor: "transparent",

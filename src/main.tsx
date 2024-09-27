@@ -12,6 +12,7 @@ import router from "./routes";
 import "./styles/globals.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "react-toastify/dist/ReactToastify.css";
+import "react-phone-number-input/style.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <StrictMode>

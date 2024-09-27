@@ -7,7 +7,7 @@ type Props = {
   fallback?: ReactNode;
 };
 const RenderIf = ({ condition, fallback, children }: Props) => {
-  return condition ? <>{children}</> : fallback || null;
+  return condition ? children : fallback || null;
 };
 
 export default RenderIf;

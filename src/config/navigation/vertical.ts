@@ -15,7 +15,7 @@ export const verticalNavItems: IVerticalNavItemsType = [
   {
     title: "Employees",
     icon: "lucide:user-round",
-    path: "/list-employee",
+    path: "/employees",
   },
 ];
 

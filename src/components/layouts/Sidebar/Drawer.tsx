@@ -6,7 +6,7 @@ import { Backdrop, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 
 // ** Hooks
-import { useSettings } from "@/hooks/useSettings";
+import useSettings from "@/hooks/useSettings";
 
 // ** Styled Components
 export const StyledDrawer = styled("div")(({ theme }) => ({
@@ -30,18 +30,18 @@ const Drawer = ({ children }: { children: ReactNode }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { toggleDrawer, setToggleDrawer } = useSettings();
+  const { removeId, activeIds } = useSettings();
 
   function handleCloseBackdrop(event: MouseEvent) {
     event.stopPropagation();
-    setToggleDrawer(false);
+    removeId("toggle-drawer");
   }
 
   if (isSmallScreen) {
     return (
       <Backdrop
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={toggleDrawer && isSmallScreen}
+        open={activeIds.includes("toggle-drawer") && isSmallScreen}
         onClick={handleCloseBackdrop}>
         <StyledDrawer
           onClick={(event) => {
@@ -49,7 +49,7 @@ const Drawer = ({ children }: { children: ReactNode }) => {
           }}
           sx={(theme) => ({
             [theme.breakpoints.down("md")]: {
-              width: toggleDrawer ? "260px" : 0,
+              width: activeIds.includes("toggle-drawer") ? "260px" : 0,
             },
           })}
           className="drawer">

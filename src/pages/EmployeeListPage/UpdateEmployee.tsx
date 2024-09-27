@@ -5,7 +5,7 @@ import { useEffect, Fragment } from "react";
 import { Grid, Typography, Button, Stack } from "@mui/material";
 
 // ** Components
-import Fields from "@/components/Fields";
+import { RenderFieldsControlled } from "@/components";
 import { Form } from "@/components/ui";
 
 // ** Library
@@ -16,13 +16,15 @@ import { useMutation } from "@tanstack/react-query";
 // ** Config
 import { updateEmployeeField } from "@/config/fields/update-employee-field";
 
+// ** Services
+import { updateEmployee } from "@/services/userService";
+
 // ** Utils
-import { updateEmployeeData } from "@/utils/services/userService";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { EmployeeDetailFormSchema } from "@/utils/validations";
 
 // ** Types
-import { IEmployeeDetailFormSchema } from "@/types/schemas";
+import { IEmployeeDetailFormSchema } from "@/utils/validations";
 
 type Props = {
   employeeData: any;
@@ -31,9 +33,9 @@ type Props = {
 
 const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
   const { mutate } = useMutation({
-    mutationFn: (employeeData: any) => updateEmployeeData(employeeData),
-    onSuccess: async (test) => {
-      console.log("🚀 ~ onSuccess: ~ test:", test);
+    mutationFn: (employeeData: any) => updateEmployee(employeeData),
+    onSuccess: async () => {
+
     },
     onError: (error) => {
       handleAxiosError(error);
@@ -56,7 +58,7 @@ const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
         test: { label: "abc test", value: "ezx" },
         ...employeeDataRest,
       };
-      console.log("🚀 ~ useEffect ~ updatedValues:", updatedValues);
+
       reset(updatedValues);
     }
   }, [employeeData]);
@@ -73,7 +75,11 @@ const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
       <Grid container rowSpacing={3} columnSpacing={3}>
         {updateEmployeeField.map((field, index) => (
           <Fragment key={index}>
-            <Fields field={field} control={control} />
+            <RenderFieldsControlled
+              field={field}
+              control={control}
+              id={String(index)}
+            />
           </Fragment>
         ))}
       </Grid>

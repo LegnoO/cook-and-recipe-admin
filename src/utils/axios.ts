@@ -2,7 +2,7 @@
 import axios, { AxiosError } from "axios";
 
 // ** Services
-import { handleRefresh } from "@/utils/services/authService";
+import { handleRefresh } from "@/services/authService";
 
 // ** Constants
 import { STATUS_CODES } from "@/config/status-codes";
