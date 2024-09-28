@@ -34,9 +34,7 @@ type Props = {
 const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
   const { mutate } = useMutation({
     mutationFn: (employeeData: any) => updateEmployee(employeeData),
-    onSuccess: async () => {
-
-    },
+    onSuccess: async () => {},
     onError: (error) => {
       handleAxiosError(error);
     },
@@ -64,7 +62,7 @@ const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
   }, [employeeData]);
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
       <Typography
         fontWeight={500}
         component="h3"

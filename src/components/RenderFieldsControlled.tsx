@@ -64,7 +64,7 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <DatePicker
             disabled={disabled}
-            value={value ? dayjs(value) : null}
+            value={value ? dayjs(value) : undefined}
             onChange={(date: Dayjs | null) => {
               onChange(date ? date.toISOString() : null);
             }}

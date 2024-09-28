@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment, memo } from "react";
+import { useState, Fragment, memo, Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
 import { Grid, Typography, Button, Stack, Input } from "@mui/material";
@@ -11,7 +11,7 @@ import Fields from "@/components/RenderFieldsControlled";
 import { Form } from "@/components/ui";
 import RenderIf from "@/components/RenderIf";
 
-// ** Library
+// ** Library Imports
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -23,15 +23,18 @@ import { addEmployee } from "@/services/userService";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { AddEmployeeSchema } from "@/utils/validations";
 import PhoneInput from "@/components/fields/PhoneInput";
+import { toast } from "react-toastify";
 
 // ** Services
 
 // ** Types
 type Props = {
+  setController: Dispatch<SetStateAction<AbortController | null>>;
   closeMenu: () => void;
+  refetch: () => void;
 };
 
-const AddEmployee = ({ closeMenu }: Props) => {
+const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
 
@@ -44,36 +47,41 @@ const AddEmployee = ({ closeMenu }: Props) => {
   }
 
   async function onSubmit(data: any) {
+    console.log("🚀 ~ onSubmit ~ data:", data);
+    const toastLoading = toast.loading("Loading...");
+
     try {
       setLoading(true);
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key !== "address" && value) {
-          formData.append(key, JSON.stringify(value));
-        }
-        formData.append(key, value as string);
-      });
+      formData.append("groupId", data.groupId);
+      formData.append("address", JSON.stringify(data.address));
+      formData.append("gender", data.gender);
+      formData.append("email", data.email);
+      formData.append("fullName", data.fullName);
+      formData.append("password", data.password);
+      formData.append("phone", data.phone);
+      if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
+      if (file) formData.append("avatar", file);
 
-      if (file) {
-        formData.append("avatar", file);
-      }
-
-      const res = await addEmployee(formData);
-
-      console.log("🚀 ~ onSubmit ~ res:", res);
+      const newController = new AbortController();
+      setController(newController);
+      await addEmployee(formData, newController);
+      toast.success("Add new employee successfully");
+      refetch();
     } catch (error) {
       handleAxiosError(error);
     } finally {
       setLoading(false);
+      toast.dismiss(toastLoading);
     }
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form noValidate onSubmit={handleSubmit(onSubmit)}>
       <Typography
         fontWeight={500}
         component="h3"
-        sx={{ mb: "1.5rem" }}
+        sx={{ mb: "2rem" }}
         variant="h4">
         Add New Employee
       </Typography>
@@ -87,6 +95,7 @@ const AddEmployee = ({ closeMenu }: Props) => {
                   fullWidth
                   control={control}
                   name="groupId"
+                  required
                 />
               </Grid>
             </RenderIf>
@@ -98,6 +107,7 @@ const AddEmployee = ({ closeMenu }: Props) => {
                   name="phone"
                   placeholder="Enter number phnone"
                   control={control}
+                  required
                 />
               </Grid>
             </RenderIf>
@@ -159,6 +169,7 @@ const AddEmployee = ({ closeMenu }: Props) => {
           Cancel
         </Button>
         <Button
+          disabled={isLoading}
           type="submit"
           sx={{
             width: { xs: "100%", md: "auto" },

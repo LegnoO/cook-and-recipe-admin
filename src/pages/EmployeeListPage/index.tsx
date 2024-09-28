@@ -7,36 +7,28 @@ import {
   IconButton,
   Stack,
   Avatar,
-  Skeleton,
   Typography,
   Button,
-  Pagination,
   Tooltip,
+  Divider,
 } from "@mui/material";
 
 // ** Components
 import {
   Table,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
-  TableFooter,
-  Image,
   Icon,
   Modal,
   Paper,
   Select,
   Switch,
 } from "@/components/ui";
-import { RenderIf, Repeat } from "@/components";
-
-// ** Assets
-import NoDataIcon from "@/assets/ic-content.svg";
+import { TableHead, TableBody, TableFooter } from "@/components";
+import SearchInput from "@/components/fields/SearchInput";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -57,40 +49,60 @@ import {
   getFilterEmployee,
   toggleStatusEmployee,
 } from "@/services/userService";
+import GroupSelect from "@/components/fields/GroupSelect";
 
-// ** Types
-type EmployeeStatus = {
-  id: string;
-  status: boolean;
-};
 const EmployeeListPage = () => {
-  const pageSizeOptions = ["10", "20", "25"];
+  const pageSizeOptions = ["2", "5", "10"];
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
-  const [employeeStatus, setEmployeeStatus] = useState<EmployeeStatus[]>([]);
-  const [paginate, setPaginate] = useState<Paginate>({
+  const [controller, setController] = useState<AbortController | null>(null);
+  const [filter, setFilter] = useState<Filter>({
     total: 0,
     index: 1,
     size: Number(pageSizeOptions[0]),
+    search: "",
+    group: "",
+    status: null,
+    gender: "",
   });
 
-  const { isLoading, data: dataEmployee } = useQuery({
-    queryKey: ["list-employee", paginate.index, paginate.size],
-    queryFn: () => getFilterEmployee(paginate),
+  const {
+    isLoading,
+    data: dataEmployee,
+    refetch,
+  } = useQuery({
+    queryKey: [
+      "list-employee",
+      filter.index,
+      filter.size,
+      filter.search,
+      filter.group,
+      filter.status,
+      filter.gender,
+    ],
+    queryFn: () => getFilterEmployee(filter),
     ...queryOptions,
   });
+
+  useEffect(() => {
+    if (dataEmployee) {
+      setEmployees(dataEmployee.data);
+      setFilter((prev) => ({ ...prev, ...dataEmployee.paginate }));
+    }
+  }, [dataEmployee]);
 
   async function handleChangeStatus(employeeId: string) {
     try {
       addId(`loading-switch-${employeeId}`);
       await toggleStatusEmployee(employeeId);
-      setEmployeeStatus((prev) => {
-        return prev.map((employee) =>
-          employee.id === employeeId
-            ? { ...employee, status: !employee.status }
-            : employee,
-        );
-      });
+      setEmployees(
+        (prev) =>
+          prev?.map((employee) =>
+            employee.id === employeeId
+              ? { ...employee, status: !employee.status }
+              : employee,
+          ) || prev,
+      );
     } catch (error) {
       handleAxiosError(error);
     } finally {
@@ -98,207 +110,218 @@ const EmployeeListPage = () => {
     }
   }
 
+  function updateFilter(updates: Partial<Filter>) {
+    setFilter((prev) => ({ ...prev, ...updates }));
+  }
+
   function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    setPaginate((prev) => ({ ...prev, index: value }));
+    updateFilter({ index: value });
+  }
+
+  function handleFilterGroup(event: ChangeEvent<HTMLInputElement>) {
+    const newGroup = event.target.value;
+    updateFilter({ group: newGroup });
+  }
+
+  function handleFilterGender(event: ChangeEvent<HTMLInputElement>) {
+    const newGender = event.target.value as Gender;
+    updateFilter({ gender: newGender });
+  }
+
+  function handleFilterStatus(event: ChangeEvent<HTMLInputElement>) {
+    const newStatus = event.target.value;
+    updateFilter({ status: newStatus });
   }
 
   function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
     const newSize = event.target.value;
-    setPaginate((prev) => ({ ...prev, size: Number(newSize) }));
+    updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  useEffect(() => {
-    if (dataEmployee) {
-      setEmployees(dataEmployee.data);
-      setEmployeeStatus(
-        dataEmployee.data.map((data) => ({ id: data.id, status: data.status })),
-      );
+  const handleSearchTest = useDebouncedCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setFilter((prev) => ({ ...prev, search: event.target.value }));
+    },
+    300,
+  );
 
-      setPaginate((prev) => ({ ...prev, ...dataEmployee.paginate }));
+  function handleCancel() {
+    if (controller) {
+      controller.abort();
+      setController(null);
     }
-  }, [dataEmployee]);
+    removeId("new-employee-modal");
+  }
+
+  const HEAD_COLUMNS = [
+    { title: "Name" },
+    { title: "Phone number" },
+    { title: "Location" },
+    { title: "Role" },
+    { title: "Status" },
+    { title: null, sx: { width: "75px" } },
+  ];
+
+  const BODY_CELLS = [
+    {
+      render: (row: Employee) => (
+        <Stack direction="row" spacing={2} alignItems={"center"}>
+          <Avatar src={row.avatar} alt="Avatar user" />
+          <Stack direction="column">
+            <Typography fontWeight="500" color="text.primary">
+              {row.fullName}
+            </Typography>
+            <Typography color="text.secondary">{row.email}</Typography>
+          </Stack>
+        </Stack>
+      ),
+    },
+    {
+      render: (row: Employee) => row.phone,
+    },
+    {
+      render: (row: Employee) => (
+        <Tooltip title={<Typography>{formatAddress(row.address)}</Typography>}>
+          <Typography>{formatAddress(row.address, 26)}</Typography>
+        </Tooltip>
+      ),
+    },
+    {
+      render: (row: Employee) => row.group,
+    },
+    {
+      render: (row: Employee) => (
+        <Switch
+          color="success"
+          onChange={() => handleChangeStatus(row.id)}
+          disabled={activeIds.includes(`loading-switch-${row.id}`)}
+          checked={
+            employees?.find((employee) => employee.id === row.id)?.status ||
+            false
+          }
+        />
+      ),
+    },
+    {
+      render: (row: Employee) => (
+        <IconButton disableRipple onClick={() => addId(row.id)}>
+          <Icon icon="heroicons:pencil-solid" />
+          <Modal
+            open={activeIds.includes(row.id)}
+            onClose={() => removeId(row.id)}>
+            <UpdateEmployee
+              closeMenu={() => removeId(row.id)}
+              employeeData={row}
+            />
+          </Modal>
+        </IconButton>
+      ),
+    },
+  ];
 
   return (
     <TableContainer>
-      <Paper sx={{ borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
+      <Paper
+        sx={{ p: 0, borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
+        <Stack direction="column" spacing={2} sx={{ p: 3 }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
+          <Stack direction="row" spacing={3} alignItems="center">
+            <GroupSelect
+              name="groupId-filter"
+              defaultOption={"Select Group"}
+              fullWidth
+              onChange={handleFilterGroup}
+              SelectProps={{
+                displayEmpty: true,
+              }}
+            />
+            <Select
+              onChange={handleFilterGender}
+              menuItems={["Male", "Female", "Other"]}
+              defaultOption={"Select Gender"}
+              fullWidth
+              SelectProps={{
+                displayEmpty: true,
+              }}
+            />
+            <Select
+              onChange={handleFilterStatus}
+              menuItems={[
+                { value: "true", label: "Active" },
+                { value: "false", label: "Banned" },
+              ]}
+              defaultOption={"Select Status"}
+              fullWidth
+              SelectProps={{
+                displayEmpty: true,
+              }}
+            />
+          </Stack>
+        </Stack>
+        <Divider />
         <Stack
+          sx={{ p: 3 }}
           direction="row"
           justifyContent="space-between"
           alignItems="center">
-          <Box sx={{ width: 58 }}>
+          <Box sx={{ minWidth: 68 }}>
             <Select
+              sx={{ height: 42 }}
               fullWidth
               disabled={isLoading}
               onChange={handleChangeRowPageSelector}
-              value={paginate.size}
+              value={filter.size}
               menuItems={pageSizeOptions}
             />
           </Box>
 
-          <Box>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <SearchInput
+              disabled={isLoading}
+              placeholder="Search User"
+              onChange={handleSearchTest}
+              fullWidth
+              sx={{ height: 42 }}
+            />
             <Button
+              sx={{ minWidth: "max-content" }}
               disabled={isLoading}
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
-              onClick={() => addId("new-employee")}>
+              onClick={() => addId("new-employee-modal")}>
               Add New Employee
               <Modal
                 scrollVertical
-                open={activeIds.includes("new-employee")}
-                onClose={() => removeId("new-employee")}>
-                <AddEmployee closeMenu={() => removeId("new-employee")} />
+                open={activeIds.includes("new-employee-modal")}
+                onClose={() => removeId("new-employee-modal")}>
+                <AddEmployee
+                  refetch={refetch}
+                  closeMenu={handleCancel}
+                  setController={setController}
+                />
               </Modal>
             </Button>
-          </Box>
+          </Stack>
         </Stack>
       </Paper>
       <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Phone number</TableCell>
-            <TableCell>Location</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell sx={{ width: "75px" }}>{null}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <RenderIf
-            condition={
-              !isLoading && employees !== null && employees.length > 0
-            }>
-            {employees?.map((row, index) => (
-              <TableRow
-                key={index}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}>
-                <TableCell component="th" scope="row">
-                  <Stack direction="row" spacing={2} alignItems={"center"}>
-                    <Avatar src={row.avatar} alt="Avatar user" />
-                    <Stack direction="column">
-                      <Typography fontWeight="500" color="text.primary">
-                        {row.fullName}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        {row.email}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </TableCell>
-                <TableCell>{row.phone}</TableCell>
-                <TableCell>
-                  <Tooltip
-                    title={
-                      <Typography>{formatAddress(row.address)}</Typography>
-                    }>
-                    <Typography>{formatAddress(row.address, 26)}</Typography>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>{row.group}</TableCell>
-                <TableCell>
-                  <Switch
-                    color="success"
-                    onChange={() => {
-                      handleChangeStatus(row.id);
-                    }}
-                    disabled={activeIds.includes(`loading-switch-${row.id}`)}
-                    checked={
-                      employeeStatus?.find((status) => status.id === row.id)
-                        ?.status || false
-                    }
-                  />
-                </TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={0}>
-                    <IconButton onClick={() => addId(row.id)}>
-                      <Icon icon="heroicons:pencil-solid" />
-                      <Modal
-                        open={activeIds.includes(row.id)}
-                        onClose={() => removeId(row.id)}>
-                        <UpdateEmployee
-                          closeMenu={() => removeId(row.id)}
-                          employeeData={row}
-                        />
-                      </Modal>
-                    </IconButton>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
-          </RenderIf>
-
-          <RenderIf condition={isLoading}>
-            <Repeat times={paginate.size}>
-              <TableRow>
-                <Repeat times={6}>
-                  <TableCell sx={{ height: 68.5 }}>
-                    <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-                  </TableCell>
-                </Repeat>
-              </TableRow>
-            </Repeat>
-          </RenderIf>
-
-          <RenderIf
-            condition={
-              !isLoading && employees !== null && employees.length === 0
-            }>
-            <TableRow>
-              <TableCell colSpan={99} align="center">
-                <Box
-                  className="no-data-found"
-                  sx={{
-                    display: "flex",
-                    textAlign: "center",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                    gap: 1,
-                    paddingInline: "1.5rem",
-                    paddingBlock: "4rem",
-                  }}>
-                  <Image
-                    sx={{ mx: "auto" }}
-                    width="150px"
-                    height="150px"
-                    alt="no data icon"
-                    src={NoDataIcon}
-                  />
-                  <Typography
-                    sx={{ color: (theme) => theme.palette.text.disabled }}
-                    fontWeight="600"
-                    variant="subtitle1">
-                    No Data
-                  </Typography>
-                </Box>
-              </TableCell>
-            </TableRow>
-          </RenderIf>
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={99}>
-              <Stack
-                sx={{ padding: "0.78125rem 0.5625rem" }}
-                direction="row"
-                justifyContent={"space-between"}
-                alignItems={"center"}>
-                <Pagination
-                  sx={{ marginLeft: "auto" }}
-                  color="primary"
-                  disabled={isLoading}
-                  count={paginate.total}
-                  page={paginate.index || 0}
-                  onChange={handleChangePage}
-                  showFirstButton
-                  showLastButton
-                />
-              </Stack>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
+        <TableHead headColumns={HEAD_COLUMNS} />
+        <TableBody
+          isLoading={isLoading}
+          data={employees}
+          filter={filter}
+          bodyCells={BODY_CELLS}
+        />
+        <TableFooter
+          dataLength={employees?.length}
+          isLoading={isLoading}
+          paginateCount={filter.total}
+          paginatePage={filter.index || 0}
+          handlePaginateChange={handleChangePage}
+        />
       </Table>
     </TableContainer>
   );

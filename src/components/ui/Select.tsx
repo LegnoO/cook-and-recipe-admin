@@ -10,14 +10,7 @@ import {
 import { TextField, Icon } from "@/components/ui";
 
 // ** Types
-type Props = {
-  isLoading?: boolean;
-  menuItems?: MenuItem[];
-  endIcon?: string;
-  startIcon?: string;
-  defaultOption?: string;
-  disableDefaultOption?: boolean;
-} & TextFieldProps;
+type Props = Select & TextFieldProps;
 
 const Select = (props: Props) => {
   const {
@@ -31,6 +24,7 @@ const Select = (props: Props) => {
   } = props;
   return (
     <TextField
+      defaultValue={defaultOption && ""}
       select
       variant="outlined"
       InputProps={{
@@ -50,10 +44,13 @@ const Select = (props: Props) => {
         ) : undefined,
       }}
       {...rest}>
-      {isLoading && <MenuItem disabled>Loading...</MenuItem>}
-      {!isLoading && menuItems.length > 0 && defaultOption && (
-        <MenuItem disabled={disableDefaultOption}>{defaultOption}</MenuItem>
+      {defaultOption && (
+        <MenuItem value="" disabled={disableDefaultOption}>
+          {defaultOption}
+        </MenuItem>
       )}
+
+      {isLoading && <MenuItem disabled>Loading...</MenuItem>}
 
       {!isLoading &&
         menuItems.length > 0 &&

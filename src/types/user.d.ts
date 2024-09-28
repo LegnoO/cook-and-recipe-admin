@@ -24,7 +24,7 @@ interface UserProfile {
   username: string;
   avatar: string;
   createdDate: Date | null;
-  gender?: "Male" | "Female" | "Other";
+  gender?: Gender;
   address: Address;
 }
 
@@ -41,8 +41,14 @@ type Address = {
   city: string;
 };
 
-type Paginate = {
+type Filter = {
   index: number;
   size: number;
   total: number;
+  search: string;
+  group: string;
+  status: string | null;
+  gender: Gender | "";
 };
+
+type Gender = "Male" | "Female" | "Other";

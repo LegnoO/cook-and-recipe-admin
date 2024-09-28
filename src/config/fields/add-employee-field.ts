@@ -4,6 +4,7 @@ export const addEmployeeField: FormField[] = [
     label: "Full name",
     placeholder: "Enter full name",
     type: "input",
+    required: true,
     size: { md: 6 },
   },
 
@@ -12,6 +13,7 @@ export const addEmployeeField: FormField[] = [
     label: "Email",
     placeholder: "Enter email",
     type: "input",
+    required: true,
     size: { md: 6 },
   },
   {
@@ -19,6 +21,7 @@ export const addEmployeeField: FormField[] = [
     label: "Password",
     placeholder: "Enter password",
     type: "input",
+    required: true,
     size: { md: 6 },
   },
   {
@@ -26,6 +29,7 @@ export const addEmployeeField: FormField[] = [
     name: "gender",
     label: "Gender",
     type: "select",
+    required: true,
     size: { md: 6 },
   },
   {
@@ -42,6 +46,7 @@ export const addEmployeeField: FormField[] = [
         label: "Number address",
         placeholder: "Enter number",
         type: "input",
+        required: true,
         size: { md: 6 },
       },
 
@@ -50,6 +55,7 @@ export const addEmployeeField: FormField[] = [
         label: "Street address",
         placeholder: "Enter street address",
         type: "input",
+        required: true,
         size: { md: 6 },
       },
       {
@@ -57,6 +63,7 @@ export const addEmployeeField: FormField[] = [
         label: "Ward address",
         placeholder: "Enter ward address",
         type: "input",
+        required: true,
         size: { md: 6 },
       },
       {
@@ -64,6 +71,7 @@ export const addEmployeeField: FormField[] = [
         label: "District address",
         placeholder: "Enter district address",
         type: "input",
+        required: true,
         size: { md: 6 },
       },
       {
@@ -71,6 +79,7 @@ export const addEmployeeField: FormField[] = [
         label: "City address",
         placeholder: "Enter city address",
         type: "input",
+        required: true,
         size: { md: 6 },
       },
     ],

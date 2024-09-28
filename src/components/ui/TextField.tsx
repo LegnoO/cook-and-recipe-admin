@@ -16,6 +16,7 @@ const StyledTextField = styled(MuiTextField)<TextFieldProps>(({ theme }) => ({
     color: `${theme.palette.text.primary} !important`,
   },
   "& .MuiInputBase-root": {
+    height: "100%",
     borderRadius: theme.shape.borderRadius,
     backgroundColor: "transparent !important",
     border: `1px solid ${theme.palette.customColors.borderColor}`,

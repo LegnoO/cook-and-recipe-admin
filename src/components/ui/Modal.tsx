@@ -47,7 +47,7 @@ const Modal = ({
             left: "50%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
-            height: scrollVertical ? "99dvh" : "auto",
+            height: scrollVertical ? "95dvh" : "auto",
             overflowY: scrollVertical ? "auto" : "hidden",
           }}>
           {children}

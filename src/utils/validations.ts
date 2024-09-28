@@ -26,6 +26,8 @@ const emailSchema = z
   .min(5, "Email must be at least 5 characters long")
   .max(100, "Email must be at most 100 characters long");
 
+const groupSchema = z.string().min(1, "Required");
+
 const phoneSchema = z
   .string()
   .nullable()
@@ -38,7 +40,7 @@ const phoneSchema = z
     },
   );
 
-const nullableDateSchema = z.coerce.date().nullable();
+const nullableDateSchema = z.coerce.date().optional();
 const addressSchema = z
   .object({
     number: z.string(),
@@ -49,7 +51,8 @@ const addressSchema = z
   })
   .nullable();
 
-const genderSchema = z.enum(["Male", "Female", "Other"]).optional();
+const genderSchemaOptional = z.enum(["Male", "Female", "Other"]).optional();
+const genderSchema = z.enum(["Male", "Female", "Other"]);
 
 // ** Form schemas
 export const LoginFormSchema = z.object({
@@ -64,7 +67,7 @@ export const ProfileFormSchema = z.object({
   phone: phoneSchema,
   group: z.string(),
   username: usernameSchema,
-  gender: genderSchema,
+  gender: genderSchemaOptional,
   dateOfBirth: nullableDateSchema,
   createdDate: nullableDateSchema,
   address: addressSchema,
@@ -87,7 +90,7 @@ export const AddEmployeeSchema = z.object({
   address: addressSchema,
   gender: genderSchema,
   phone: phoneSchema,
-  groupId: z.string(),
+  groupId: groupSchema,
 });
 
 // ** Types of form schemas

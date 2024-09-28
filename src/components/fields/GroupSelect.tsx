@@ -1,11 +1,12 @@
 // ** React Imports
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 
 // ** Mui Imports
 import { TextFieldProps } from "@mui/material";
 
 // ** Components
 import { Select } from "@/components/ui";
+import { RenderIf } from "@/components";
 
 // ** Library
 import { useQuery } from "@tanstack/react-query";
@@ -17,8 +18,9 @@ import { getAllGroups } from "@/services/groupServices";
 
 // ** Types
 type Props = {
-  control: Control<any>;
-} & TextFieldProps;
+  control?: Control<any>;
+} & TextFieldProps &
+  Select;
 
 const GroupSelect = ({ name, control, ...rest }: Props) => {
   const { isLoading, data } = useQuery({
@@ -37,24 +39,39 @@ const GroupSelect = ({ name, control, ...rest }: Props) => {
   }, [data]);
 
   return (
-    <Controller
-      name={name as string}
-      control={control}
-      defaultValue={""}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
+    <Fragment>
+      <RenderIf condition={Boolean(control)}>
+        <Controller
+          name={name as string}
+          control={control}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Select
+              id="group-id-select"
+              value={value}
+              onChange={onChange}
+              isLoading={isLoading}
+              menuItems={menuItems}
+              error={Boolean(error)}
+              helperText={error?.message}
+              disableDefaultOption={false}
+              {...rest}
+            />
+          )}
+        />
+      </RenderIf>
+      <RenderIf condition={Boolean(!control)}>
         <Select
-          value={value}
-          onChange={onChange}
           id="group-id-select"
+          name={name}
           isLoading={isLoading}
           menuItems={menuItems}
-          error={Boolean(error)}
-          helperText={error?.message}
+          // error={Boolean(error)}
+          // helperText={error?.message}
           disableDefaultOption={false}
           {...rest}
         />
-      )}
-    />
+      </RenderIf>
+    </Fragment>
   );
 };
 export default GroupSelect;

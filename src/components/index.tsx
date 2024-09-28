@@ -5,3 +5,6 @@ export { default as Repeat } from "./Repeat";
 export { default as Suspense } from "./Suspense";
 export { default as UploadImageButton } from "./UploadImageButton";
 export { default as UserDropDown } from "./UserDropDown";
+export { default as TableBody } from "./Table/TableBody";
+export { default as TableHead } from "./Table/TableHead";
+export { default as TableFooter } from "./Table/TableFooter";

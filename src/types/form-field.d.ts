@@ -28,3 +28,12 @@ type datalist = {
   name: string;
   data: any;
 };
+
+type Select = {
+  isLoading?: boolean;
+  menuItems?: MenuItem[];
+  endIcon?: string;
+  startIcon?: string;
+  defaultOption?: string;
+  disableDefaultOption?: boolean;
+};

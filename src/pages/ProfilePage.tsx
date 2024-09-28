@@ -80,7 +80,6 @@ export default function ProfilePage() {
     if (userProfile) {
       const { avatar, ...userProfileRest } = userProfile;
       Object.entries(userProfile).forEach(([key, value]) => {
-        console.log({ key, value });
         setValue(key as keyof IProfileFormSchema, value, {
           shouldValidate: true,
         });
@@ -114,6 +113,7 @@ export default function ProfilePage() {
   }
 
   async function onSubmit(data: IProfileFormSchema) {
+    console.log("🚀 ~ onSubmit ~ data:", data)
     const toastLoading = toast.loading("Loading...");
     try {
       setLoading(true);
@@ -209,7 +209,7 @@ export default function ProfilePage() {
             </Stack>
           </Stack>
           <Box sx={{ pb: "1.5rem" }}>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               <Grid container rowSpacing={3} columnSpacing={3}>
                 {profileFields.map((field, index) => (
                   <RenderFieldsControlled

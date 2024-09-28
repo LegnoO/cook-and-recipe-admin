@@ -83,13 +83,6 @@ export function isUrlPatternMatched(inputUrl: string, all_url: string[]) {
   return baseUrls.some((baseUrl) => baseUrl === inputBaseUrl);
 }
 
-export function delay<T>(time: number, value?: T): Promise<T> {
-  if (value)
-    return new Promise((resolve) => setTimeout(() => resolve(value), time));
-
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
 export function formatAddress(address: Address, maxLength: number = 100) {
   let formattedAddress = `${address.number}, ${address.street}, ${address.ward}, ${address.district}, ${address.city}`;
 
@@ -138,4 +131,8 @@ export function formatPhoneNumber(number: string) {
 
 export function removeWhiteSpace(input: string) {
   return input.replace(/\s+/g, "");
+}
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
