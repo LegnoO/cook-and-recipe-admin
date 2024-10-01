@@ -73,13 +73,15 @@ export const ProfileFormSchema = z.object({
   address: addressSchema,
 });
 
-export const EmployeeDetailFormSchema = z.object({
-  group: z.string(),
-  email: emailSchema,
-  phone: phoneSchema,
-  dateOfBirth: nullableDateSchema,
+export const EmployeeUpdateFormSchema = z.object({
+  fullName: fullNameSchema,
   address: addressSchema,
-  status: z.boolean(),
+  email: emailSchema,
+  dateOfBirth: nullableDateSchema,
+  avatar: z.string(),
+  gender: genderSchema,
+  phone: phoneSchema,
+  groupId: z.string(),
 });
 
 export const AddEmployeeSchema = z.object({
@@ -96,6 +98,6 @@ export const AddEmployeeSchema = z.object({
 // ** Types of form schemas
 export type ILoginFormSchema = z.infer<typeof LoginFormSchema>;
 export type IProfileFormSchema = z.infer<typeof ProfileFormSchema>;
-export type IEmployeeDetailFormSchema = z.infer<
-  typeof EmployeeDetailFormSchema
+export type IEmployeeUpdateFormSchema = z.infer<
+  typeof EmployeeUpdateFormSchema
 >;

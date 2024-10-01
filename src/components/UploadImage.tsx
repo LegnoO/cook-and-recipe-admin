@@ -2,24 +2,29 @@
 import { ReactNode, useRef, useState, ChangeEvent } from "react";
 
 // ** Mui Imports
-import { Button, SxProps } from "@mui/material";
+import { Button, SxProps, Box } from "@mui/material";
+
+// ** Components
+import { RenderIf } from "@/components";
 
 interface Props {
   name?: string;
   maxSize?: number;
-  onFileSelect: (file: File | null, imageDataUrl: string | null) => void;
+  onFileSelect: (file?: File, imageDataUrl?: string) => void;
   accept?: string;
+  type?: "node" | "button";
   sx?: SxProps;
   children: ReactNode;
   [key: string]: any;
 }
 
-const UploadImageButton = ({
+const UploadImage = ({
   maxSize = 2000000,
   onFileSelect,
   name,
   children,
   accept,
+  type = "button",
   sx,
   ...rest
 }: Props) => {
@@ -64,16 +69,21 @@ const UploadImageButton = ({
         accept={accept || "image/*"}
         onChange={handleReviewImage}
       />
+      <RenderIf condition={type === "button"}>
+        <Button
+          sx={{ width: "fit-content", fontWeight: 500, ...sx }}
+          onClick={triggerSelect}
+          variant="contained"
+          {...rest}>
+          {children}
+        </Button>
+      </RenderIf>
 
-      <Button
-        sx={{ width: "fit-content", fontWeight: 500, ...sx }}
-        onClick={triggerSelect}
-        variant="contained"
-        {...rest}>
-        {children}
-      </Button>
+      <RenderIf condition={type === "node"}>
+        <Box onClick={triggerSelect}>{children}</Box>
+      </RenderIf>
     </>
   );
 };
 
-export default UploadImageButton;
+export default UploadImage;

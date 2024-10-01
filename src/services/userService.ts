@@ -1,5 +1,6 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
+import { createSearchParams } from "@/utils/helpers";
 
 export async function updateEmployeeProfile(formData: FormData) {
   const response = await AxiosInstance.put<any>(
@@ -16,11 +17,9 @@ export async function updateEmployeeProfile(formData: FormData) {
 }
 
 export async function getFilterEmployee(filter: Filter) {
-  const params = new URLSearchParams();
+  const { total, ...restFilter } = filter;
 
-  Object.entries(filter).forEach(([key, value]) => {
-    if (value) params.append(key, String(value));
-  });
+  const params = createSearchParams(restFilter);
 
   const response = await AxiosInstance.get<ListEmployees>(
     `/employees?${params.toString()}`,
@@ -29,21 +28,38 @@ export async function getFilterEmployee(filter: Filter) {
   return response.data;
 }
 
-export async function updateEmployee(employeeData: any) {
-  const { id, avatar, createdDate, username, ...rest } = employeeData;
-
-  const response = await AxiosInstance.put<any>(
-    `/employees/${employeeData.id}`,
+export async function updateEmployee(
+  employeeData: FormData,
+  employeeId: string,
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.put(
+    `/employees/${employeeId}`,
+    employeeData,
     {
-      ...rest,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      signal: controller?.signal,
     },
   );
 
   return response.data;
 }
 
-export async function addEmployee(formData: any, controller?: AbortController) {
-  const response = await AxiosInstance.post<any>(`/employees`, formData, {
+export async function getEmployeeDetail(employeeId: string) {
+  const response = await AxiosInstance.get<Employee>(
+    `/employees/${employeeId}`,
+  );
+
+  return response.data;
+}
+
+export async function addEmployee(
+  formData: FormData,
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.post(`/employees`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -53,8 +69,8 @@ export async function addEmployee(formData: any, controller?: AbortController) {
   return response.data;
 }
 
-export async function toggleStatusEmployee(employeeId: any) {
-  const response = await AxiosInstance.patch<any>(
+export async function toggleStatusEmployee(employeeId: string) {
+  const response = await AxiosInstance.patch(
     `/employees/${employeeId}/toggle-status`,
     {
       id: employeeId,

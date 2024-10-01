@@ -9,7 +9,8 @@ import LoadingScreen from "@/components/layouts/LoadingScreen";
 import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 
 // ** Config
-import { homeRoute, protectedRoute } from "@/config/route-permission";
+import { protectedRoute } from "@/config/route-permission";
+import { loginRoute } from "@/config/url";
 
 // ** Utils
 import { isUrlPatternMatched } from "@/utils/helpers";
@@ -32,9 +33,9 @@ const ProtectedRoute = () => {
 
   if (!user && !isUrlPatternMatched(currentPathname, allowedRoutes)) {
     const redirectToLogin =
-      location.pathname !== homeRoute
-        ? `/login?returnUrl=${location.pathname}`
-        : "/login";
+      location.pathname !== loginRoute
+        ? `${loginRoute}?returnUrl=${location.pathname}`
+        : loginRoute;
     return <Navigate to={redirectToLogin} />;
   }
 

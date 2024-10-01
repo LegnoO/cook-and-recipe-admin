@@ -24,7 +24,7 @@ type Props = {
 
 const GroupSelect = ({ name, control, ...rest }: Props) => {
   const { isLoading, data } = useQuery({
-    queryKey: ["all-groups"],
+    queryKey: ["all-groups-active"],
     queryFn: getAllGroups,
     ...queryOptions,
   });
@@ -47,7 +47,7 @@ const GroupSelect = ({ name, control, ...rest }: Props) => {
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <Select
               id="group-id-select"
-              value={value}
+              value={value || ""}
               onChange={onChange}
               isLoading={isLoading}
               menuItems={menuItems}

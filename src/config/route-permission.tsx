@@ -1,13 +1,14 @@
 // ** React
 import { lazy } from "react";
 
+// ** Config
+import { homeRoute, loginRoute } from "./url";
+
 // ** Pages
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeeListPage = lazy(() => import("@/pages/EmployeeListPage/"));
-
-export const homeRoute: string = "/home";
 
 export const protectedRoute: ProtectedRoute[] = [
   {
@@ -47,6 +48,6 @@ export const protectedRoute: ProtectedRoute[] = [
 export const publicRoute: PublicRoute[] = [
   {
     component: <LoginPage />,
-    path: "/login",
+    path: loginRoute,
   },
 ];

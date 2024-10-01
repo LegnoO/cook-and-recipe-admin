@@ -1,63 +1,120 @@
 // ** React Imports
-import { useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
-import { Grid, Typography, Button, Stack } from "@mui/material";
+import { Grid, Typography, Button, Stack, Avatar, Box } from "@mui/material";
 
 // ** Components
-import { RenderFieldsControlled } from "@/components";
-import { Form } from "@/components/ui";
+import { RenderIf, RenderFieldsControlled, UploadImage } from "@/components";
+import { BouncingDotsLoader, Form, Icon } from "@/components/ui";
+import { GroupSelect, PhoneInput } from "@/components/fields";
 
 // ** Library
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 // ** Config
 import { updateEmployeeField } from "@/config/fields/update-employee-field";
+import { queryOptions } from "@/config/query-options";
 
 // ** Services
-import { updateEmployee } from "@/services/userService";
+import { getEmployeeDetail, updateEmployee } from "@/services/userService";
+
+// ** Library Imports
+import { useQuery } from "@tanstack/react-query";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { EmployeeDetailFormSchema } from "@/utils/validations";
+import { createFormData, hexToRGBA } from "@/utils/helpers";
 
 // ** Types
-import { IEmployeeDetailFormSchema } from "@/utils/validations";
+import {
+  EmployeeUpdateFormSchema,
+  IEmployeeUpdateFormSchema,
+} from "@/utils/validations";
 
 type Props = {
-  employeeData: any;
+  employeeId: string;
   closeMenu: () => void;
+  setController: Dispatch<SetStateAction<AbortController | null>>;
+  refetch: () => void;
 };
 
-const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
-  const { mutate } = useMutation({
-    mutationFn: (employeeData: any) => updateEmployee(employeeData),
-    onSuccess: async () => {},
-    onError: (error) => {
+const UpdateEmployee = ({
+  employeeId,
+  closeMenu,
+  setController,
+  refetch,
+}: Props) => {
+  const { data: employeeData } = useQuery({
+    queryKey: ["employee-detail", employeeId],
+
+    queryFn: () => getEmployeeDetail(employeeId),
+    ...queryOptions,
+  });
+
+  const [avatarFileState, setAvatarFileState] = useState<
+    Partial<{ file?: File; url?: string }>
+  >({});
+
+  const [isLoading, setLoading] = useState(false);
+
+  const { setValue, control, handleSubmit } =
+    useForm<IEmployeeUpdateFormSchema>({
+      resolver: zodResolver(EmployeeUpdateFormSchema),
+    });
+
+  function handleFileSelect(file?: File, imageDataUrl?: string) {
+    const newFileUpdated = { file, url: imageDataUrl };
+    if (newFileUpdated) {
+      setAvatarFileState(newFileUpdated);
+    }
+  }
+
+  async function onSubmit(data: IEmployeeUpdateFormSchema) {
+    const toastLoading = toast.loading("Loading...");
+
+    const employeeData = {
+      fullName: data.fullName,
+      groupId: data.groupId,
+      address: JSON.stringify(data.address),
+      email: data.email,
+      gender: data.gender,
+      phone: data.phone,
+      avatar: avatarFileState.file,
+      dateOfBirth: String(data.dateOfBirth),
+    };
+
+    try {
+      setLoading(true);
+      const formData = createFormData(employeeData);
+      const newController = new AbortController();
+      setController(newController);
+      await updateEmployee(formData, employeeId, newController);
+      toast.success("Update successfully");
+      refetch();
+      closeMenu();
+      setLoading(false);
+      toast.dismiss(toastLoading);
+      setController(null);
+    } catch (error) {
       handleAxiosError(error);
-    },
-  });
-
-  const { reset, control, handleSubmit } = useForm<IEmployeeDetailFormSchema>({
-    resolver: zodResolver(EmployeeDetailFormSchema),
-  });
-
-  async function onSubmit(data: IEmployeeDetailFormSchema) {
-    console.log("🚀 ~ onSubmit ~ data:", data);
-    mutate(data);
+    }
   }
 
   useEffect(() => {
     if (employeeData) {
-      const { ...employeeDataRest } = employeeData;
-      const updatedValues = {
-        test: { label: "abc test", value: "ezx" },
-        ...employeeDataRest,
-      };
+      const { id, disabledDate, createdDate, status, ...employeeInfo } =
+        employeeData;
 
-      reset(updatedValues);
+      Object.entries(employeeInfo).forEach(([key, value]) => {
+        if (value) {
+          setValue(key as keyof IEmployeeUpdateFormSchema, value, {
+            shouldValidate: true,
+          });
+        }
+      });
     }
   }, [employeeData]);
 
@@ -66,21 +123,118 @@ const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
       <Typography
         fontWeight={500}
         component="h3"
-        sx={{ mb: "1.5rem" }}
+        sx={{ mb: "2.75rem" }}
         variant="h4">
         Update Information
       </Typography>
-      <Grid container rowSpacing={3} columnSpacing={3}>
-        {updateEmployeeField.map((field, index) => (
-          <Fragment key={index}>
-            <RenderFieldsControlled
-              field={field}
-              control={control}
-              id={String(index)}
-            />
-          </Fragment>
-        ))}
-      </Grid>
+      <RenderIf
+        condition={Boolean(employeeData)}
+        fallback={
+          <Box sx={{ justifyContent: "center", display: "flex" }}>
+            <BouncingDotsLoader />
+          </Box>
+        }>
+        <Box className="modal-loading-info">
+          <Stack sx={{ mb: 5 }} direction="column" alignItems="center">
+            <Box
+              className="upload-avatar"
+              sx={{
+                "&": {
+                  height: 125,
+                  width: 125,
+                  mb: 3,
+                  cursor: "pointer",
+                  position: "relative",
+                },
+              }}>
+              <Avatar
+                alt={`Avatar ${employeeData?.fullName ?? "default"}`}
+                src={avatarFileState?.url || employeeData?.avatar}
+                sx={{ height: "100%", width: "100%" }}
+              />
+
+              <UploadImage
+                type="node"
+                name="avatar"
+                onFileSelect={handleFileSelect}>
+                <Stack
+                  direction="column"
+                  justifyContent={"center"}
+                  alignItems="center"
+                  spacing={1}
+                  className="upload-avatar-placeholder"
+                  sx={{
+                    "&": {
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      transition: "opacity 300ms",
+                      opacity: 0,
+                      borderRadius: "50%",
+                      height: "100%",
+                      width: "100%",
+                      willChange: "opacity",
+                      backgroundColor: (theme) =>
+                        hexToRGBA(theme.palette.customColors.backdrop, 0.5),
+                      color: (theme) =>
+                        theme.palette.customColors.backdropContrastText,
+                    },
+                    "&:hover": { opacity: 1 },
+                  }}>
+                  <Icon fontSize="1.35rem" icon={"ic:sharp-add-a-photo"} />
+                  <Typography
+                    sx={{ lineHeight: 1, color: "inherit" }}
+                    variant="body2">
+                    Update avatar
+                  </Typography>
+                </Stack>
+              </UploadImage>
+            </Box>
+
+            <Typography variant="body2" color="text.secondary">
+              Allowed JPEG, JPG, PNG, or WEBP
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              max size of 2 MB.
+            </Typography>
+          </Stack>
+          <Grid container rowSpacing={3} columnSpacing={3}>
+            {updateEmployeeField.map((field, index) => (
+              <Fragment key={index}>
+                <RenderIf condition={index === 3}>
+                  <Grid item md={6} xs={12}>
+                    <GroupSelect
+                      label="Group"
+                      fullWidth
+                      control={control}
+                      name="groupId"
+                      required
+                    />
+                  </Grid>
+                </RenderIf>
+                <RenderIf condition={index === 5}>
+                  <Grid item md={6} xs={12}>
+                    <PhoneInput
+                      fullWidth
+                      label="Phone number"
+                      name="phone"
+                      placeholder="Enter number phnone"
+                      control={control}
+                      required
+                    />
+                  </Grid>
+                </RenderIf>
+
+                <RenderFieldsControlled
+                  field={field}
+                  control={control}
+                  id={String(index)}
+                />
+              </Fragment>
+            ))}
+          </Grid>
+        </Box>
+      </RenderIf>
       <Stack
         direction="row"
         justifyContent="end"
@@ -94,6 +248,7 @@ const UpdateEmployee = ({ employeeData, closeMenu }: Props) => {
           Cancel
         </Button>
         <Button
+          disabled={!Boolean(employeeData) || isLoading}
           type="submit"
           sx={{
             width: { xs: "100%", md: "auto" },

@@ -1,6 +1,8 @@
 export const queryOptions = {
   retry: false,
-  refetchOnMount: false,
+  refetchOnMount: true,
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
+  keepPreviousData: true,
+  staleTime: 0,
 };

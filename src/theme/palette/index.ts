@@ -25,6 +25,7 @@ interface newCustomPalette {
   avatarBg: string;
   tableHeaderBg: string;
   backdrop: string;
+  backdropContrastText: string;
   borderColor: string;
   grey500: string;
 }
@@ -80,7 +81,8 @@ const DefaultPalette = (mode: Palette["mode"]): Palette => {
     trackBg: mode === "light" ? "#F1F0F2" : "#363B54",
     avatarBg: mode === "light" ? "#DBDADE" : "#4A5072",
     tableHeaderBg: mode === "light" ? "#F6F6F7" : "#4A5072",
-    backdrop: "#2f2b3d80",
+    backdrop: "#000",
+    backdropContrastText: mode === "light" ? "#000" : "#fff",
     borderColor,
   };
 

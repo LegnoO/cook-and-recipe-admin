@@ -24,9 +24,8 @@ import { LoginFormSchema } from "@/utils/validations";
 import { ILoginFormSchema } from "@/utils/validations";
 
 // ** Config
-import PasswordInput from "@/components/fields/PasswordInput";
-import RememberCheckBox from "@/components/fields/RememberCheckBox";
-import RenderIf from "@/components/RenderIf";
+import { RenderIf } from "@/components";
+import { PasswordInput, RememberCheckBox } from "@/components/fields";
 
 // ** Styled Components
 

@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 
 // ** Components
-import { UploadImageButton, RenderFieldsControlled } from "@/components/";
+import { UploadImage, RenderFieldsControlled } from "@/components/";
 import { Container, Modal, Image, Form } from "@/components/ui";
 
 // ** Library Imports
@@ -42,6 +42,7 @@ import useAuth from "@/hooks/useAuth";
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
 import { updateEmployeeProfile } from "@/services/userService";
+import { createFormData } from "@/utils/helpers";
 
 // ** Types
 import { IProfileFormSchema } from "@/utils/validations";
@@ -57,8 +58,9 @@ export default function ProfilePage() {
   const { refetchInfo } = useAuth();
   const { activeIds, addId, removeId } = useSettings();
   const [isLoading, setLoading] = useState(false);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarFileState, setAvatarFileState] = useState<
+    Partial<{ file?: File; url?: string }>
+  >({});
 
   const [profileDataDraft, setProfileDataDraft] = useStorage<UserProfileDraft>(
     "profile-data-draft",
@@ -66,7 +68,11 @@ export default function ProfilePage() {
     "session",
   );
 
-  const { data: userProfile, isLoading: isProfileLoading } = useQuery({
+  const {
+    data: userProfile,
+    isLoading: isProfileLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["user-profile"],
     queryFn: getUserProfile,
     ...queryOptions,
@@ -78,28 +84,30 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (userProfile) {
-      const { avatar, ...userProfileRest } = userProfile;
-      Object.entries(userProfile).forEach(([key, value]) => {
-        setValue(key as keyof IProfileFormSchema, value, {
-          shouldValidate: true,
-        });
-      });
+      const fieldsToExclude = ["avatar"];
 
-      const { username, group, email, ...userProfileDraft } = userProfileRest;
+      Object.entries(userProfile)
+        .filter(([key]) => !fieldsToExclude.includes(key))
+        .forEach(([key, value]) => {
+          setValue(key as keyof IProfileFormSchema, value, {
+            shouldValidate: true,
+          });
+        });
+
+      const { username, group, email, ...userProfileDraft } = userProfile;
       setProfileDataDraft(userProfileDraft);
     }
   }, [userProfile]);
 
-  function handleFileSelect(file: File | null, imageDataUrl: string | null) {
-    if (file) {
-      setAvatarFile(file);
-      setAvatarUrl(imageDataUrl);
+  function handleFileSelect(file?: File, imageDataUrl?: string) {
+    const newFileUpdated = { file, url: imageDataUrl };
+    if (newFileUpdated) {
+      setAvatarFileState(newFileUpdated);
     }
   }
 
   function handleResetFields() {
-    if (avatarUrl) setAvatarUrl(null);
-    if (avatarFile) setAvatarFile(null);
+    if (avatarFileState) setAvatarFileState({});
 
     if (profileDataDraft) {
       Object.entries({ ...userProfile, ...profileDataDraft }).forEach(
@@ -113,29 +121,28 @@ export default function ProfilePage() {
   }
 
   async function onSubmit(data: IProfileFormSchema) {
-    console.log("🚀 ~ onSubmit ~ data:", data)
     const toastLoading = toast.loading("Loading...");
+
+    const profileData = {
+      fullName: data.fullName,
+      address: JSON.stringify(data.address) || undefined,
+      dateOfBirth: String(data.dateOfBirth) || undefined,
+      avatar: avatarFileState.file || undefined,
+      phone: data.phone || undefined,
+    };
+
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("fullName", data.fullName);
-      if (data.address)
-        formData.append("address", JSON.stringify(data.address));
-      if (data.dateOfBirth)
-        formData.append("dateOfBirth", String(data.dateOfBirth));
-      if (avatarFile) formData.append("avatar", avatarFile);
-      if (data.phone) formData.append("phone", data.phone);
+      const formData = createFormData(profileData);
 
-      const newData = await updateEmployeeProfile(formData);
-      const { group, email, avatar, ...restNewData } = newData;
-      setProfileDataDraft(restNewData);
+      await updateEmployeeProfile(formData);
+      refetch();
       refetchInfo();
       toast.success("Update successfully");
-    } catch (error) {
-      handleAxiosError(error);
-    } finally {
       setLoading(false);
       toast.dismiss(toastLoading);
+    } catch (error) {
+      handleAxiosError(error);
     }
   }
 
@@ -172,8 +179,8 @@ export default function ProfilePage() {
                   borderRadius: "inherit",
                   objectFit: "cover",
                 }}
-                alt={`Avatar ${userProfile?.username ?? "default"}`}
-                src={avatarUrl || userProfile?.avatar || undefined}
+                alt={`Avatar ${userProfile?.fullName ?? "default"}`}
+                src={avatarFileState?.url || userProfile?.avatar}
               />
               <Modal
                 scrollVertical
@@ -185,7 +192,7 @@ export default function ProfilePage() {
                     maxWidth: "75dvh",
                   }}
                   alt={`Avatar ${userProfile?.username ?? "default"}`}
-                  src={avatarUrl || userProfile?.avatar || undefined}
+                  src={avatarFileState?.url || userProfile?.avatar}
                 />
               </Modal>
             </Box>
@@ -194,13 +201,13 @@ export default function ProfilePage() {
                 direction="row"
                 justifyContent={{ xs: "center", sm: "start" }}
                 alignItems="center">
-                <UploadImageButton
+                <UploadImage
                   name="avatar"
                   disabled={isProfileLoading || isLoading}
                   sx={{ width: 180, fontWeight: 500 }}
                   onFileSelect={handleFileSelect}>
                   Change Avatar
-                </UploadImageButton>
+                </UploadImage>
               </Stack>
 
               <Typography variant="body1" color="text.secondary">

@@ -24,7 +24,6 @@ export const profileFields: FormField[] = [
     type: "input",
     size: { md: 6 },
   },
-
   {
     menuItems: ["Male", "Female", "Other"],
     disabled: true,

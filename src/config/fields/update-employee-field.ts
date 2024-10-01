@@ -2,7 +2,7 @@ export const updateEmployeeField: FormField[] = [
   {
     name: "fullName",
     label: "Full name",
-    placeholder: "Enter your full name",
+    placeholder: "Enter fullName",
     icon: "carbon:email",
     type: "input",
     size: { md: 6 },
@@ -10,26 +10,24 @@ export const updateEmployeeField: FormField[] = [
   {
     name: "email",
     label: "Email",
-    placeholder: "",
-    disabled: true,
+    placeholder: "Enter email",
     icon: "carbon:email",
     type: "input",
     size: { md: 6 },
   },
-
+  {
+    menuItems: ["Male", "Female", "Other"],
+    name: "gender",
+    label: "Gender",
+    type: "select",
+    required: true,
+    size: { md: 6 },
+  },
   {
     name: "dateOfBirth",
     label: "Date of birth",
     type: "date",
     icon: "material-symbols:person-outline-rounded",
-    size: { md: 6 },
-  },
-  {
-    name: "phone",
-    label: "Phone",
-    placeholder: "Enter your phone",
-    icon: "material-symbols:phonelink-ring",
-    type: "input",
     size: { md: 6 },
   },
   {

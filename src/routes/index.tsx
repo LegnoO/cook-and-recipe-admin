@@ -21,12 +21,14 @@ import BouncingDotsLoader from "@/components/ui/BouncingDotsLoader";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 
+// ** Config
+import { homeRoute } from "@/config/url";
+
 // ** App
 import App from "@/App";
 
 // ** Routes
 import {
-  homeRoute,
   protectedRoute,
   publicRoute,
 } from "@/config/route-permission";

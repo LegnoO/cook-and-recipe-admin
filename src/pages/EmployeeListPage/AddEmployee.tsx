@@ -5,27 +5,26 @@ import { useState, Fragment, memo, Dispatch, SetStateAction } from "react";
 import { Grid, Typography, Button, Stack, Input } from "@mui/material";
 
 // ** Components
-import GroupSelect from "@/components/fields/GroupSelect";
-import UploadImageButton from "@/components/UploadImageButton";
-import Fields from "@/components/RenderFieldsControlled";
+import { GroupSelect, PhoneInput } from "@/components/fields";
+
 import { Form } from "@/components/ui";
-import RenderIf from "@/components/RenderIf";
+import { RenderIf, UploadImage, RenderFieldsControlled } from "@/components";
 
 // ** Library Imports
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
 
 // ** Config
 import { addEmployeeField } from "@/config/fields/add-employee-field";
 
 // ** Utils
-import { addEmployee } from "@/services/userService";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { AddEmployeeSchema } from "@/utils/validations";
-import PhoneInput from "@/components/fields/PhoneInput";
-import { toast } from "react-toastify";
+import { createFormData } from "@/utils/helpers";
 
 // ** Services
+import { addEmployee } from "@/services/userService";
 
 // ** Types
 type Props = {
@@ -42,37 +41,39 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
     resolver: zodResolver(AddEmployeeSchema),
   });
 
-  function handleFileSelect(file: File | null) {
+  function handleFileSelect(file?: File, _imageDataUrl?: string) {
     if (file) setFile(file);
   }
 
   async function onSubmit(data: any) {
-    console.log("🚀 ~ onSubmit ~ data:", data);
     const toastLoading = toast.loading("Loading...");
+
+    const employeeData = {
+      groupId: data.groupId,
+      address: JSON.stringify(data.address),
+      gender: data.gender,
+      email: data.email,
+      fullName: data.fullName,
+      password: data.password,
+      phone: data.phone,
+      dateOfBirth: data.dateOfBirth || undefined,
+      avatar: file || undefined,
+    };
 
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("groupId", data.groupId);
-      formData.append("address", JSON.stringify(data.address));
-      formData.append("gender", data.gender);
-      formData.append("email", data.email);
-      formData.append("fullName", data.fullName);
-      formData.append("password", data.password);
-      formData.append("phone", data.phone);
-      if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
-      if (file) formData.append("avatar", file);
-
+      const formData = createFormData(employeeData);
       const newController = new AbortController();
       setController(newController);
       await addEmployee(formData, newController);
       toast.success("Add new employee successfully");
       refetch();
-    } catch (error) {
-      handleAxiosError(error);
-    } finally {
       setLoading(false);
       toast.dismiss(toastLoading);
+      setController(null);
+      closeMenu();
+    } catch (error) {
+      handleAxiosError(error);
     }
   }
 
@@ -81,7 +82,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
       <Typography
         fontWeight={500}
         component="h3"
-        sx={{ mb: "2rem" }}
+        sx={{ mb: "2.75rem" }}
         variant="h4">
         Add New Employee
       </Typography>
@@ -112,7 +113,11 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
               </Grid>
             </RenderIf>
 
-            <Fields field={field} control={control} id={String(index)} />
+            <RenderFieldsControlled
+              field={field}
+              control={control}
+              id={String(index)}
+            />
           </Fragment>
         ))}
         <Grid item md={6} xs={12}>
@@ -130,7 +135,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
             direction="row"
             alignItems="center"
             spacing={0}>
-            <UploadImageButton
+            <UploadImage
               name="avatar"
               disabled={isLoading}
               sx={{
@@ -141,7 +146,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
               }}
               onFileSelect={handleFileSelect}>
               Choose File
-            </UploadImageButton>
+            </UploadImage>
             <Input
               disableUnderline
               sx={{
@@ -175,7 +180,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
             width: { xs: "100%", md: "auto" },
           }}
           variant="contained">
-          Add
+          Submit
         </Button>
       </Stack>
     </Form>

@@ -24,7 +24,7 @@ import {
   Switch,
 } from "@/components/ui";
 import { TableHead, TableBody, TableFooter } from "@/components";
-import SearchInput from "@/components/fields/SearchInput";
+import { SearchInput, GroupSelect } from "@/components/fields";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -49,26 +49,27 @@ import {
   getFilterEmployee,
   toggleStatusEmployee,
 } from "@/services/userService";
-import GroupSelect from "@/components/fields/GroupSelect";
 
 const EmployeeListPage = () => {
-  const pageSizeOptions = ["2", "5", "10"];
+  const pageSizeOptions = ["15", "20", "25"];
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<Filter>({
-    total: 0,
     index: 1,
     size: Number(pageSizeOptions[0]),
-    search: "",
-    group: "",
+    total: null,
+    search: null,
+    groupId: null,
     status: null,
-    gender: "",
+    gender: null,
+    sortBy: null,
+    sortOrder: "",
   });
 
   const {
     isLoading,
-    data: dataEmployee,
+    data: employeeData,
     refetch,
   } = useQuery({
     queryKey: [
@@ -76,20 +77,22 @@ const EmployeeListPage = () => {
       filter.index,
       filter.size,
       filter.search,
-      filter.group,
+      filter.groupId,
       filter.status,
       filter.gender,
+      filter.sortBy,
+      filter.sortOrder,
     ],
     queryFn: () => getFilterEmployee(filter),
     ...queryOptions,
   });
 
   useEffect(() => {
-    if (dataEmployee) {
-      setEmployees(dataEmployee.data);
-      setFilter((prev) => ({ ...prev, ...dataEmployee.paginate }));
+    if (employeeData) {
+      setEmployees(employeeData.data);
+      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
     }
-  }, [dataEmployee]);
+  }, [employeeData]);
 
   async function handleChangeStatus(employeeId: string) {
     try {
@@ -118,19 +121,11 @@ const EmployeeListPage = () => {
     updateFilter({ index: value });
   }
 
-  function handleFilterGroup(event: ChangeEvent<HTMLInputElement>) {
-    const newGroup = event.target.value;
-    updateFilter({ group: newGroup });
-  }
-
-  function handleFilterGender(event: ChangeEvent<HTMLInputElement>) {
-    const newGender = event.target.value as Gender;
-    updateFilter({ gender: newGender });
-  }
-
-  function handleFilterStatus(event: ChangeEvent<HTMLInputElement>) {
-    const newStatus = event.target.value;
-    updateFilter({ status: newStatus });
+  function handleFilterChange(
+    event: ChangeEvent<HTMLInputElement>,
+    field: keyof Filter,
+  ) {
+    updateFilter({ index: 1, [field]: event.target.value });
   }
 
   function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
@@ -145,20 +140,20 @@ const EmployeeListPage = () => {
     300,
   );
 
-  function handleCancel() {
+  function handleCancel(modalId: string) {
     if (controller) {
       controller.abort();
       setController(null);
     }
-    removeId("new-employee-modal");
+    removeId(modalId);
   }
 
   const HEAD_COLUMNS = [
-    { title: "Name" },
-    { title: "Phone number" },
-    { title: "Location" },
-    { title: "Role" },
-    { title: "Status" },
+    { title: "Name", sortName: "fullName" },
+    { title: "Phone number", sortName: "phone" },
+    { title: "Location", sortName: "number" },
+    { title: "Role", sortName: "group" },
+    { title: "Status", sortName: "status" },
     { title: null, sx: { width: "75px" } },
   ];
 
@@ -204,14 +199,19 @@ const EmployeeListPage = () => {
     },
     {
       render: (row: Employee) => (
-        <IconButton disableRipple onClick={() => addId(row.id)}>
+        <IconButton
+          disableRipple
+          onClick={() => addId(`modal-update-employee-${row.id}`)}>
           <Icon icon="heroicons:pencil-solid" />
           <Modal
-            open={activeIds.includes(row.id)}
-            onClose={() => removeId(row.id)}>
+            scrollVertical
+            open={activeIds.includes(`modal-update-employee-${row.id}`)}
+            onClose={() => removeId(`modal-update-employee-${row.id}`)}>
             <UpdateEmployee
-              closeMenu={() => removeId(row.id)}
-              employeeData={row}
+              employeeId={row.id}
+              refetch={refetch}
+              closeMenu={() => handleCancel(`modal-update-employee-${row.id}`)}
+              setController={setController}
             />
           </Modal>
         </IconButton>
@@ -232,31 +232,31 @@ const EmployeeListPage = () => {
               name="groupId-filter"
               defaultOption={"Select Group"}
               fullWidth
-              onChange={handleFilterGroup}
-              SelectProps={{
-                displayEmpty: true,
-              }}
+              isLoading={isLoading}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFilterChange(event, "groupId")
+              }
             />
             <Select
-              onChange={handleFilterGender}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFilterChange(event, "gender")
+              }
               menuItems={["Male", "Female", "Other"]}
               defaultOption={"Select Gender"}
               fullWidth
-              SelectProps={{
-                displayEmpty: true,
-              }}
+              isLoading={isLoading}
             />
             <Select
-              onChange={handleFilterStatus}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFilterChange(event, "status")
+              }
               menuItems={[
                 { value: "true", label: "Active" },
                 { value: "false", label: "Banned" },
               ]}
               defaultOption={"Select Status"}
               fullWidth
-              SelectProps={{
-                displayEmpty: true,
-              }}
+              isLoading={isLoading}
             />
           </Stack>
         </Stack>
@@ -299,7 +299,7 @@ const EmployeeListPage = () => {
                 onClose={() => removeId("new-employee-modal")}>
                 <AddEmployee
                   refetch={refetch}
-                  closeMenu={handleCancel}
+                  closeMenu={() => handleCancel("new-employee-modal")}
                   setController={setController}
                 />
               </Modal>
@@ -308,7 +308,12 @@ const EmployeeListPage = () => {
         </Stack>
       </Paper>
       <Table>
-        <TableHead headColumns={HEAD_COLUMNS} />
+        <TableHead
+          isLoading={isLoading}
+          headColumns={HEAD_COLUMNS}
+          filter={filter}
+          setFilter={setFilter}
+        />
         <TableBody
           isLoading={isLoading}
           data={employees}
@@ -318,7 +323,7 @@ const EmployeeListPage = () => {
         <TableFooter
           dataLength={employees?.length}
           isLoading={isLoading}
-          paginateCount={filter.total}
+          paginateCount={filter.total || 0}
           paginatePage={filter.index || 0}
           handlePaginateChange={handleChangePage}
         />

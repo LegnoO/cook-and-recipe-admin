@@ -1,11 +1,13 @@
-// ** Library
+// ** Library Imports
 import axios, { AxiosError } from "axios";
 
 // ** Services
 import { handleRefresh } from "@/services/authService";
 
-// ** Constants
+// ** Config
 import { STATUS_CODES } from "@/config/status-codes";
+import { handleAxiosError } from "./errorHandler";
+import { loginRoute } from "@/config/url";
 
 const BASE_URL: string =
   import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;
@@ -40,23 +42,30 @@ AxiosInstance.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
+    const pathname = window.location.pathname;
+    const responseUrl = error.response?.config?.url;
+
     if (
       error.config &&
       error.response &&
       error.response.status === STATUS_CODES.UNAUTHORIZED &&
-      !error.response?.config?.url?.includes("/login") &&
-      !error.request.responseURL.includes("/api/auth/refresh") &&
-      !error.request.responseURL.includes("/auth/logout")
+      pathname !== loginRoute &&
+      responseUrl !== "/auth/refresh" &&
+      responseUrl !== "/auth/logout"
     ) {
-      const newToken = await handleRefresh(
-        localStorage.getItem("rememberMe")
-          ? JSON.parse(localStorage.getItem("rememberMe")!)
-          : false,
-      );
-      error.config.headers.Authorization = `Bearer ${newToken}`;
-      return axios.request(error.config);
+      try {
+        const newToken = await handleRefresh(
+          localStorage.getItem("rememberMe")
+            ? JSON.parse(localStorage.getItem("rememberMe")!)
+            : false,
+        );
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return axios.request(error.config);
+      } catch (error) {
+        handleAxiosError(error);
+        window.location.href = loginRoute;
+      }
     }
-
     return Promise.reject(error);
   },
 );

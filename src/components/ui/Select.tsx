@@ -20,13 +20,18 @@ const Select = (props: Props) => {
     startIcon,
     defaultOption,
     disableDefaultOption = false,
+    disabled,
     ...rest
   } = props;
   return (
     <TextField
-      defaultValue={defaultOption && ""}
+      defaultValue={''}
       select
       variant="outlined"
+      SelectProps={{
+        displayEmpty: true,
+        disabled: disabled || isLoading,
+      }}
       InputProps={{
         endAdornment: endIcon ? (
           <InputAdornment position="end">
@@ -45,15 +50,12 @@ const Select = (props: Props) => {
       }}
       {...rest}>
       {defaultOption && (
-        <MenuItem value="" disabled={disableDefaultOption}>
+        <MenuItem value="" disabled={isLoading || disableDefaultOption}>
           {defaultOption}
         </MenuItem>
       )}
 
-      {isLoading && <MenuItem disabled>Loading...</MenuItem>}
-
-      {!isLoading &&
-        menuItems.length > 0 &&
+      {menuItems.length > 0 &&
         menuItems?.map((item, index) =>
           typeof item === "string" ? (
             <MenuItem key={index} value={item}>

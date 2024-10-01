@@ -1,6 +1,9 @@
 // ** Mui Imports
 import { Box, keyframes, styled } from "@mui/material";
 
+// ** Components
+import { Repeat } from "@/components";
+
 // ** Keyframes
 const bounce = keyframes`
   to {
@@ -41,34 +44,23 @@ const Dot = styled(Box)(({ theme }) => ({
   },
 }));
 
-interface IProps {
+// ** Types
+type Props = {
   layout?: boolean;
-}
+};
 
-const BouncingDotsLoader = ({ layout }: IProps) => {
+const BouncingDotsLoader = ({ layout }: Props) => {
   const Dots = (
     <Loader>
-      <Dot
-        sx={{
-          backgroundColor: layout
-            ? undefined
-            : (theme) => theme.palette.primary.contrastText,
-        }}
-      />
-      <Dot
-        sx={{
-          backgroundColor: layout
-            ? undefined
-            : (theme) => theme.palette.primary.contrastText,
-        }}
-      />
-      <Dot
-        sx={{
-          backgroundColor: layout
-            ? undefined
-            : (theme) => theme.palette.primary.contrastText,
-        }}
-      />
+      <Repeat times={3}>
+        <Dot
+          sx={{
+            backgroundColor: layout
+              ? undefined
+              : (theme) => theme.palette.primary.contrastText,
+          }}
+        />
+      </Repeat>
     </Loader>
   );
 

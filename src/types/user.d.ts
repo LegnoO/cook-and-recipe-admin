@@ -6,13 +6,18 @@ type ListEmployees = {
 type Employee = {
   address: Address;
   avatar: string;
-  dateOfBirth: Date | null;
+  dateOfBirth?: Date;
   email: string;
   fullName: string;
   group: string;
   id: string;
-  phone: string | null;
+  phone?: string;
   status: boolean;
+  gender?: Gender;
+  id: string;
+  disabledDate?: Date;
+  createdDate: Date;
+  groupId?: string;
 };
 
 interface UserProfile {
@@ -26,6 +31,7 @@ interface UserProfile {
   createdDate: Date | null;
   gender?: Gender;
   address: Address;
+  groupId?: string;
 }
 
 type UserProfileDraft = Omit<
@@ -44,11 +50,13 @@ type Address = {
 type Filter = {
   index: number;
   size: number;
-  total: number;
-  search: string;
-  group: string;
+  total: number | null;
+  search: string | null;
+  groupId: string | null;
   status: string | null;
-  gender: Gender | "";
+  gender: Gender | null;
+  sortBy: string | null;
+  sortOrder: 1 | -1 | '';
 };
 
 type Gender = "Male" | "Female" | "Other";

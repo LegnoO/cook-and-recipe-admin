@@ -98,7 +98,7 @@ const TableBody = <T,>({ data, bodyCells, filter, isLoading }: Props<T>) => {
           {renderDataRows(data as T[])}
         </RenderIf>
 
-        <RenderIf condition={isLoading}>{renderLoadingRows()}</RenderIf>
+        <RenderIf condition={isLoading || data === null}>{renderLoadingRows()}</RenderIf>
 
         <RenderIf condition={!isLoading && data !== null && data.length === 0}>
           {renderDataEmpty()}
