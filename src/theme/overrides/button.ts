@@ -133,6 +133,16 @@ const Button = (): Components<Omit<Theme, "components">> => {
             },
           }),
         },
+        {
+          props: { variant: "tonal", color: "error" },
+          style: ({ theme }: { theme: Theme }) => ({
+            color: theme.palette.error.main,
+            backgroundColor: hexToRGBA(theme.palette.error.main, 0.16),
+            "&:hover, &:active": {
+              backgroundColor: hexToRGBA(theme.palette.error.main, 0.24),
+            },
+          }),
+        },
       ],
       styleOverrides: {
         root: ({ ownerState, theme }: OwnerStateThemeType) => ({

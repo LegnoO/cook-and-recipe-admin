@@ -1,9 +1,8 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect, Fragment } from "react";
 
 // ** Mui Imports
 import {
-  Box,
   IconButton,
   Stack,
   Avatar,
@@ -50,12 +49,13 @@ import {
   toggleStatusEmployee,
 } from "@/services/userService";
 
-const EmployeeListPage = () => {
-  const pageSizeOptions = ["15", "20", "25"];
+const ListEmployee = () => {
+  const pageSizeOptions = ["10", "15", "20"];
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<Filter>({
+
+  const defaultFilter: Filter = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
@@ -63,9 +63,11 @@ const EmployeeListPage = () => {
     groupId: null,
     status: null,
     gender: null,
-    sortBy: null,
+    sortBy: "",
     sortOrder: "",
-  });
+  };
+
+  const [filter, setFilter] = useState<Filter>(defaultFilter);
 
   const {
     isLoading,
@@ -84,74 +86,14 @@ const EmployeeListPage = () => {
       filter.sortOrder,
     ],
     queryFn: () => getFilterEmployee(filter),
+
     ...queryOptions,
   });
-
-  useEffect(() => {
-    if (employeeData) {
-      setEmployees(employeeData.data);
-      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
-    }
-  }, [employeeData]);
-
-  async function handleChangeStatus(employeeId: string) {
-    try {
-      addId(`loading-switch-${employeeId}`);
-      await toggleStatusEmployee(employeeId);
-      setEmployees(
-        (prev) =>
-          prev?.map((employee) =>
-            employee.id === employeeId
-              ? { ...employee, status: !employee.status }
-              : employee,
-          ) || prev,
-      );
-    } catch (error) {
-      handleAxiosError(error);
-    } finally {
-      removeId(`loading-switch-${employeeId}`);
-    }
-  }
-
-  function updateFilter(updates: Partial<Filter>) {
-    setFilter((prev) => ({ ...prev, ...updates }));
-  }
-
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
-
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter,
-  ) {
-    updateFilter({ index: 1, [field]: event.target.value });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
-  const handleSearchTest = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, search: event.target.value }));
-    },
-    300,
-  );
-
-  function handleCancel(modalId: string) {
-    if (controller) {
-      controller.abort();
-      setController(null);
-    }
-    removeId(modalId);
-  }
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "fullName" },
     { title: "Phone number", sortName: "phone" },
-    { title: "Location", sortName: "number" },
+    { title: "Location", sortName: "address.number" },
     { title: "Role", sortName: "group" },
     { title: "Status", sortName: "status" },
     { title: null, sx: { width: "75px" } },
@@ -218,17 +160,96 @@ const EmployeeListPage = () => {
       ),
     },
   ];
+  useEffect(() => {
+    if (employeeData) {
+      setEmployees(employeeData.data);
+      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
+    }
+  }, [employeeData]);
+
+  async function handleChangeStatus(employeeId: string) {
+    try {
+      addId(`loading-switch-${employeeId}`);
+      await toggleStatusEmployee(employeeId);
+      setEmployees(
+        (prev) =>
+          prev?.map((employee) =>
+            employee.id === employeeId
+              ? { ...employee, status: !employee.status }
+              : employee,
+          ) || prev,
+      );
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      removeId(`loading-switch-${employeeId}`);
+    }
+  }
+
+  function updateFilter(updates: Partial<Filter>) {
+    setFilter((prev) => ({ ...prev, ...updates }));
+  }
+
+  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
+    updateFilter({ index: value });
+  }
+
+  function handleFilterChange(
+    event: ChangeEvent<HTMLInputElement>,
+    field: keyof Filter,
+  ) {
+    updateFilter({
+      index: 1,
+      [field]: event.target.value,
+    });
+  }
+
+  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
+    const newSize = event.target.value;
+    updateFilter({ index: 1, size: Number(newSize) });
+  }
+
+  const handleSearchTest = useDebouncedCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setFilter((prev) => ({ ...prev, search: event.target.value }));
+    },
+    300,
+  );
+
+  function handleResetFilter() {
+    setFilter(defaultFilter);
+  }
+
+  function handleCancel(modalId: string) {
+    if (controller) {
+      controller.abort();
+      setController(null);
+    }
+    removeId(modalId);
+  }
 
   return (
-    <TableContainer>
+    <Fragment>
       <Paper
-        sx={{ p: 0, borderBottomRightRadius: 0, borderBottomLeftRadius: 0 }}>
+        sx={{
+          p: 0,
+          borderBottomRightRadius: 0,
+          borderBottomLeftRadius: 0,
+          boxShadow: "none",
+        }}>
         <Stack direction="column" spacing={2} sx={{ p: 3 }}>
           <Typography variant="h5" sx={{ mb: 2 }}>
             Filters
           </Typography>
-          <Stack direction="row" spacing={3} alignItems="center">
+          <Stack
+            direction={{
+              md: "row",
+              xs: "column",
+            }}
+            spacing={3}
+            alignItems="center">
             <GroupSelect
+              value={filter.groupId || ""}
               name="groupId-filter"
               defaultOption={"Select Group"}
               fullWidth
@@ -238,6 +259,7 @@ const EmployeeListPage = () => {
               }
             />
             <Select
+              value={filter.gender || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "gender")
               }
@@ -247,6 +269,7 @@ const EmployeeListPage = () => {
               isLoading={isLoading}
             />
             <Select
+              value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "status")
               }
@@ -262,29 +285,73 @@ const EmployeeListPage = () => {
         </Stack>
         <Divider />
         <Stack
-          sx={{ p: 3 }}
-          direction="row"
+          sx={{ p: 3, flexWrap: "wrap" }}
+          direction={{
+            md: "column",
+            lg: "row",
+          }}
           justifyContent="space-between"
-          alignItems="center">
-          <Box sx={{ minWidth: 68 }}>
+          alignItems={{
+            md: "start",
+            lg: "center",
+          }}
+          spacing={{
+            xs: 2,
+            md: 2,
+          }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={{
+              xs: 1.5,
+              md: 1.5,
+            }}>
+            <Typography>Show</Typography>
             <Select
-              sx={{ height: 42 }}
+              sx={{ height: 42, width: 70 }}
               fullWidth
               disabled={isLoading}
               onChange={handleChangeRowPageSelector}
               value={filter.size}
               menuItems={pageSizeOptions}
             />
-          </Box>
+          </Stack>
 
-          <Stack direction="row" alignItems="center" spacing={2}>
+          <Stack
+            direction={{
+              sm: "column",
+              md: "row",
+            }}
+            alignItems={{
+              sm: "stretch",
+              md: "center",
+            }}
+            spacing={{
+              xs: 2,
+              md: 2,
+            }}>
             <SearchInput
               disabled={isLoading}
               placeholder="Search User"
               onChange={handleSearchTest}
               fullWidth
-              sx={{ height: 42 }}
+              sx={{
+                height: 42,
+                minWidth: 120,
+              }}
             />
+            <Button
+              sx={{
+                minWidth: "max-content",
+              }}
+              disabled={isLoading}
+              disableRipple
+              color="error"
+              variant="tonal"
+              onClick={handleResetFilter}
+              startIcon={<Icon icon="carbon:filter-reset" />}>
+              Reset Filter
+            </Button>
             <Button
               sx={{ minWidth: "max-content" }}
               disabled={isLoading}
@@ -307,28 +374,31 @@ const EmployeeListPage = () => {
           </Stack>
         </Stack>
       </Paper>
-      <Table>
-        <TableHead
-          isLoading={isLoading}
-          headColumns={HEAD_COLUMNS}
-          filter={filter}
-          setFilter={setFilter}
-        />
-        <TableBody
-          isLoading={isLoading}
-          data={employees}
-          filter={filter}
-          bodyCells={BODY_CELLS}
-        />
-        <TableFooter
-          dataLength={employees?.length}
-          isLoading={isLoading}
-          paginateCount={filter.total || 0}
-          paginatePage={filter.index || 0}
-          handlePaginateChange={handleChangePage}
-        />
-      </Table>
-    </TableContainer>
+      <Divider />
+      <TableContainer>
+        <Table>
+          <TableHead
+            isLoading={isLoading}
+            headColumns={HEAD_COLUMNS}
+            filter={filter}
+            setFilter={setFilter}
+          />
+          <TableBody
+            isLoading={isLoading}
+            data={employees}
+            filter={filter}
+            bodyCells={BODY_CELLS}
+          />
+          <TableFooter
+            dataLength={employees?.length}
+            isLoading={isLoading}
+            paginateCount={filter.total || 0}
+            paginatePage={filter.index || 0}
+            handlePaginateChange={handleChangePage}
+          />
+        </Table>
+      </TableContainer>
+    </Fragment>
   );
 };
-export default EmployeeListPage;
+export default ListEmployee;

@@ -1,5 +1,6 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
+import { handleAxiosError } from "@/utils/errorHandler";
 import { createSearchParams } from "@/utils/helpers";
 
 export async function updateEmployeeProfile(formData: FormData) {
@@ -17,15 +18,18 @@ export async function updateEmployeeProfile(formData: FormData) {
 }
 
 export async function getFilterEmployee(filter: Filter) {
-  const { total, ...restFilter } = filter;
+  try {
+    const { total, ...restFilter } = filter;
 
-  const params = createSearchParams(restFilter);
+    const params = createSearchParams(restFilter);
+    const response = await AxiosInstance.get<ListEmployees>(
+      `/employees?${params.toString()}`,
+    );
 
-  const response = await AxiosInstance.get<ListEmployees>(
-    `/employees?${params.toString()}`,
-  );
-
-  return response.data;
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 }
 
 export async function updateEmployee(

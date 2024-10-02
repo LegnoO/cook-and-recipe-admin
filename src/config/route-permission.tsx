@@ -8,7 +8,8 @@ import { homeRoute, loginRoute } from "./url";
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const EmployeeListPage = lazy(() => import("@/pages/EmployeeListPage/"));
+const ListEmployee = lazy(() => import("@/pages/Employee/ListEmployee"));
+const ListGroup = lazy(() => import("@/pages/Group/ListGroup"));
 
 export const protectedRoute: ProtectedRoute[] = [
   {
@@ -37,7 +38,15 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/employees",
-    component: <EmployeeListPage />,
+    component: <ListEmployee />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
+  {
+    path: "/groups",
+    component: <ListGroup />,
     permission: {
       page: "user",
       action: "read",

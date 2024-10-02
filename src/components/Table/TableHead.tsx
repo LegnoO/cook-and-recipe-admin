@@ -9,7 +9,6 @@ import { TableRow, TableHead as TableHeadMui, Icon } from "@/components/ui";
 
 // ** Types
 type HeadColumns = { sortName?: string; title: string | null; sx?: SxProps };
-type SortOrder = "" | "1" | "-1";
 
 type Props = {
   filter: Filter;
@@ -20,14 +19,15 @@ type Props = {
 
 const TableHead = ({ headColumns, filter, setFilter, isLoading }: Props) => {
   function handleSortOrder(sortName: string) {
-    const sortOrderCycle = { "": 1, "1": -1, "-1": "" } as const;
+    const sortOrderCycle = { "": "desc", desc: "asc", asc: "" } as const;
+
     if (filter.sortBy === sortName) {
       const nextSortOrder = sortOrderCycle[filter.sortOrder];
 
       return nextSortOrder;
     }
 
-    return 1;
+    return "desc";
   }
 
   function handleSortColumn(sortName?: string) {
@@ -43,14 +43,14 @@ const TableHead = ({ headColumns, filter, setFilter, isLoading }: Props) => {
   function getSortIcon(
     sortOrder: SortOrder,
     sortName?: string,
-    sortBy?: string | null,
+    sortBy?: string,
   ) {
     if (!sortName) return "";
 
     const icons = {
       "": "vaadin:sort",
-      "1": "typcn:arrow-sorted-up",
-      "-1": "typcn:arrow-sorted-down",
+      asc: "typcn:arrow-sorted-up",
+      desc: "typcn:arrow-sorted-down",
     };
 
     return sortName === sortBy ? icons[sortOrder] : "vaadin:sort";
@@ -81,7 +81,7 @@ const TableHead = ({ headColumns, filter, setFilter, isLoading }: Props) => {
               <Icon
                 fontSize="1rem"
                 icon={getSortIcon(
-                  String(filter.sortOrder) as SortOrder,
+                  filter.sortOrder as SortOrder,
                   column.sortName,
                   filter.sortBy,
                 )}

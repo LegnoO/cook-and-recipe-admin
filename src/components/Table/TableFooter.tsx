@@ -33,16 +33,16 @@ const TableFooter = ({
         <TableCell colSpan={99}>
           <Stack
             sx={{ padding: "0.78125rem 0.75rem" }}
-            direction="row"
+            direction={{ xs: "column", md: "row" }}
             justifyContent={"space-between"}
-            alignItems={"center"}>
+            alignItems={{ xs: "start", sm: "center" }}
+            spacing={2}>
             {dataLength && (
               <Typography color="secondary">
                 Showing 1 to {dataLength} of {dataLength} entries
               </Typography>
             )}
             <Pagination
-              sx={{ marginLeft: "auto" }}
               color="primary"
               disabled={isLoading}
               count={paginateCount}

@@ -237,8 +237,8 @@ export default function ProfilePage() {
                   disabled={isProfileLoading || isLoading}
                   sx={{ width: { xs: "100%", md: "auto" } }}
                   onClick={handleResetFields}
-                  color="secondary"
-                  variant="contained">
+                  color="error"
+                  variant="tonal">
                   Reset
                 </Button>
                 <Button

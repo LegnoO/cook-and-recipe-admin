@@ -14,7 +14,7 @@ import { Controller, Control } from "react-hook-form";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-import { getAllGroups } from "@/services/groupServices";
+import { getGroupActive } from "@/services/groupServices";
 
 // ** Types
 type Props = {
@@ -25,7 +25,7 @@ type Props = {
 const GroupSelect = ({ name, control, ...rest }: Props) => {
   const { isLoading, data } = useQuery({
     queryKey: ["all-groups-active"],
-    queryFn: getAllGroups,
+    queryFn: getGroupActive,
     ...queryOptions,
   });
 

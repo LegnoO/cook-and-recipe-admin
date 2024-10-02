@@ -19,9 +19,6 @@ import {
   signOut,
 } from "@/services/authService";
 
-// ** Utils
-import { handleAxiosError } from "@/utils/errorHandler";
-
 // ** Types
 import { AxiosError } from "axios";
 
@@ -72,7 +69,6 @@ const AuthProvider = ({ children }: Props) => {
 
         if (!accessTokenSession) await refreshUserData();
       } catch (error) {
-        handleAxiosError(error);
         handleLogout();
       } finally {
         setLoading(false);

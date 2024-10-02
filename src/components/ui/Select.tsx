@@ -9,6 +9,9 @@ import {
 // ** Components
 import { TextField, Icon } from "@/components/ui";
 
+// ** Utils
+import { hexToRGBA } from "@/utils/helpers";
+
 // ** Types
 type Props = Select & TextFieldProps;
 
@@ -25,12 +28,38 @@ const Select = (props: Props) => {
   } = props;
   return (
     <TextField
-      defaultValue={''}
+      defaultValue={""}
       select
       variant="outlined"
       SelectProps={{
         displayEmpty: true,
         disabled: disabled || isLoading,
+        MenuProps: {
+          PaperProps: {
+            sx: {
+              "& .MuiMenuItem-root.Mui-selected": {
+                backgroundColor: (theme) =>
+                  hexToRGBA(theme.palette.primary.main, 0.16),
+                color: (theme) => theme.palette.primary.main,
+                "&:hover": {
+                  backgroundColor: (theme) =>
+                    hexToRGBA(theme.palette.primary.main, 0.24),
+                },
+              },
+              "& .MuiMenuItem-root": {
+                color: (theme) => theme.palette.text.primary,
+                marginInline: "0.5rem",
+                paddingBlock: "0.5rem",
+                paddingInline: "1rem",
+                borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+              },
+
+              "& .MuiList-root .MuiMenuItem-root:not(:last-of-type)": {
+                marginBlockEnd: "0.2rem",
+              },
+            },
+          },
+        },
       }}
       InputProps={{
         endAdornment: endIcon ? (

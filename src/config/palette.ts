@@ -1,13 +1,14 @@
+// ** Utils
 import { hexToRGBA } from "@/utils/helpers";
 
 export const defaultTextColor = {
-  light: "#212636",
+  light: "#2F2B3D",
   dark: "#e1def5",
 };
 
 export const textColors = {
   primary: {
-    light: "#212636",
+    light: defaultTextColor.light,
     dark: hexToRGBA(defaultTextColor.dark, 0.9),
   },
   secondary: {
@@ -22,13 +23,13 @@ export const commonColors = {
 };
 
 export const borderColors = {
-  light: "#2F2B3D",
+  light: hexToRGBA("#2F2B3D", 0.12),
   dark: hexToRGBA(defaultTextColor.dark, 0.12),
 };
 
 export const backgroundColors = {
   body: {
-    light: "#fafafa",
+    light: "#F8F7FA",
     dark: "#25293C",
   },
   paper: {
@@ -39,7 +40,7 @@ export const backgroundColors = {
 
 export const mainColors = {
   primary: {
-    main: "#5646ce",
+    main: "#7367F0",
     dark: "#4131B9",
     contrastText: commonColors.white,
   },

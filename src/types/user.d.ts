@@ -46,6 +46,14 @@ type Address = {
   district: string;
   city: string;
 };
+type SortOrder = "" | "asc" | "desc";
+
+type Sort = {
+  sortBy: string;
+  sortOrder: SortOrder;
+};
+
+type Filter = Sort & { [key: string]: any };
 
 type Filter = {
   index: number;
@@ -55,8 +63,6 @@ type Filter = {
   groupId: string | null;
   status: string | null;
   gender: Gender | null;
-  sortBy: string | null;
-  sortOrder: 1 | -1 | '';
-};
+} & Sort;
 
 type Gender = "Male" | "Female" | "Other";
