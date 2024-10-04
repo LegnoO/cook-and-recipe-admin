@@ -17,7 +17,7 @@ export async function updateEmployeeProfile(formData: FormData) {
   return response.data;
 }
 
-export async function getFilterEmployee(filter: Filter) {
+export async function getFilterEmployee(filter: FilterEmployees) {
   try {
     const { total, ...restFilter } = filter;
 
@@ -74,12 +74,15 @@ export async function addEmployee(
 }
 
 export async function toggleStatusEmployee(employeeId: string) {
-  const response = await AxiosInstance.patch(
-    `/employees/${employeeId}/toggle-status`,
-    {
-      id: employeeId,
-    },
-  );
-
-  return response.data;
+  try {
+    const response = await AxiosInstance.patch(
+      `/employees/${employeeId}/toggle-status`,
+      {
+        id: employeeId,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 }

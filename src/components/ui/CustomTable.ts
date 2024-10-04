@@ -14,23 +14,25 @@ import { hexToRGBA } from "@/utils/helpers";
 // ** Styled Components
 export const Table = styled(MuiTable)({});
 
-export const TableRow = styled(MuiTableRow)({
-  "&.MuiTableRow-head": {
-    borderBottom: 0,
-  },
-});
+export const TableRow = styled(MuiTableRow)({});
 
-export const TableContainer = styled(MuiTableContainer)(({ theme }) => ({
-  boxShadow: theme.shadows[2],
-  borderBottomRightRadius: `${theme.shape.borderRadius}px`,
-  borderBottomLeftRadius: `${theme.shape.borderRadius}px`,
-}));
+export const TableContainer = styled(MuiTableContainer)({});
 
 export const TableHead = styled(MuiTableHead)(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "light"
-      ? theme.palette.action.selected
-      : hexToRGBA(theme.palette.background.paper, 1, 15),
+  "&.MuiTableHead-root": {
+    backgroundColor:
+      theme.palette.mode === "light"
+        ? theme.palette.action.selected
+        : hexToRGBA(theme.palette.background.paper, 1, 15),
+
+    "& .MuiTableRow-head .MuiTableCell-head": {
+      fontSize: theme.typography.subtitle2.fontSize,
+      fontWeight: 500,
+      borderBottom: 0,
+      paddingBlock: "1.25rem",
+      paddingInline: "1.5rem",
+    },
+  },
 }));
 
 export const TableBody = styled(MuiTableBody)(({ theme }) => ({
@@ -41,20 +43,10 @@ export const TableBody = styled(MuiTableBody)(({ theme }) => ({
 }));
 
 export const TableCell = styled(MuiTableCell)(({ theme }) => ({
-  "&": {
-    color: theme.palette.text.primary,
-    lineHeight: "1.5",
-  },
-  "&.MuiTableCell-head": {
-    fontSize: theme.typography.subtitle2.fontSize,
-    fontWeight: 500,
-    borderBottom: 0,
-    padding: "1.25rem",
-  },
   "&.MuiTableCell-body": {
     paddingBlock: "0.75rem",
-    paddingInline: "1.25rem",
-    borderBottom: `1px solid ${theme.palette.divider} !important`,
+    paddingInline: "1.5rem",
+    borderBottom: `1px solid ${theme.palette.divider}`,
   },
   "&.MuiTableCell-footer": {
     padding: "0.5rem",

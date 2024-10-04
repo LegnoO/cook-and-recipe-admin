@@ -20,7 +20,7 @@ const ChipStatus = ({ sx, label, variant = "success" }: Props) => {
         paddingBlock: "0.125rem",
         fontWeight: 600,
         textAlign: "center",
-        borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+        borderRadius: (theme) => `${theme.shape.borderRadius - 2}px`,
         backgroundColor: (theme) =>
           hexToRGBA(theme.palette[variant].main, 0.25),
         color: (theme) => theme.palette[variant].main,

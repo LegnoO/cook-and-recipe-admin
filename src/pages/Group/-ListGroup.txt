@@ -21,8 +21,9 @@ import {
   Paper,
   Select,
   Switch,
+  ChipStatus,
 } from "@/components/ui";
-import { TableHead, TableBody, TableFooter } from "@/components";
+import { TableHead, TableBody, Pagination, Repeat } from "@/components";
 import { SearchInput, GroupSelect } from "@/components/fields";
 
 // ** Library Imports
@@ -40,11 +41,12 @@ import { queryOptions } from "@/config/query-options";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatAddress } from "@/utils/helpers";
+import { formatAddress, formatDateTime } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
-import { getAllGroups } from "@/services/groupServices";
+import { getAllGroups, toggleStatusGroup } from "@/services/groupServices";
+import PermissionSelect from "@/components/fields/PermissionSelect";
 
 const ListGroup = () => {
   const pageSizeOptions = ["10", "15", "20"];
@@ -52,7 +54,7 @@ const ListGroup = () => {
   const [groups, setGroups] = useState<any[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
 
-  const defaultFilter: Filter = {
+  const defaultFilter: any = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
@@ -64,123 +66,94 @@ const ListGroup = () => {
     // sortOrder: "",
   };
 
-  const [filter, setFilter] = useState<Filter>(defaultFilter);
+  const [filter, setFilter] = useState<any>(defaultFilter);
 
   const {
     isLoading,
     data: groupData,
     refetch,
   } = useQuery({
-    queryKey: ["list-group"],
+    queryKey: ["list-group", filter.size],
     queryFn: () => getAllGroups(filter),
 
     ...queryOptions,
   });
-    console.log("🚀 ~ ListGroup ~ groupData:", groupData)
+  console.log("🚀 ~ ListGroup ~ groupData:", groupData);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "" },
     { title: "Permissions", sortName: "" },
-    // { title: "Location", sortName: "" },
-    // { title: "Role", sortName: "" },
-    // { title: "Status", sortName: "" },
-    // { title: null, sx: { width: "75px" } },
+    { title: "Members", sortName: "" },
+    { title: "Created Date", sortName: "" },
+    { title: "Status", sortName: "" },
   ];
 
   const BODY_CELLS = [
     {
-      render: (row: Employee) => (
-        <Stack direction="row" spacing={2} alignItems={"center"}>
-          <Avatar src={row.avatar} alt="Avatar user" />
-          <Stack direction="column">
-            <Typography fontWeight="500" color="text.primary">
-              {row.fullName}
-            </Typography>
-            <Typography color="text.secondary">{row.email}</Typography>
+      render: (row: any) => row.name,
+    },
+    {
+      width: 300,
+      render: (row: any) =>
+        row.permissions.map((permission, index) => (
+          <Stack
+            sx={{ flexWrap: "wrap", gap: 2 }}
+            direction="row"
+            alignItems={"center"}
+            key={index}>
+            <ChipStatus label={permission.page} />
           </Stack>
-        </Stack>
-      ),
+        )),
     },
     {
-      render: (row: Employee) => row.phone,
+      render: (row: any) => row.members,
     },
     {
-      render: (row: Employee) => (
-        <Tooltip title={<Typography>{formatAddress(row.address)}</Typography>}>
-          <Typography>{formatAddress(row.address, 26)}</Typography>
-        </Tooltip>
-      ),
+      render: (row: any) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: Employee) => row.group,
-    },
-    {
-      render: (row: Employee) => (
+      render: (row: any) => (
         <Switch
           color="success"
-          // onChange={() => handleChangeStatus(row.id)}
+          onChange={() => handleChangeStatus(row.id)}
           disabled={activeIds.includes(`loading-switch-${row.id}`)}
-          checked={
-            groups?.find((group) => group.id === row.id)?.status || false
-          }
+          checked={groups?.find((group) => group.id === row.id)?.status}
         />
       ),
     },
-    {
-      render: (row: Employee) => (
-        <IconButton
-          disableRipple
-          onClick={() => addId(`modal-update-employee-${row.id}`)}>
-          <Icon icon="heroicons:pencil-solid" />
-          {/* <Modal
-            scrollVertical
-            open={activeIds.includes(`modal-update-employee-${row.id}`)}
-            onClose={() => removeId(`modal-update-employee-${row.id}`)}>
-            <UpdateEmployee
-              employeeId={row.id}
-              refetch={refetch}
-              closeMenu={() => handleCancel(`modal-update-employee-${row.id}`)}
-              setController={setController}
-            />
-          </Modal> */}
-        </IconButton>
-      ),
-    },
   ];
-  
+
   useEffect(() => {
     if (groupData) {
       setGroups(groupData.data);
-      // setFilter((prev) => ({ ...prev, ...groupData.paginate }));
+      setFilter((prev) => ({ ...prev, ...groupData.paginate }));
     }
   }, [groupData]);
 
-  // async function handleChangeStatus(employeeId: string) {
-  //   try {
-  //     addId(`loading-switch-${employeeId}`);
-  //     await toggleStatusEmployee(employeeId);
-  //     setEmployees(
-  //       (prev) =>
-  //         prev?.map((employee) =>
-  //           employee.id === employeeId
-  //             ? { ...employee, status: !employee.status }
-  //             : employee,
-  //         ) || prev,
-  //     );
-  //   } catch (error) {
-  //     handleAxiosError(error);
-  //   } finally {
-  //     removeId(`loading-switch-${employeeId}`);
-  //   }
-  // }
+  async function handleChangeStatus(groupId: string) {
+    try {
+      addId(`loading-switch-${groupId}`);
+      await toggleStatusGroup(groupId);
+      setGroups(
+        (prev) =>
+          prev?.map((group) =>
+            group.id === groupId ? { ...group, status: !group.status } : group,
+          ) || prev,
+      );
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      removeId(`loading-switch-${groupId}`);
+    }
+  }
 
   function updateFilter(updates: Partial<Filter>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  // function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-  //   updateFilter({ index: value });
-  // }
+  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
+    updateFilter({ index: value });
+  }
 
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
@@ -223,6 +196,7 @@ const ListGroup = () => {
           p: 0,
           borderBottomRightRadius: 0,
           borderBottomLeftRadius: 0,
+          boxShadow: "none",
         }}>
         {/* <Stack direction="column" spacing={2} sx={{ p: 3 }}>
           <Typography variant="h5" sx={{ mb: 2 }}>
@@ -327,6 +301,7 @@ const ListGroup = () => {
                 minWidth: 120,
               }}
             />
+            <PermissionSelect/>
             <Button
               sx={{
                 minWidth: "max-content",
@@ -361,6 +336,7 @@ const ListGroup = () => {
           </Stack>
         </Stack>
       </Paper>
+      <Divider />
       <TableContainer>
         <Table>
           <TableHead
@@ -369,21 +345,21 @@ const ListGroup = () => {
             filter={filter}
             setFilter={setFilter}
           />
-          {/* <TableBody
+          <TableBody
             isLoading={isLoading}
-            data={employees}
+            data={groups}
             filter={filter}
             bodyCells={BODY_CELLS}
           />
-          <TableFooter
-            dataLength={employees?.length}
-            isLoading={isLoading}
-            paginateCount={filter.total || 0}
-            paginatePage={filter.index || 0}
-            handlePaginateChange={handleChangePage}
-          /> */}
         </Table>
       </TableContainer>
+      <Pagination
+        dataLength={groups?.length}
+        isLoading={isLoading}
+        paginateCount={filter.total || 0}
+        paginatePage={filter.index || 0}
+        handlePaginateChange={handleChangePage}
+      />
     </Fragment>
   );
 };

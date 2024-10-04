@@ -19,16 +19,17 @@ import NoDataIcon from "@/assets/ic-content.svg";
 // ** Types
 type BodyCell<T> = {
   render: (row: T) => ReactNode;
+  width?: string | number;
 };
 
-type Props<T> = {
+type Props<T,V> = {
   bodyCells: BodyCell<T>[];
   isLoading: boolean;
-  filter: Filter;
+  filter: Filter<V>;
   data: T[] | null;
 };
 
-const TableBody = <T,>({ data, bodyCells, filter, isLoading }: Props<T>) => {
+const TableBody = <T,V>({ data, bodyCells, filter, isLoading }: Props<T,V>) => {
   const renderDataRows = (data: T[]) => {
     return data?.map((row, index) => (
       <TableRow
@@ -36,8 +37,10 @@ const TableBody = <T,>({ data, bodyCells, filter, isLoading }: Props<T>) => {
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
         }}>
-        {bodyCells.map(({ render }, index) => (
-          <TableCell key={index}>{render(row)}</TableCell>
+        {bodyCells.map(({ render, width }, index) => (
+          <TableCell sx={{ width }} key={index}>
+            {render(row)}
+          </TableCell>
         ))}
       </TableRow>
     ));

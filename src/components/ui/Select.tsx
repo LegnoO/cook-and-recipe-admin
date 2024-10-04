@@ -24,6 +24,7 @@ const Select = (props: Props) => {
     defaultOption,
     disableDefaultOption = false,
     disabled,
+    SelectProps,
     ...rest
   } = props;
   return (
@@ -60,6 +61,7 @@ const Select = (props: Props) => {
             },
           },
         },
+        ...SelectProps,
       }}
       InputProps={{
         endAdornment: endIcon ? (

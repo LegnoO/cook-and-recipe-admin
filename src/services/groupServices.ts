@@ -3,7 +3,7 @@ import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { createSearchParams } from "@/utils/helpers";
 
-export async function getAllGroups(filter: Filter) {
+export async function getAllGroups(filter: any) {
   const { total, ...restFilter } = filter;
 
   const params = createSearchParams(restFilter);
@@ -17,13 +17,17 @@ export async function getAllGroups(filter: Filter) {
 }
 
 export async function getGroupActive() {
-  const response = await AxiosInstance.get<Role[]>("groups/active");
+  const response = await AxiosInstance.get<Role[]>("/groups/active");
 
   return response.data;
 }
 
-// export async function getAllGroups() {
-//   const response = await AxiosInstance.get<Role[]>("/groups"); // dev test - use groups active api
-
-//   return response.data;
-// }
+export async function toggleStatusGroup(groupId: string) {
+  const response = await AxiosInstance.patch(
+    `/groups/${groupId}/toggle-status`,
+    {
+      id: groupId,
+    },
+  );
+  return response.data;
+}

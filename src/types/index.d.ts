@@ -1,0 +1,24 @@
+type Gender = "Male" | "Female" | "Other";
+
+type Address = {
+  number: string;
+  street: string;
+  ward: string;
+  district: string;
+  city: string;
+};
+
+type SortOrder = "" | "asc" | "desc";
+
+type Sort = {
+  sortBy: string;
+  sortOrder: SortOrder;
+};
+
+type Filter<T> = T & Paginate & Sort;
+
+type Paginate = {
+  index: number;
+  size: number;
+  total: number | null;
+};

@@ -22,7 +22,7 @@ import {
   Select,
   Switch,
 } from "@/components/ui";
-import { TableHead, TableBody, TableFooter } from "@/components";
+import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput, GroupSelect } from "@/components/fields";
 
 // ** Library Imports
@@ -55,7 +55,7 @@ const ListEmployee = () => {
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
 
-  const defaultFilter: Filter = {
+  const defaultFilter: FilterEmployees = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
@@ -67,7 +67,7 @@ const ListEmployee = () => {
     sortOrder: "",
   };
 
-  const [filter, setFilter] = useState<Filter>(defaultFilter);
+  const [filter, setFilter] = useState<FilterEmployees>(defaultFilter);
 
   const {
     isLoading,
@@ -186,7 +186,7 @@ const ListEmployee = () => {
     }
   }
 
-  function updateFilter(updates: Partial<Filter>) {
+  function updateFilter(updates: Partial<FilterEmployees>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
@@ -196,7 +196,7 @@ const ListEmployee = () => {
 
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter,
+    field: keyof FilterEmployees,
   ) {
     updateFilter({
       index: 1,
@@ -377,27 +377,27 @@ const ListEmployee = () => {
       <Divider />
       <TableContainer>
         <Table>
-          <TableHead
+          <TableHead<FilterEmployees>
             isLoading={isLoading}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody
+          <TableBody<Employee, FilterEmployees>
             isLoading={isLoading}
             data={employees}
             filter={filter}
             bodyCells={BODY_CELLS}
           />
-          <TableFooter
-            dataLength={employees?.length}
-            isLoading={isLoading}
-            paginateCount={filter.total || 0}
-            paginatePage={filter.index || 0}
-            handlePaginateChange={handleChangePage}
-          />
         </Table>
       </TableContainer>
+      <Pagination
+        dataLength={employees?.length}
+        isLoading={isLoading}
+        paginateCount={filter.total || 0}
+        paginatePage={filter.index || 0}
+        handlePaginateChange={handleChangePage}
+      />
     </Fragment>
   );
 };

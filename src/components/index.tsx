@@ -7,4 +7,4 @@ export { default as UploadImage } from "./UploadImage";
 export { default as UserDropDown } from "./UserDropDown";
 export { default as TableBody } from "./Table/TableBody";
 export { default as TableHead } from "./Table/TableHead";
-export { default as TableFooter } from "./Table/TableFooter";
+export { default as Pagination } from "./Pagination";

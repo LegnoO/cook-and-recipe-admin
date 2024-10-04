@@ -19,16 +19,6 @@ interface FormField {
   menuItems?: MenuItem[];
 }
 
-type Value = {
-  value: string;
-  label: any;
-};
-
-type datalist = {
-  name: string;
-  data: any;
-};
-
 type Select = {
   isLoading?: boolean;
   menuItems?: MenuItem[];

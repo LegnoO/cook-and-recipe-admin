@@ -10,14 +10,19 @@ import { TableRow, TableHead as TableHeadMui, Icon } from "@/components/ui";
 // ** Types
 type HeadColumns = { sortName?: string; title: string | null; sx?: SxProps };
 
-type Props = {
-  filter: Filter;
-  setFilter: Dispatch<SetStateAction<Filter>>;
+type Props<T> = {
+  filter: Filter<T>;
+  setFilter: Dispatch<SetStateAction<Filter<T>>>;
   headColumns: HeadColumns[];
   isLoading?: boolean;
 };
 
-const TableHead = ({ headColumns, filter, setFilter, isLoading }: Props) => {
+const TableHead = <T,>({
+  headColumns,
+  filter,
+  setFilter,
+  isLoading,
+}: Props<T>) => {
   function handleSortOrder(sortName: string) {
     const sortOrderCycle = { "": "desc", desc: "asc", asc: "" } as const;
 

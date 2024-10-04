@@ -25,7 +25,7 @@ export async function signOut() {
 }
 
 export async function getUserInfo() {
-  const response = await AxiosInstance.get<UserInfo>("/employees/info");
+  const response = await AxiosInstance.get<User>("/employees/info");
 
   return response.data;
 }
