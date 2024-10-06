@@ -20,9 +20,9 @@ import typography from "@/theme/typography";
 import overrides from "@/theme/overrides";
 
 // ** Props
-interface Props {
+type Props = {
   children: ReactNode;
-}
+};
 
 const ThemeComponent = ({ children }: Props) => {
   const { mode } = useMode();

@@ -22,3 +22,5 @@ type Paginate = {
   size: number;
   total: number | null;
 };
+
+type JSONString<T> = string;

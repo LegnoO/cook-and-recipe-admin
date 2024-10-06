@@ -16,9 +16,9 @@ import NavItems from "./NavItems";
 import { IVerticalNavItemsType } from "./types";
 
 // ** Props
-interface Props {
+type Props = {
   navItems: IVerticalNavItemsType;
-}
+};
 
 // ** Styled Components
 export const StyledSidebar = styled("aside")(() => ({

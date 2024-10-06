@@ -5,9 +5,9 @@ import { styled } from "@mui/material/styles";
 import { INavSectionTitle } from "./types";
 
 // ** Props
-interface Props {
+type Props = {
   item: INavSectionTitle;
-}
+};
 
 // ** Styled Components
 export const StyledNavSectionTitle = styled("li")({

@@ -174,6 +174,17 @@ export function formatDateTime(dateInput: Date) {
     hour: "2-digit",
     minute: "2-digit",
   });
-  
+
   return `${formattedDate}, ${formattedTime}`;
+}
+
+export function compareArrayLengths(
+  firstArray: Array<any>,
+  secondArray: Array<any>,
+): number {
+  if (!Array.isArray(firstArray) || !Array.isArray(secondArray)) {
+    return -1;
+  }
+
+  return firstArray.length - secondArray.length;
 }

@@ -16,7 +16,7 @@ import {
 } from "./types";
 
 // ** Props
-interface Props {
+type Props = {
   rootGroupActive: string[];
   setRootGroupActive: Dispatch<SetStateAction<string[]>>;
   childGroupActive: string[];
@@ -24,7 +24,7 @@ interface Props {
   navItems?: IVerticalNavItemsType;
   navParent?: INavGroup;
   isRootParent: boolean;
-}
+};
 
 const NavItems = (props: Props) => {
   const {

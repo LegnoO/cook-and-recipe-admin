@@ -21,14 +21,14 @@ import { INavGroup, INavLink } from "./types";
 import NavItems from "./NavItems";
 
 // ** Props Type
-interface Props {
+type Props = {
   rootGroupActive: string[];
   setRootGroupActive: Dispatch<SetStateAction<string[]>>;
   childGroupActive: string[];
   setChildGroupActive: Dispatch<SetStateAction<string[]>>;
   item: INavGroup;
   isRootParent: boolean;
-}
+};
 
 // ** Styled Components
 export const StyledNavGroup = styled("li")(() => () => ({

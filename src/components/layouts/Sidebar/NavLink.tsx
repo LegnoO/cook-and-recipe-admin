@@ -1,11 +1,14 @@
 // ** React
-import { Dispatch, SetStateAction, MouseEvent } from "react";
+import { Dispatch, SetStateAction, MouseEvent, useEffect } from "react";
 
 // ** Next Imports
 import { Link, useLocation } from "react-router-dom";
 
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
+
+// ** Context
+import useSettings from "@/hooks/useSettings";
 
 // ** Components
 import Icon from "@/components/ui/Icon";
@@ -20,11 +23,11 @@ import clsx from "clsx";
 import { INavGroup, INavLink } from "./types";
 
 // ** Props
-interface Props {
+type Props = {
   item: INavLink;
   navParent?: INavGroup;
   setRootGroupActive: Dispatch<SetStateAction<string[]>>;
-}
+};
 
 // ** Styled Components
 export const MenuNavLink = styled("li")(({ theme }) => ({
@@ -84,9 +87,9 @@ export const Label = styled("span")(({ theme }) => ({
 
 const NavLink = (props: Props) => {
   const { item, navParent, setRootGroupActive } = props;
+  const { removeId, activeIds } = useSettings();
   const { pathname } = useLocation();
 
-  // ** Check if the current path matches the item path
   const isActive = pathname === item.path;
 
   function handleSetRootGroup(event: MouseEvent<HTMLAnchorElement>) {
@@ -99,6 +102,12 @@ const NavLink = (props: Props) => {
       setRootGroupActive([]);
     }
   }
+
+  useEffect(() => {
+    if (activeIds.includes("toggle-drawer")) {
+      removeId("toggle-drawer");
+    }
+  }, [pathname]);
 
   return (
     <MenuNavLink className="menu-nav-link">

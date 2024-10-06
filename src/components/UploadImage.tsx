@@ -7,7 +7,7 @@ import { Button, SxProps, Box } from "@mui/material";
 // ** Components
 import { RenderIf } from "@/components";
 
-interface Props {
+type Props = {
   name?: string;
   maxSize?: number;
   onFileSelect: (file?: File, imageDataUrl?: string) => void;
@@ -16,7 +16,7 @@ interface Props {
   sx?: SxProps;
   children: ReactNode;
   [key: string]: any;
-}
+};
 
 const UploadImage = ({
   maxSize = 2000000,

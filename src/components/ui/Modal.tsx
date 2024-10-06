@@ -6,13 +6,13 @@ import { Box, Backdrop, Fade } from "@mui/material/";
 import MuiModal from "@mui/material/Modal";
 
 // ** Types
-interface Props {
+type Props = {
   children: ReactNode;
   onClick?: MouseEventHandler<HTMLDivElement>;
   open: boolean;
   scrollVertical?: boolean;
   onClose: () => void;
-}
+};
 
 const Modal = ({
   scrollVertical = false,
@@ -24,6 +24,7 @@ const Modal = ({
 }: Props) => {
   return (
     <MuiModal
+      aria-modal
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
       slotProps={{

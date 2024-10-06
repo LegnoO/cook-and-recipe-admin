@@ -1,9 +1,13 @@
+// ** React Imports
+import { memo } from "react";
+
 // ** Mui Imports
 import {
   TextFieldProps,
   InputAdornment,
   IconButton,
   MenuItem,
+  ListItemText,
 } from "@mui/material";
 
 // ** Components
@@ -13,26 +17,29 @@ import { TextField, Icon } from "@/components/ui";
 import { hexToRGBA } from "@/utils/helpers";
 
 // ** Types
-type Props = Select & TextFieldProps;
+type Props = { jsonValue?: boolean } & Select & TextFieldProps;
 
-const Select = ({
-  isLoading = false,
-  menuItems = [],
-  endIcon,
-  startIcon,
-  defaultOption,
-  disableDefaultOption = false,
-  disabled,
-  SelectProps,
-  ...rest
-}: Props) => {
+const SelectMultiple = (props: Props) => {
+  const {
+    isLoading = false,
+    menuItems = [],
+    endIcon,
+    startIcon,
+    disabled,
+    SelectProps,
+    value,
+    jsonValue = false,
+    ...rest
+  } = props;
+
   return (
     <TextField
       select
-      defaultValue=""
       variant="outlined"
       SelectProps={{
+        value,
         displayEmpty: true,
+        multiple: true,
         disabled: disabled || isLoading,
         MenuProps: {
           PaperProps: {
@@ -79,21 +86,25 @@ const Select = ({
         ) : undefined,
       }}
       {...rest}>
-      {defaultOption && (
-        <MenuItem value="" disabled={isLoading || disableDefaultOption}>
-          {defaultOption}
-        </MenuItem>
-      )}
-
       {menuItems.length > 0 &&
         menuItems?.map((item, index) =>
           typeof item === "string" ? (
             <MenuItem key={index} value={item}>
-              {item}
+              <ListItemText primary={item} />
             </MenuItem>
           ) : (
             <MenuItem key={index} value={item.value}>
-              {item.label}
+              {/* <Checkbox
+                disableRipple
+                checked={
+                  jsonValue
+                    ? value
+                        .map((item) => JSON.parse(item))
+                        .some((parsedItem) => parsedItem.page === item.label)
+                    : value.includes(item.label)
+                }
+              /> */}
+              <ListItemText primary={item.label} />
             </MenuItem>
           ),
         )}
@@ -104,4 +115,4 @@ const Select = ({
     </TextField>
   );
 };
-export default Select;
+export default memo(SelectMultiple);

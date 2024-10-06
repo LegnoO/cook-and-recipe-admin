@@ -1,5 +1,5 @@
 // ** React
-import { forwardRef } from "react";
+import { memo, forwardRef } from "react";
 
 // ** Mui
 import { styled } from "@mui/material/styles";
@@ -177,4 +177,4 @@ const TextField = forwardRef((props: TextFieldProps, ref) => {
 
 TextField.displayName = "TextField";
 
-export default TextField;
+export default memo(TextField);

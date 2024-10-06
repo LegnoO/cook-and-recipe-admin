@@ -352,6 +352,7 @@ const ListEmployee = () => {
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
             </Button>
+
             <Button
               sx={{ minWidth: "max-content" }}
               disabled={isLoading}

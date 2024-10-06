@@ -13,7 +13,7 @@ const Paper = ({ sx, scrollVertical, children, ...rest }: Props) => {
         background: (theme) => theme.palette.background.paper,
         padding: "1.5rem",
         overflowY: scrollVertical ? "auto" : "hidden",
-        maxHeight: scrollVertical ? "99dvh" : "100%",
+        maxHeight: scrollVertical ? "95dvh" : "100%",
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
         minWidth: { sm: "inherit", xs: "80dvw" },
         ...sx,

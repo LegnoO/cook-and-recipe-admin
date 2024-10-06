@@ -17,7 +17,7 @@ const App = () => {
   const divRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (divRef.current) {
-      alert(divRef.current.clientWidth);
+      // alert(divRef.current.clientWidth);
     }
   }, [divRef.current]);
 
