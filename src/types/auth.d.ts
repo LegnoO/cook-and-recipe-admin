@@ -9,12 +9,7 @@ interface LoginCredentials {
 }
 
 interface Permission {
-  permission: RoutePermission[];
-}
-
-interface RoutePermission {
-  page: string;
-  actions: Action;
+  permission: PagePermissions[];
 }
 
 type Role = {

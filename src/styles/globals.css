@@ -28,3 +28,7 @@ li {
   width: 0px !important;
 }
 
+.ps-scrollbar-x-rail,
+.ps-scrollbar-y-rail {
+  /* margin-left: 100px; */
+}

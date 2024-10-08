@@ -55,6 +55,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 export default function ProfilePage() {
+  const zoomAvatarId = "zoom-avatar";
   const { refetchInfo } = useAuth();
   const { activeIds, addId, removeId } = useSettings();
   const [isLoading, setLoading] = useState(false);
@@ -159,10 +160,10 @@ export default function ProfilePage() {
       <Container>
         <StyledPaper>
           <Stack
+            sx={{ overFlow: "hidden", padding: "1.5rem" }}
             direction={{ xs: "column", sm: "row" }}
             spacing={4}
-            alignItems="center"
-            padding="1.5rem">
+            alignItems="center">
             <Box
               sx={{
                 height: { xs: 175, sm: 100 },
@@ -172,7 +173,7 @@ export default function ProfilePage() {
                 borderRadius: (theme) => `${theme.shape.borderRadius}px`,
               }}>
               <Avatar
-                onClick={() => addId("zoom-avatar")}
+                onClick={() => addId(zoomAvatarId)}
                 sx={{
                   width: "100%",
                   height: "100%",
@@ -183,12 +184,11 @@ export default function ProfilePage() {
                 src={avatarFileState?.url || userProfile?.avatar}
               />
               <Modal
-                scrollVertical
-                open={activeIds.includes("zoom-avatar")}
-                onClose={() => removeId("zoom-avatar")}>
+                open={activeIds.includes(zoomAvatarId)}
+                onClose={() => removeId(zoomAvatarId)}>
                 <Image
                   sx={{
-                    maxHeight: "100dvh",
+                    // maxHeight: "100%",
                     maxWidth: "75dvh",
                   }}
                   alt={`Avatar ${userProfile?.username ?? "default"}`}
@@ -215,7 +215,7 @@ export default function ProfilePage() {
               </Typography>
             </Stack>
           </Stack>
-          <Box sx={{ pb: "1.5rem" }}>
+          <Box sx={{ paddingInline: "1.5rem", pb: "1.5rem" }}>
             <Form noValidate onSubmit={handleSubmit(onSubmit)}>
               <Grid container rowSpacing={3} columnSpacing={3}>
                 {profileFields.map((field, index) => (

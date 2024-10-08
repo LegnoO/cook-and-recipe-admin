@@ -28,6 +28,7 @@ import { SearchInput, GroupSelect } from "@/components/fields";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+import { useLocation } from "react-router-dom";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -50,7 +51,15 @@ import {
 } from "@/services/userService";
 
 const ListEmployee = () => {
+  const location = useLocation();
   const pageSizeOptions = ["10", "15", "20"];
+
+  const ids = {
+    loadingSwitch: (id: string) => `loading-switch-${id}`,
+    modalUpdateEmployee: (id: string) => `modal-update-employee-${id}`,
+    newEmployeeModal: "new-employee-modal",
+  };
+
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
@@ -59,10 +68,10 @@ const ListEmployee = () => {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
-    search: null,
-    groupId: null,
+    groupId: location.state?.groupId || null,
     status: null,
     gender: null,
+    fullName: "",
     sortBy: "",
     sortOrder: "",
   };
@@ -78,7 +87,7 @@ const ListEmployee = () => {
       "list-employee",
       filter.index,
       filter.size,
-      filter.search,
+      filter.fullName,
       filter.groupId,
       filter.status,
       filter.gender,
@@ -131,7 +140,7 @@ const ListEmployee = () => {
         <Switch
           color="success"
           onChange={() => handleChangeStatus(row.id)}
-          disabled={activeIds.includes(`loading-switch-${row.id}`)}
+          disabled={activeIds.includes(ids.loadingSwitch(row.id))}
           checked={
             employees?.find((employee) => employee.id === row.id)?.status ||
             false
@@ -143,16 +152,15 @@ const ListEmployee = () => {
       render: (row: Employee) => (
         <IconButton
           disableRipple
-          onClick={() => addId(`modal-update-employee-${row.id}`)}>
+          onClick={() => addId(ids.modalUpdateEmployee(row.id))}>
           <Icon icon="heroicons:pencil-solid" />
           <Modal
-            scrollVertical
-            open={activeIds.includes(`modal-update-employee-${row.id}`)}
-            onClose={() => removeId(`modal-update-employee-${row.id}`)}>
+            open={activeIds.includes(ids.modalUpdateEmployee(row.id))}
+            onClose={() => removeId(ids.modalUpdateEmployee(row.id))}>
             <UpdateEmployee
               employeeId={row.id}
               refetch={refetch}
-              closeMenu={() => handleCancel(`modal-update-employee-${row.id}`)}
+              closeMenu={() => handleCancel(ids.modalUpdateEmployee(row.id))}
               setController={setController}
             />
           </Modal>
@@ -209,9 +217,9 @@ const ListEmployee = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchTest = useDebouncedCallback(
+  const handleSearch = useDebouncedCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, search: event.target.value }));
+      setFilter((prev) => ({ ...prev, fullName: event.target.value }));
     },
     300,
   );
@@ -333,7 +341,7 @@ const ListEmployee = () => {
             <SearchInput
               disabled={isLoading}
               placeholder="Search User"
-              onChange={handleSearchTest}
+              onChange={handleSearch}
               fullWidth
               sx={{
                 height: 42,
@@ -359,15 +367,14 @@ const ListEmployee = () => {
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
-              onClick={() => addId("new-employee-modal")}>
+              onClick={() => addId(ids.newEmployeeModal)}>
               Add New Employee
               <Modal
-                scrollVertical
-                open={activeIds.includes("new-employee-modal")}
-                onClose={() => removeId("new-employee-modal")}>
+                open={activeIds.includes(ids.newEmployeeModal)}
+                onClose={() => removeId(ids.newEmployeeModal)}>
                 <AddEmployee
                   refetch={refetch}
-                  closeMenu={() => handleCancel("new-employee-modal")}
+                  closeMenu={() => handleCancel(ids.newEmployeeModal)}
                   setController={setController}
                 />
               </Modal>

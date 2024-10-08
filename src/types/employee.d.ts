@@ -21,8 +21,9 @@ type Employee = {
 };
 
 type FilterEmployees = {
-  search: string | null;
+  fullName: string;
   groupId: string | null;
   status: string | null;
   gender: Gender | null;
-} & Sort & Paginate;
+} & Sort &
+  Paginate;

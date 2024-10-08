@@ -2,18 +2,15 @@
 import MuiPaper, { PaperProps } from "@mui/material/Paper";
 
 // ** Types
-type Props = {
-  scrollVertical?: boolean;
-} & PaperProps;
+type Props = {} & PaperProps;
 
-const Paper = ({ sx, scrollVertical, children, ...rest }: Props) => {
+const Paper = ({ sx, children, ...rest }: Props) => {
   return (
     <MuiPaper
       sx={{
         background: (theme) => theme.palette.background.paper,
         padding: "1.5rem",
-        overflowY: scrollVertical ? "auto" : "hidden",
-        maxHeight: scrollVertical ? "95dvh" : "100%",
+        height: "auto",
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
         minWidth: { sm: "inherit", xs: "80dvw" },
         ...sx,

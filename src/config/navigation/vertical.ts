@@ -13,12 +13,12 @@ export const verticalNavItems: IVerticalNavItemsType = [
     path: "/profile",
   },
   {
-    title: "Employee",
+    title: "Employees",
     icon: "lucide:user-round",
     path: "/employees",
   },
   {
-    title: "Group",
+    title: "Groups",
     icon: "ph:lock-key-light",
     path: "/groups",
   },

@@ -4,12 +4,14 @@ type PermissionActionObject = {
   checked?: boolean;
 };
 
-interface PagePermissions {
+interface PermissionsFetch {
   page: string;
+  checked?: boolean;
   actions: PermissionAction[];
 }
 
-interface PagePermissionsSelected {
+interface Permissions {
   page: string;
+  checked?: boolean;
   actions: PermissionActionObject[];
 }

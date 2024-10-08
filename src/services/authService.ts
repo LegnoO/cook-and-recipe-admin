@@ -37,7 +37,7 @@ export async function getUserProfile() {
 }
 
 export async function getUserPermission() {
-  const response = await AxiosInstance.get<RoutePermission[]>("/permissions");
+  const response = await AxiosInstance.get<Permission[]>("/permissions");
 
   return response.data;
 }

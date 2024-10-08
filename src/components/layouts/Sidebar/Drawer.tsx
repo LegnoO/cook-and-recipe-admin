@@ -27,6 +27,7 @@ export const StyledDrawer = styled("div")(({ theme }) => ({
 }));
 
 const Drawer = ({ children }: { children: ReactNode }) => {
+  const toggleDrawerId = "toggle-drawer";
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -34,14 +35,14 @@ const Drawer = ({ children }: { children: ReactNode }) => {
 
   function handleCloseBackdrop(event: MouseEvent) {
     event.stopPropagation();
-    removeId("toggle-drawer");
+    removeId(toggleDrawerId);
   }
 
   if (isSmallScreen) {
     return (
       <Backdrop
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={activeIds.includes("toggle-drawer") && isSmallScreen}
+        open={activeIds.includes(toggleDrawerId) && isSmallScreen}
         onClick={handleCloseBackdrop}>
         <StyledDrawer
           onClick={(event) => {
@@ -49,7 +50,7 @@ const Drawer = ({ children }: { children: ReactNode }) => {
           }}
           sx={(theme) => ({
             [theme.breakpoints.down("md")]: {
-              width: activeIds.includes("toggle-drawer") ? "260px" : 0,
+              width: activeIds.includes(toggleDrawerId) ? "260px" : 0,
             },
           })}
           className="drawer">

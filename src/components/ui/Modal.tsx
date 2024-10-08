@@ -2,26 +2,18 @@
 import { ReactNode, MouseEventHandler } from "react";
 
 // ** Mui Imports
-import { Box, Backdrop, Fade } from "@mui/material/";
-import MuiModal from "@mui/material/Modal";
+import { Box, Backdrop, Fade, SxProps, Modal as MuiModal } from "@mui/material";
 
 // ** Types
 type Props = {
   children: ReactNode;
   onClick?: MouseEventHandler<HTMLDivElement>;
   open: boolean;
-  scrollVertical?: boolean;
   onClose: () => void;
+  sx?: SxProps;
 };
 
-const Modal = ({
-  scrollVertical = false,
-  children,
-  onClick,
-  open,
-  onClose,
-  ...rest
-}: Props) => {
+const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
   return (
     <MuiModal
       aria-modal
@@ -48,8 +40,9 @@ const Modal = ({
             left: "50%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
-            height: scrollVertical ? "95dvh" : "auto",
-            overflowY: scrollVertical ? "auto" : "hidden",
+            borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+            overflow: "hidden",
+            ...sx,
           }}>
           {children}
         </Box>

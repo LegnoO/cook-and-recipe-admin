@@ -4,7 +4,7 @@ import { useState, memo } from "react";
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
 
-// ** Library
+// ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // ** Components's Sidebar

@@ -31,3 +31,30 @@ export async function toggleStatusGroup(groupId: string) {
   );
   return response.data;
 }
+
+export async function createGroups(
+  group: GroupSubmit,
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.post(`/groups`, group, {
+    signal: controller?.signal,
+  });
+  return response.data;
+}
+
+export async function updateGroups(
+  groupId: string,
+  group: GroupSubmit,
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.put(`/groups/${groupId}`, group, {
+    signal: controller?.signal,
+  });
+  return response.data;
+}
+
+export async function getGroupDetail(groupId: string) {
+  const response = await AxiosInstance.get<any>(`/groups/${groupId}`);
+
+  return response.data;
+}

@@ -10,6 +10,7 @@ import {
 
 // ** Library
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { AxiosError } from "axios";
 
 // ** Services
 import {
@@ -19,9 +20,10 @@ import {
   signOut,
 } from "@/services/authService";
 
-// ** Types
-import { AxiosError } from "axios";
+// ** Config
+import { loginRoute } from "@/config/url";
 
+// ** Types
 export interface IAuthContext {
   user: User | null;
   isLoading: boolean;
@@ -68,6 +70,8 @@ const AuthProvider = ({ children }: Props) => {
         if (accessTokenSession) await fetchUserData();
 
         if (!accessTokenSession) await refreshUserData();
+        if (window.location.pathname === loginRoute)
+          navigate(searchParams.get("returnUrl") || "/");
       } catch (error) {
         handleLogout();
       } finally {

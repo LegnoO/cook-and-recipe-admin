@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode } from "react";
+import { memo, ReactNode } from "react";
 
 type Props = {
   condition: boolean;
@@ -10,4 +10,4 @@ const RenderIf = ({ condition, fallback, children }: Props) => {
   return condition ? children : fallback || null;
 };
 
-export default RenderIf;
+export default memo(RenderIf);

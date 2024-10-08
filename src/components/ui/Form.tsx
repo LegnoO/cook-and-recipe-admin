@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 
 // ** Mui Imports
-import { Box } from "@mui/material";
+import { PaperProps } from "@mui/material";
 
 // ** Components
 import { Paper } from "@/components/ui";
@@ -12,17 +12,16 @@ type Props = {
   children: ReactNode;
   noPaper?: boolean;
   [key: string]: any;
-};
+} & PaperProps;
 
-const Form = ({ noPaper = false, children, ...rest }: Props) => {
+const Form = ({ sx, noPaper = false, children, ...rest }: Props) => {
   return (
-    <Box component={"form"} {...rest}>
-      {noPaper ? (
-        children
-      ) : (
-        <Paper sx={{ padding: "1.5rem" }}>{children}</Paper>
-      )}
-    </Box>
+    <Paper
+      sx={{ p: 0, backgroundColor: "transparent", ...sx }}
+      component={"form"}
+      {...rest}>
+      {children}
+    </Paper>
   );
 };
 

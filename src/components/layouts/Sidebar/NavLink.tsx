@@ -86,6 +86,7 @@ export const Label = styled("span")(({ theme }) => ({
 }));
 
 const NavLink = (props: Props) => {
+  const toggleDrawerId="toggle-drawer"
   const { item, navParent, setRootGroupActive } = props;
   const { removeId, activeIds } = useSettings();
   const { pathname } = useLocation();
@@ -104,8 +105,8 @@ const NavLink = (props: Props) => {
   }
 
   useEffect(() => {
-    if (activeIds.includes("toggle-drawer")) {
-      removeId("toggle-drawer");
+    if (activeIds.includes(toggleDrawerId)) {
+      removeId(toggleDrawerId);
     }
   }, [pathname]);
 

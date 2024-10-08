@@ -68,7 +68,8 @@ const TableHead = <T,>({
           <TableCell key={index} sx={{ ...column.sx }}>
             <Stack
               sx={{
-                cursor: !isLoading ? "pointer" : "auto",
+                cursor:
+                  !isLoading && column.sortName !== "" ? "pointer" : "auto",
                 width: "fit-content",
               }}
               direction="row"
