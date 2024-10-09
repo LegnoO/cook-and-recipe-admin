@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, memo } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
 
 // ** Mui Imports
 import { Typography, Checkbox, Stack, Box, Collapse } from "@mui/material";
@@ -27,11 +27,13 @@ type Props = {
   groupName?: string;
   groupNameError?: string;
   searchPermissions: string;
+  isLoading?: boolean;
   handleChangeSearchPermissions: (event: ChangeEvent<HTMLInputElement>) => void;
   handleChangeGroupName: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const PermissionList = ({
+  isLoading,
   permissions,
   setPermissions,
   groupName,
@@ -89,7 +91,12 @@ const PermissionList = ({
   }
 
   useEffect(() => {
-    if (listPermissions && permissions.length === 0) {
+    if (
+      !isLoading &&
+      listPermissions &&
+      listPermissions.length > 0 &&
+      permissions.length === 0
+    ) {
       let updatedPermission = listPermissions.map((permission) => {
         const detail = permissionDetail?.find(
           (detail) => detail.page === permission.page,
@@ -107,6 +114,11 @@ const PermissionList = ({
           }),
         };
       }) as Permissions[];
+      console.log({ permissionDetail, listPermissions });
+      console.log(
+        "🚀 ~ updatedPermission ~ updatedPermission:",
+        updatedPermission,
+      );
 
       setPermissions(updatedPermission);
     }
@@ -263,4 +275,4 @@ const PermissionList = ({
   );
 };
 
-export default memo(PermissionList);
+export default PermissionList;

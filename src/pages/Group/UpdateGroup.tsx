@@ -1,10 +1,5 @@
 // ** React Imports
-import {
-  useState,
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { useState, ChangeEvent, Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
 import { Typography, Button, Stack, Box } from "@mui/material";
@@ -35,7 +30,7 @@ type Props = {
 };
 
 const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
-  const { data: groupData } = useQuery({
+  const { isLoading: isGroupLoading, data: groupData } = useQuery({
     queryKey: ["group-detail", groupId],
     queryFn: () => getGroupDetail(groupId),
     ...queryOptions,
@@ -127,6 +122,7 @@ const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
           <PerfectScrollbar options={{ wheelPropagation: false }}>
             <Box sx={{ width: "100%", maxHeight: "68dvh", flex: 1 }}>
               <PermissionList
+                isLoading={isGroupLoading}
                 permissionDetail={groupData && groupData.permissions}
                 permissions={permissions}
                 setPermissions={setPermissions}
