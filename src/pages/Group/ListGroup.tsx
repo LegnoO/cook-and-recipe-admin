@@ -38,9 +38,10 @@ import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import { getAllGroups, toggleStatusGroup } from "@/services/groupServices";
-
+import { useNavigate } from "react-router-dom";
 
 const ListGroup = () => {
+  const navigate = useNavigate();
   const [permissions, setPermissions] = useState<Permissions[]>([]);
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
@@ -126,22 +127,26 @@ const ListGroup = () => {
     },
     {
       render: (row: Group) => (
-        <IconButton
-          disableRipple
-          onClick={() => addId(ids.modalUpdateGroup(row.id))}>
-          <Icon icon="heroicons:pencil-solid" />
-          <Modal
-            open={activeIds.includes(ids.modalUpdateGroup(row.id))}
-            onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
-            <UpdateGroup
-            
-              groupId={row.id}
-              refetch={refetch}
-              closeMenu={() => handleCancel(ids.modalUpdateGroup(row.id))}
-              setController={setController}
-            />
-          </Modal>
-        </IconButton>
+        <Stack direction="row">
+          <IconButton disableRipple onClick={() => handleViewGroupId(row.id)}>
+            <Icon icon="hugeicons:view" />
+          </IconButton>
+          <IconButton
+            disableRipple
+            onClick={() => addId(ids.modalUpdateGroup(row.id))}>
+            <Icon icon="heroicons:pencil-solid" />
+            <Modal
+              open={activeIds.includes(ids.modalUpdateGroup(row.id))}
+              onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
+              <UpdateGroup
+                groupId={row.id}
+                refetch={refetch}
+                closeMenu={() => handleCancel(ids.modalUpdateGroup(row.id))}
+                setController={setController}
+              />
+            </Modal>
+          </IconButton>
+        </Stack>
       ),
     },
   ];
@@ -197,6 +202,10 @@ const ListGroup = () => {
     setFilter(defaultFilter);
   }
 
+  function handleViewGroupId(groupId: string) {
+    navigate("/employees", { state: { groupId } });
+  }
+
   function handleCancel(modalId: string) {
     if (controller) {
       controller.abort();
@@ -209,7 +218,6 @@ const ListGroup = () => {
     if (groupData) {
       setGroups(groupData.data);
       setFilter((prev) => ({ ...prev, ...groupData.paginate }));
-      // navigate("/employees", { state: { groupId: "66fa5d3a13620c9a19078b05" } });
     }
   }, [groupData]);
 
