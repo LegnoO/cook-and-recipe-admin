@@ -24,7 +24,7 @@ import { AddEmployeeSchema } from "@/utils/validations";
 import { createFormData } from "@/utils/helpers";
 
 // ** Services
-import { addEmployee } from "@/services/userService";
+import { addEmployee } from "@/services/employeeService";
 
 // ** Types
 type Props = {

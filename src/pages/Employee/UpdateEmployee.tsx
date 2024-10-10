@@ -14,7 +14,7 @@ import { updateEmployeeField } from "@/config/fields/update-employee-field";
 import { queryOptions } from "@/config/query-options";
 
 // ** Services
-import { getEmployeeDetail, updateEmployee } from "@/services/userService";
+import { getEmployeeDetail, updateEmployee } from "@/services/employeeService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";

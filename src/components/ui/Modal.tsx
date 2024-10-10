@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, MouseEventHandler } from "react";
+import { ReactNode, MouseEventHandler ,memo} from "react";
 
 // ** Mui Imports
 import { Box, Backdrop, Fade, SxProps, Modal as MuiModal } from "@mui/material";
@@ -13,7 +13,7 @@ type Props = {
   sx?: SxProps;
 };
 
-const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
+const Modal = ({children, onClick, open, onClose, sx, ...rest }: Props) => {
   return (
     <MuiModal
       aria-modal
@@ -50,4 +50,4 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
     </MuiModal>
   );
 };
-export default Modal;
+export default memo(Modal);

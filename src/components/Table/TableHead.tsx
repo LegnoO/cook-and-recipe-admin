@@ -8,7 +8,7 @@ import { Stack, Typography, TableCell, SxProps } from "@mui/material";
 import { TableRow, TableHead as TableHeadMui, Icon } from "@/components/ui";
 
 // ** Types
-type HeadColumns = { sortName?: string; title: string | null; sx?: SxProps };
+type HeadColumns = { sortName: string; title: string | null; sx?: SxProps };
 
 type Props<T> = {
   filter: Filter<T>;

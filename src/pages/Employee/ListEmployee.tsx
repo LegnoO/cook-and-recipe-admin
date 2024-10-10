@@ -48,7 +48,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 import {
   getFilterEmployee,
   toggleStatusEmployee,
-} from "@/services/userService";
+} from "@/services/employeeService";
 
 const ListEmployee = () => {
   const location = useLocation();
@@ -105,7 +105,7 @@ const ListEmployee = () => {
     { title: "Location", sortName: "address.number" },
     { title: "Role", sortName: "group" },
     { title: "Status", sortName: "status" },
-    { title: null, sx: { width: "75px" } },
+    { title: null, sortName: "", sx: { width: "75px" } },
   ];
 
   const BODY_CELLS = [

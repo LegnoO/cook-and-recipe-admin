@@ -22,7 +22,7 @@ type Props = {
 } & TextFieldProps &
   Select;
 
-const GroupSelect = ({ name, control, ...rest }: Props) => {
+const GroupSelect = ({ value, name, control, ...rest }: Props) => {
   const { isLoading, data } = useQuery({
     queryKey: ["all-groups-active"],
     queryFn: getGroupActive,
@@ -47,7 +47,7 @@ const GroupSelect = ({ name, control, ...rest }: Props) => {
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <Select
               id="group-id-select"
-              value={value || ""}
+              value={data && value ? value : ""}
               onChange={onChange}
               isLoading={isLoading}
               menuItems={menuItems}
@@ -63,10 +63,9 @@ const GroupSelect = ({ name, control, ...rest }: Props) => {
         <Select
           id="group-id-select"
           name={name}
+          value={data && value ? value : ""}
           isLoading={isLoading}
           menuItems={menuItems}
-          // error={Boolean(error)}
-          // helperText={error?.message}
           disableDefaultOption={false}
           {...rest}
         />

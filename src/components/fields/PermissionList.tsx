@@ -125,7 +125,7 @@ const PermissionList = ({
   }, [listPermissions, permissionDetail]);
 
   return (
-    <RenderIf condition={Boolean(permissionDetail) && Boolean(listPermissions)}>
+    <RenderIf condition={Boolean(listPermissions)}>
       <Stack
         sx={{ width: "100%", paddingRight: "0.75rem" }}
         direction="column"

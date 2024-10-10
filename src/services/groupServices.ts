@@ -58,3 +58,4 @@ export async function getGroupDetail(groupId: string) {
 
   return response.data;
 }
+

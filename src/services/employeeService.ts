@@ -86,3 +86,17 @@ export async function toggleStatusEmployee(employeeId: string) {
     handleAxiosError(error);
   }
 }
+
+export async function updateGroupAllEmployees(
+  data: {
+    currentGroup: string;
+    newGroup: string;
+  },
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.put(`/employees/update-group`, data, {
+    signal: controller?.signal,
+  });
+
+  return response.data;
+}

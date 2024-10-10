@@ -7,6 +7,7 @@ export interface ISettingsContext {
   addId: (id: string) => void;
   removeId: (id: string) => void;
   toggleId: (id: string) => void;
+  setId: (id: string) => void;
 }
 
 type Props = {
@@ -39,6 +40,10 @@ const SettingsProvider = ({ children }: Props) => {
     setActiveIds((prev) => prev.filter((id) => id !== modalId));
   }
 
+  function setId(modalId: string) {
+    setActiveIds([modalId]);
+  }
+
   return (
     <SettingsContext.Provider
       value={{
@@ -46,6 +51,7 @@ const SettingsProvider = ({ children }: Props) => {
         addId,
         removeId,
         toggleId,
+        setId,
       }}>
       {children}
     </SettingsContext.Provider>

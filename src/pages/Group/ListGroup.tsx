@@ -1,8 +1,21 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Fragment,
+  useMemo,
+} from "react";
 
 // ** Mui Imports
-import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Button,
+  Divider,
+  IconButton,
+  Popover,
+} from "@mui/material";
 
 // ** Components
 import {
@@ -28,6 +41,7 @@ import { queryOptions } from "@/config/query-options";
 // ** Component's
 import UpdateGroup from "./UpdateGroup";
 import AddGroup from "./AddGroup";
+import MoveMember from "./MoveMember";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -41,17 +55,8 @@ import { getAllGroups, toggleStatusGroup } from "@/services/groupServices";
 import { useNavigate } from "react-router-dom";
 
 const ListGroup = () => {
-  const navigate = useNavigate();
-  const [permissions, setPermissions] = useState<Permissions[]>([]);
-  const ids = {
-    loadingSwitch: (id: string) => `loading-switch-${id}`,
-    modalUpdateGroup: (id: string) => `modal-update-employee-${id}`,
-    newGroupModal: "new-group-modal",
-  };
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const pageSizeOptions = ["10", "15", "20"];
-  const { activeIds, addId, removeId } = useSettings();
-  const [groups, setGroups] = useState<Group[] | null>(null);
-  const [controller, setController] = useState<AbortController | null>(null);
   const defaultFilter: FilterGroup = {
     index: 1,
     size: Number(pageSizeOptions[0]),
@@ -61,7 +66,23 @@ const ListGroup = () => {
     sortBy: "",
     sortOrder: "",
   };
+  const navigate = useNavigate();
+  const { activeIds, addId, removeId } = useSettings();
 
+  const [permissions, setPermissions] = useState<Permissions[]>([]);
+  const ids = useMemo(
+    () => ({
+      loadingSwitch: (id: string) => `loading-switch-${id}`,
+      modalUpdateGroup: (id: string) => `modal-update-employee-${id}`,
+      modalAction: (id: string) => `modal-action-${id}`,
+      modalMoveMember: (id: string) => `modal-move-member-${id}`,
+      newGroupModal: "new-group-modal",
+    }),
+    [],
+  );
+
+  const [groups, setGroups] = useState<Group[] | null>(null);
+  const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<FilterGroup>(defaultFilter);
 
   const {
@@ -89,7 +110,7 @@ const ListGroup = () => {
     { title: "Members", sortName: "members" },
     { title: "Created Date", sortName: "createdDate" },
     { title: "Status", sortName: "status" },
-    { title: null, sx: { width: "75px" } },
+    { title: "Action", sortName: "" },
   ];
 
   const BODY_CELLS = [
@@ -127,29 +148,142 @@ const ListGroup = () => {
     },
     {
       render: (row: Group) => (
-        <Stack direction="row">
-          <IconButton disableRipple onClick={() => handleViewGroupId(row.id)}>
-            <Icon icon="hugeicons:view" />
-          </IconButton>
+        <>
           <IconButton
-            disableRipple
-            onClick={() => addId(ids.modalUpdateGroup(row.id))}>
-            <Icon icon="heroicons:pencil-solid" />
-            <Modal
-              open={activeIds.includes(ids.modalUpdateGroup(row.id))}
-              onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
-              <UpdateGroup
-                groupId={row.id}
-                refetch={refetch}
-                closeMenu={() => handleCancel(ids.modalUpdateGroup(row.id))}
-                setController={setController}
-              />
-            </Modal>
+            aria-describedby={row.id}
+            disableFocusRipple
+            onClick={(event) => {
+              setAnchorEl(event.currentTarget);
+              handleToggleAction(row.id);
+            }}>
+            <Icon icon="mingcute:more-2-fill" />
+            <Popover
+              id={row.id}
+              anchorEl={anchorEl}
+              open={activeIds.includes(ids.modalAction(row.id))}
+              onClose={() => handleCloseAction(row.id)}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              sx={{
+                "& .MuiPaper-root": {
+                  cursor: "pointer",
+                  backgroundColor: (theme) => theme.palette.background.default,
+                  boxShadow: (theme) => theme.shadows[3],
+                  paddingInline: "0.5rem",
+                  paddingBlock: "0.375rem",
+                },
+              }}>
+              <Stack
+                sx={{
+                  "& > *": {
+                    borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+                    paddingInline: "0.5rem",
+                    paddingBlock: "0.5rem",
+                    minWidth: 120,
+                  },
+
+                  "& > *:not(:last-child)": { marginBottom: "0.25rem" },
+                  "& > *:hover": {
+                    backgroundColor: (theme) => theme.palette.action.hover,
+                  },
+                }}
+                direction="column">
+                <Stack
+                  alignItems="center"
+                  direction="row"
+                  sx={{
+                    gap: "0.5rem",
+                    zIndex: 2101,
+                  }}
+                  onClick={() => {
+                    handleViewGroupId(row.id);
+                    handleCloseAction(row.id);
+                  }}>
+                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
+                    <Icon icon="hugeicons:view" />
+                  </IconButton>
+                  <Typography color="text.secondary">
+                    View all member
+                  </Typography>
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  direction="row"
+                  sx={{
+                    gap: "0.5rem",
+                    zIndex: 2102,
+                  }}
+                  onClick={() => {
+                    addId(ids.modalUpdateGroup(row.id));
+                    handleCloseAction(row.id);
+                  }}>
+                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
+                    <Icon icon="heroicons:pencil-solid" />
+                    <Modal
+                      open={activeIds.includes(ids.modalUpdateGroup(row.id))}
+                      onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
+                      <UpdateGroup
+                        groupId={row.id}
+                        refetch={refetch}
+                        closeMenu={() =>
+                          handleCancel(ids.modalUpdateGroup(row.id))
+                        }
+                        setController={setController}
+                      />
+                    </Modal>
+                  </IconButton>
+                  <Typography color="text.secondary">Edit group</Typography>
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  direction="row"
+                  sx={{
+                    gap: "0.5rem",
+                    zIndex: 2103,
+                  }}
+                  onClick={() => {
+                    addId(ids.modalMoveMember(row.id));
+                    handleCloseAction(row.id);
+                  }}>
+                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
+                    <Icon icon="mingcute:transfer-line" />
+                    <Modal
+                      open={activeIds.includes(ids.modalMoveMember(row.id))}
+                      onClose={() => removeId(ids.modalMoveMember(row.id))}>
+                      <MoveMember
+                        group={row}
+                        refetch={refetch}
+                        closeMenu={() =>
+                          handleCancel(ids.modalMoveMember(row.id))
+                        }
+                        setController={setController}
+                      />
+                    </Modal>
+                  </IconButton>
+                  <Typography color="text.secondary">
+                    Move All Member
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Popover>
           </IconButton>
-        </Stack>
+        </>
       ),
     },
   ];
+
+  function handleToggleAction(id: string) {
+    addId(ids.modalAction(id));
+  }
+
+  function handleCloseAction(id: string) {
+    removeId(ids.modalAction(id));
+  }
 
   async function handleChangeStatus(groupId: string) {
     try {
@@ -203,10 +337,12 @@ const ListGroup = () => {
   }
 
   function handleViewGroupId(groupId: string) {
+    console.log("test");
     navigate("/employees", { state: { groupId } });
   }
 
   function handleCancel(modalId: string) {
+    console.log("test");
     if (controller) {
       controller.abort();
       setController(null);
@@ -230,53 +366,6 @@ const ListGroup = () => {
           borderBottomLeftRadius: 0,
           boxShadow: "none",
         }}>
-        {/* <Stack direction="column" spacing={2} sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Filters
-          </Typography>
-          <Stack
-            direction={{
-              md: "row",
-              xs: "column",
-            }}
-            spacing={3}
-            alignItems="center">
-            <GroupSelect
-              value={filter.groupId || ""}
-              name="groupId-filter"
-              defaultOption={"Select Group"}
-              fullWidth
-              isLoading={isLoading}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "groupId")
-              }
-            />
-            <Select
-              value={filter.gender || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "gender")
-              }
-              menuItems={["Male", "Female", "Other"]}
-              defaultOption={"Select Gender"}
-              fullWidth
-              isLoading={isLoading}
-            />
-            <Select
-              value={filter.status || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "status")
-              }
-              menuItems={[
-                { value: "true", label: "Active" },
-                { value: "false", label: "Banned" },
-              ]}
-              defaultOption={"Select Status"}
-              fullWidth
-              isLoading={isLoading}
-            />
-          </Stack>
-        </Stack>
-        <Divider /> */}
         <Stack
           sx={{ p: 3, flexWrap: "wrap" }}
           direction={{

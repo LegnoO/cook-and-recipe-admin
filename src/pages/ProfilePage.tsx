@@ -41,7 +41,7 @@ import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { updateEmployeeProfile } from "@/services/userService";
+import { updateEmployeeProfile } from "@/services/employeeService";
 import { createFormData } from "@/utils/helpers";
 
 // ** Types
