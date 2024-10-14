@@ -43,7 +43,9 @@ export const NavList = styled("ul")({
 
 const Sidebar = ({ navItems }: Props) => {
   const [rootGroupActive, setRootGroupActive] = useState<string[]>([]);
+  console.log("🚀 ~ Sidebar ~ rootGroupActive:", rootGroupActive)
   const [childGroupActive, setChildGroupActive] = useState<string[]>([]);
+  console.log("🚀 ~ Sidebar ~ childGroupActive:", childGroupActive)
 
   return (
     <StyledSidebar className="sidebar">

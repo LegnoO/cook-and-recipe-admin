@@ -95,7 +95,7 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
           ref={modeTogglerRef}
           drag
           dragConstraints={constraints}
-          style={{ position: "absolute", bottom: "20%", right: " 5%" }}>
+          style={{ position: "absolute", bottom: "70%", right: "40%" }}>
           <IconButton
             sx={{
               "&": {
@@ -130,6 +130,12 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
           "& .MuiMenu-paper": {
             width: 128,
             mt: "1.125rem",
+          },
+          "& .MuiMenuItem-root.selected": {
+            background: (theme) => theme.palette.primary.main,
+          },
+          "& .MuiMenuItem-root.selected .MuiTypography-root": {
+            color: (theme) => theme.palette.primary.contrastText,
           },
         }}
         anchorEl={anchorEl}

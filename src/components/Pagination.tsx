@@ -2,7 +2,15 @@
 import { ChangeEvent } from "react";
 
 // ** Mui Imports
-import { Stack, Typography, Pagination as MuiPagination } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Pagination as MuiPagination,
+  Box,
+} from "@mui/material";
+
+// ** Components
+import RenderIf from "./RenderIf";
 
 // ** Types
 type Props = {
@@ -21,33 +29,42 @@ const Pagination = ({
   dataLength,
 }: Props) => {
   return (
-    <Stack
-      sx={{
-        borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-        width: "100%",
-        backgroundColor: (theme) => theme.palette.background.paper,
-        paddingBlock: "1rem",
-        paddingInline: "1.5rem",
-      }}
-      direction={{ xs: "column", md: "row" }}
-      alignItems={"center"}
-      justifyContent={"space-between"}
-      spacing={2}>
-      {dataLength && (
-        <Typography color="secondary">
-          Showing 1 to {dataLength} of {dataLength} entries
-        </Typography>
-      )}
-      <MuiPagination
-        color="primary"
-        disabled={isLoading}
-        count={paginateCount}
-        page={paginatePage || 0}
-        onChange={handlePaginateChange}
-        showFirstButton
-        showLastButton
+    <>
+      <Stack
+        sx={{
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+          width: "100%",
+          backgroundColor: (theme) => theme.palette.background.paper,
+          paddingBlock: "1rem",
+          paddingInline: "1.5rem",
+        }}
+        direction={{ xs: "column", md: "row" }}
+        alignItems={"center"}
+        justifyContent={dataLength ? "space-between" : "end"}
+        spacing={2}>
+        <RenderIf condition={Boolean(dataLength)}>
+          <Typography color="secondary">
+            Showing 1 to {dataLength} of {dataLength} entries
+          </Typography>
+        </RenderIf>
+        <MuiPagination
+          color="primary"
+          disabled={isLoading}
+          count={paginateCount}
+          page={paginatePage || 0}
+          onChange={handlePaginateChange}
+          showFirstButton
+          showLastButton
+        />
+      </Stack>
+      <Box
+        sx={{
+          height: "1px",
+          width: "100%",
+          boxShadow: (theme) => theme.shadows[1],
+        }}
       />
-    </Stack>
+    </>
   );
 };
 export default Pagination;

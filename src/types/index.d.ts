@@ -24,3 +24,5 @@ type Paginate = {
 };
 
 type JSONString<T> = string;
+
+type ColorVariant = "active" | "success" | "disabled" | "warning" | "error" | "banned"

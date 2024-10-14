@@ -139,7 +139,7 @@ export default function ProfilePage() {
       await updateEmployeeProfile(formData);
       refetch();
       refetchInfo();
-      toast.success("Update successfully");
+      toast.success("Updated successfully");
       setLoading(false);
       toast.dismiss(toastLoading);
     } catch (error) {

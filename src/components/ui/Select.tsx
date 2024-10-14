@@ -24,6 +24,7 @@ const Select = ({
   disableDefaultOption = false,
   disabled,
   SelectProps,
+  sx,
   ...rest
 }: Props) => {
   return (
@@ -31,6 +32,7 @@ const Select = ({
       select
       defaultValue=""
       variant="outlined"
+      sx={{ "& .MuiFormLabel-root": { overflow: "visible" }, ...sx }}
       SelectProps={{
         displayEmpty: true,
         disabled: disabled || isLoading,

@@ -91,7 +91,7 @@ const UpdateEmployee = ({
       const newController = new AbortController();
       setController(newController);
       await updateEmployee(formData, employeeId, newController);
-      toast.success("Update successfully");
+      toast.success("Updated successfully");
       refetch();
       closeMenu();
       setLoading(false);

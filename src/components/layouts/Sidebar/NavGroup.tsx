@@ -66,15 +66,12 @@ export const MenuButton = styled("button")(() => ({ theme }) => ({
     backgroundColor: theme.palette.action.hover,
   },
   "& span": {
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
   },
   "&.selected": {
     backgroundColor: theme.palette.action.selected,
     "&:hover": {
       backgroundColor: theme.palette.action.selected,
-    },
-    "& span": {
-      color: theme.palette.text.primary,
     },
 
     "& .expand-icon": {
@@ -111,7 +108,6 @@ export const ExpandIcon = styled("span")(() => () => ({
 }));
 
 const NavGroup = (props: Props) => {
-  // ** Props
   const {
     item,
     rootGroupActive,
@@ -122,19 +118,16 @@ const NavGroup = (props: Props) => {
     isRootParent,
   } = props;
 
-  // ** Hooks & Vars
   const { pathname } = useLocation();
 
-  // ** Function
   function containsNavLinkPath(
     navItem: INavGroup | INavLink,
     path: string,
   ): boolean {
-    // navItem is an INavLink
     if ("path" in navItem) {
       return navItem.path === path;
     }
-    // navItem is an INavGroup
+
     if ("children" in navItem && navItem.children) {
       // check if any child matches the path, return boolean
       return navItem.children.some((child) => containsNavLinkPath(child, path));
@@ -145,7 +138,6 @@ const NavGroup = (props: Props) => {
 
   function toggleActiveGroup(group: INavGroup): void {
     if (isRootParent) {
-      // if root
       const newRootGroup = [...rootGroupActive];
 
       // toggle if this root not contains path of nav link
@@ -188,7 +180,6 @@ const NavGroup = (props: Props) => {
 
   // ** UseEffect
   useEffect(() => {
-    // Check if this item is root and has a child with the same href as pathname
     if (containsNavLinkPath(item, pathname)) {
       if (isRootParent && !rootGroupActive.includes(item.title)) {
         setRootGroupActive([item.title]);

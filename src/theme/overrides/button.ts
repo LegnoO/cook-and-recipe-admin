@@ -143,6 +143,36 @@ const Button = (): Components<Omit<Theme, "components">> => {
             },
           }),
         },
+        {
+          props: { variant: "tonal", color: "warning" },
+          style: ({ theme }: { theme: Theme }) => ({
+            color: theme.palette.warning.main,
+            backgroundColor: hexToRGBA(theme.palette.warning.main, 0.16),
+            "&:hover, &:active": {
+              backgroundColor: hexToRGBA(theme.palette.warning.main, 0.24),
+            },
+          }),
+        },
+        {
+          props: { variant: "tonal", color: "info" },
+          style: ({ theme }: { theme: Theme }) => ({
+            color: theme.palette.info.main,
+            backgroundColor: hexToRGBA(theme.palette.info.main, 0.16),
+            "&:hover, &:active": {
+              backgroundColor: hexToRGBA(theme.palette.info.main, 0.24),
+            },
+          }),
+        },
+        {
+          props: { variant: "tonal", color: "success" },
+          style: ({ theme }: { theme: Theme }) => ({
+            color: theme.palette.success.main,
+            backgroundColor: hexToRGBA(theme.palette.success.main, 0.16),
+            "&:hover, &:active": {
+              backgroundColor: hexToRGBA(theme.palette.success.main, 0.24),
+            },
+          }),
+        },
       ],
       styleOverrides: {
         root: ({ ownerState, theme }: OwnerStateThemeType) => ({

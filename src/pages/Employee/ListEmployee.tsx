@@ -103,9 +103,9 @@ const ListEmployee = () => {
     { title: "Name", sortName: "fullName" },
     { title: "Phone number", sortName: "phone" },
     { title: "Location", sortName: "address.number" },
-    { title: "Role", sortName: "group" },
+    { title: "Group", sortName: "group" },
     { title: "Status", sortName: "status" },
-    { title: null, sortName: "", sx: { width: "75px" } },
+    { title: "", sortName: "" },
   ];
 
   const BODY_CELLS = [
@@ -168,6 +168,7 @@ const ListEmployee = () => {
       ),
     },
   ];
+
   useEffect(() => {
     if (employeeData) {
       setEmployees(employeeData.data);
@@ -217,7 +218,7 @@ const ListEmployee = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearch = useDebouncedCallback(
+  const handleSearchEmployee = useDebouncedCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setFilter((prev) => ({ ...prev, fullName: event.target.value }));
     },
@@ -341,7 +342,7 @@ const ListEmployee = () => {
             <SearchInput
               disabled={isLoading}
               placeholder="Search User"
-              onChange={handleSearch}
+              onChange={handleSearchEmployee}
               fullWidth
               sx={{
                 height: 42,

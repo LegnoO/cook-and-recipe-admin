@@ -6,19 +6,46 @@ export function isObjectEmpty(objectName: Object) {
 const cssRgbRegex = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
 // const cssRgbaRegex =
 //   /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|1|0?\.\d+)\s*\)$/;
-// const hexColorRegex = /^#([A-Fa-f0-9]{3}){1,2}$/;
-const hexColorRegex = /^#([A-Fa-f0-9]{3}){1,2}$/;
+
+const hexColorRegex = /^#([A-Fa-f0-9]{3,8})$/;
+
+const rgbaStrRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/;
+
+export function rgbaToHex(rgba: string) {
+  const result = rgba.match(rgbaStrRegex);
+
+  if (!result) {
+    return null;
+  }
+
+  const r = parseInt(result[1], 10);
+  const g = parseInt(result[2], 10);
+  const b = parseInt(result[3], 10);
+  const a = parseFloat(result[4]);
+
+  const toHex = (value: number) => {
+    const hex = Math.round(value).toString(16).padStart(2, "0");
+    return hex.toUpperCase();
+  };
+
+  // Convert alpha from 0-1 range to 0-255 range and then to hex
+  const alpha = Math.round(a * 255);
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(alpha)}`;
+}
 
 export function hexToRGBA(
   hexColor: string,
-  opacity: number,
+  opacity?: number,
   percent?: number,
 ): string {
   if (!hexColorRegex.test(hexColor)) {
     throw new Error(`Invalid color format: ${hexColor}`);
   }
+
   let hex = hexColor.substring(1);
 
+  // Handle 3-character shorthand hex (e.g., #FFF)
   if (hex.length === 3) {
     hex = hex
       .split("")
@@ -26,15 +53,29 @@ export function hexToRGBA(
       .join("");
   }
 
+  // Extract RGB values
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
 
-  if (percent) {
-    return `rgba(${r + percent}, ${g + percent}, ${b + percent}, ${opacity})`;
+  let alpha = 1; // Default alpha value
+
+  // If it's an 8-character hex code, extract and convert the alpha channel
+  if (hex.length === 8) {
+    alpha = parseInt(hex.substring(6, 8), 16) / 255;
   }
 
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  // If the `opacity` argument is provided, use it instead of the alpha from the hex
+  if (typeof opacity === "number") {
+    alpha = opacity;
+  }
+
+  // Apply percentage adjustment to RGB if needed
+  const adjustedR = percent ? Math.min(255, r + percent) : r;
+  const adjustedG = percent ? Math.min(255, g + percent) : g;
+  const adjustedB = percent ? Math.min(255, b + percent) : b;
+
+  return `rgba(${adjustedR}, ${adjustedG}, ${adjustedB}, ${alpha})`;
 }
 
 export function adjustRgbColor(

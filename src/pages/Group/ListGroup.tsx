@@ -1,11 +1,5 @@
 // ** React Imports
-import {
-  ChangeEvent,
-  useState,
-  useEffect,
-  Fragment,
-  useMemo,
-} from "react";
+import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
 
 // ** Mui Imports
 import {
@@ -27,6 +21,7 @@ import {
   Select,
   Switch,
   ChipStatus,
+  Tooltip,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
@@ -104,13 +99,91 @@ const ListGroup = () => {
     ...queryOptions,
   });
 
+  function handleToggleAction(id: string) {
+    addId(ids.modalAction(id));
+  }
+
+  function handleCloseAction(id: string) {
+    removeId(ids.modalAction(id));
+  }
+
+  async function handleChangeStatus(groupId: string) {
+    try {
+      addId(`loading-switch-${groupId}`);
+      await toggleStatusGroup(groupId);
+      setGroups(
+        (prev) =>
+          prev?.map((group) =>
+            group.id === groupId ? { ...group, status: !group.status } : group,
+          ) || prev,
+      );
+    } catch (error) {
+      handleAxiosError(error);
+    } finally {
+      removeId(`loading-switch-${groupId}`);
+    }
+  }
+
+  function updateFilter(updates: Partial<Filter<FilterGroup>>) {
+    setFilter((prev) => ({ ...prev, ...updates }));
+  }
+
+  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
+    updateFilter({ index: value });
+  }
+
+  function handleFilterChange(
+    event: ChangeEvent<HTMLInputElement>,
+    field: keyof Filter<FilterGroup>,
+  ) {
+    updateFilter({
+      index: 1,
+      [field]: event.target.value,
+    });
+  }
+
+  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
+    const newSize = event.target.value;
+    updateFilter({ index: 1, size: Number(newSize) });
+  }
+
+  const handleSearchGroup = useDebouncedCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setFilter((prev) => ({ ...prev, name: event.target.value }));
+    },
+    300,
+  );
+
+  function handleResetFilter() {
+    setFilter(defaultFilter);
+  }
+
+  function handleViewGroupId(groupId: string) {
+    navigate("/employees", { state: { groupId } });
+  }
+
+  function handleCancel(modalId: string) {
+    if (controller) {
+      controller.abort();
+      setController(null);
+    }
+    removeId(modalId);
+  }
+
+  useEffect(() => {
+    if (groupData) {
+      setGroups(groupData.data);
+      setFilter((prev) => ({ ...prev, ...groupData.paginate }));
+    }
+  }, [groupData]);
+
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "name" },
     { title: "Permissions", sortName: "" },
     { title: "Members", sortName: "members" },
     { title: "Created Date", sortName: "createdDate" },
     { title: "Status", sortName: "status" },
-    { title: "Action", sortName: "" },
+    { title: "", sortName: "" },
   ];
 
   const BODY_CELLS = [
@@ -125,7 +198,12 @@ const ListGroup = () => {
           direction="row"
           alignItems={"center"}>
           {row.permissions.map((permission, index) => (
-            <ChipStatus key={index} label={permission.page} />
+            <Tooltip
+              placement="top-start"
+              key={index}
+              title={permission.actions.join(", ")}>
+              <ChipStatus label={permission.page} sx={{ cursor: "pointer" }} />
+            </Tooltip>
           ))}
         </Stack>
       ),
@@ -150,6 +228,7 @@ const ListGroup = () => {
       render: (row: Group) => (
         <>
           <IconButton
+            disableRipple
             aria-describedby={row.id}
             disableFocusRipple
             onClick={(event) => {
@@ -277,86 +356,6 @@ const ListGroup = () => {
     },
   ];
 
-  function handleToggleAction(id: string) {
-    addId(ids.modalAction(id));
-  }
-
-  function handleCloseAction(id: string) {
-    removeId(ids.modalAction(id));
-  }
-
-  async function handleChangeStatus(groupId: string) {
-    try {
-      addId(`loading-switch-${groupId}`);
-      await toggleStatusGroup(groupId);
-      setGroups(
-        (prev) =>
-          prev?.map((group) =>
-            group.id === groupId ? { ...group, status: !group.status } : group,
-          ) || prev,
-      );
-    } catch (error) {
-      handleAxiosError(error);
-    } finally {
-      removeId(`loading-switch-${groupId}`);
-    }
-  }
-
-  function updateFilter(updates: Partial<Filter<FilterGroup>>) {
-    setFilter((prev) => ({ ...prev, ...updates }));
-  }
-
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
-
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterGroup>,
-  ) {
-    updateFilter({
-      index: 1,
-      [field]: event.target.value,
-    });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
-  const handleSearch = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, name: event.target.value }));
-    },
-    300,
-  );
-
-  function handleResetFilter() {
-    setFilter(defaultFilter);
-  }
-
-  function handleViewGroupId(groupId: string) {
-    console.log("test");
-    navigate("/employees", { state: { groupId } });
-  }
-
-  function handleCancel(modalId: string) {
-    console.log("test");
-    if (controller) {
-      controller.abort();
-      setController(null);
-    }
-    removeId(modalId);
-  }
-
-  useEffect(() => {
-    if (groupData) {
-      setGroups(groupData.data);
-      setFilter((prev) => ({ ...prev, ...groupData.paginate }));
-    }
-  }, [groupData]);
-
   return (
     <Fragment>
       <Paper
@@ -415,7 +414,7 @@ const ListGroup = () => {
             <SearchInput
               disabled={isLoading}
               placeholder="Search Permission"
-              onChange={handleSearch}
+              onChange={handleSearchGroup}
               fullWidth
               sx={{ minWidth: 220 }}
             />

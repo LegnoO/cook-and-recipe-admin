@@ -13,6 +13,7 @@ export { default as ChipStatus } from "./ChipStatus";
 export { default as Form } from "./Form";
 export { default as Select } from "./Select";
 export { default as Switch } from "./Switch";
+export { default as ConfirmBox } from "./ConfirmBox";
 
 export {
   Table,
