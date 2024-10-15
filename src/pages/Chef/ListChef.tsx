@@ -27,7 +27,7 @@ import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
 // ** Services
-import { getFilterChef, disableChef } from "@/services/chefService";
+import { getFilterChef, disableChef, activeChef } from "@/services/chefService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -137,9 +137,9 @@ const ListChefPending = () => {
   async function handleBanChef(row: Chef) {
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
-
+    const action = row.status === "banned" ? activeChef : disableChef;
     try {
-      await disableChef(row.userInfo.id);
+      await action(row.id);
       toast.success("Banned successfully");
       refetch();
     } catch (error) {

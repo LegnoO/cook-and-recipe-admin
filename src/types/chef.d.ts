@@ -26,7 +26,7 @@ type ChefDetail = {
   startedDate: Date;
   description: string;
   status: ChefStatus;
-  approvalBy: string;
+  approvalBy: ChefUserInfo;
   approvalDate: Date;
   userInfo: ChefUserInfo;
 };

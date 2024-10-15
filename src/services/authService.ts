@@ -14,7 +14,7 @@ export async function signIn({
     password,
     rememberMe,
   });
-
+  localStorage.setItem("access-token", response.data);
   return response.data;
 }
 

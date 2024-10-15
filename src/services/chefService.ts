@@ -37,7 +37,9 @@ export async function toggleChefRequest(chefId: string, status: boolean) {
   try {
     const response = await AxiosInstance.patch(
       `/chefs/pending/${chefId}/approve-or-reject`,
-      status,
+      {
+        approveOrReject: status,
+      },
     );
 
     return response.data;

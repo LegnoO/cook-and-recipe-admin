@@ -81,7 +81,7 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
                 <Typography sx={{ fontSize: "1.25rem" }} color="text.primary">
                   {chefData?.userInfo.fullName}
                 </Typography>
-                <Typography sx={{ fontSize: "0.75rem" }} color="text.secondary">
+                <Typography sx={{ fontSize: "1rem" }} color="text.secondary">
                   {chefData?.userInfo.email}
                 </Typography>
               </Stack>
@@ -122,7 +122,7 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
                 <Grid item md={6} xs={12}>
                   <TextField
                     label="Approval By"
-                    value={chefData?.approvalBy}
+                    value={chefData?.approvalBy.fullName}
                     variant="outlined"
                     fullWidth
                     inputProps={{

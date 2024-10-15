@@ -87,8 +87,7 @@ const AuthProvider = ({ children }: Props) => {
   async function handleLogin(data: LoginCredentials) {
     try {
       setLoading(true);
-      const accessToken = await signIn({ ...data });
-      localStorage.setItem("access-token", accessToken);
+      await signIn(data);
       await fetchUserData();
       navigate(searchParams.get("returnUrl") || "/");
     } catch (error) {
