@@ -49,7 +49,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 // ** Services
 import { queryGroups, toggleGroupStatus } from "@/services/groupServices";
 
-const ListGroup = () => {
+const ListRecipe = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: FilterGroup = {
@@ -493,4 +493,4 @@ const ListGroup = () => {
     </Fragment>
   );
 };
-export default ListGroup;
+export default ListRecipe;

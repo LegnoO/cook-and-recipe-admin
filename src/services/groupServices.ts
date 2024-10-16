@@ -3,12 +3,17 @@ import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { createSearchParams } from "@/utils/helpers";
 
-export async function getAllGroups(filter: any) {
+// ** Config
+import { groupEndpoints } from "@/config/endpoints";
+
+export async function queryGroups(filter: any) {
   const { total, ...restFilter } = filter;
 
   const params = createSearchParams(restFilter);
   try {
-    const response = await AxiosInstance.get(`/groups?${params.toString()}`);
+    const response = await AxiosInstance.get(
+      groupEndpoints.queryGroups(params.toString()),
+    );
 
     return response.data;
   } catch (error) {
@@ -16,15 +21,17 @@ export async function getAllGroups(filter: any) {
   }
 }
 
-export async function getGroupActive() {
-  const response = await AxiosInstance.get<Role[]>("/groups/active");
+export async function getActiveGroup() {
+  const response = await AxiosInstance.get<Role[]>(
+    groupEndpoints.getActiveGroup,
+  );
 
   return response.data;
 }
 
-export async function toggleStatusGroup(groupId: string) {
+export async function toggleGroupStatus(groupId: string) {
   const response = await AxiosInstance.patch(
-    `/groups/${groupId}/toggle-status`,
+    groupEndpoints.toggleGroupStatus(groupId),
     {
       id: groupId,
     },
@@ -32,30 +39,35 @@ export async function toggleStatusGroup(groupId: string) {
   return response.data;
 }
 
-export async function createGroups(
+export async function createGroup(
   group: GroupSubmit,
   controller?: AbortController,
 ) {
-  const response = await AxiosInstance.post(`/groups`, group, {
+  const response = await AxiosInstance.post(groupEndpoints.createGroup, group, {
     signal: controller?.signal,
   });
   return response.data;
 }
 
-export async function updateGroups(
+export async function editGroup(
   groupId: string,
   group: GroupSubmit,
   controller?: AbortController,
 ) {
-  const response = await AxiosInstance.put(`/groups/${groupId}`, group, {
-    signal: controller?.signal,
-  });
+  const response = await AxiosInstance.put(
+    groupEndpoints.editGroup(groupId),
+    group,
+    {
+      signal: controller?.signal,
+    },
+  );
   return response.data;
 }
 
-export async function getGroupDetail(groupId: string) {
-  const response = await AxiosInstance.get<any>(`/groups/${groupId}`);
+export async function getDetailGroup(groupId: string) {
+  const response = await AxiosInstance.get<any>(
+    groupEndpoints.getDetailGroup(groupId),
+  );
 
   return response.data;
 }
-

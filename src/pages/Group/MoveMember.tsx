@@ -15,7 +15,7 @@ import { Form } from "@/components/ui";
 import { GroupSelect } from "@/components/fields";
 
 // ** Services
-import { updateGroupAllEmployees } from "@/services/employeeService";
+import { updateAllGroupEmployees } from "@/services/employeeService";
 
 // ** Types
 type Props = {
@@ -43,7 +43,7 @@ const MoveMember = ({ group, setController, closeMenu, refetch }: Props) => {
       setLoading(true);
       const newController = new AbortController();
       setController(newController);
-      await updateGroupAllEmployees(data, newController);
+      await updateAllGroupEmployees(data, newController);
       toast.success("Updated group successfully");
       refetch();
       setLoading(false);

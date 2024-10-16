@@ -46,7 +46,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import {
-  getFilterEmployee,
+  queryEmployees,
   toggleStatusEmployee,
 } from "@/services/employeeService";
 
@@ -64,7 +64,7 @@ const ListEmployee = () => {
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
 
-  const defaultFilter: FilterEmployees = {
+  const defaultFilter: Filter<FilterEmployees> = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
@@ -76,7 +76,7 @@ const ListEmployee = () => {
     sortOrder: "",
   };
 
-  const [filter, setFilter] = useState<FilterEmployees>(defaultFilter);
+  const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
 
   const {
     isLoading,
@@ -94,7 +94,7 @@ const ListEmployee = () => {
       filter.sortBy,
       filter.sortOrder,
     ],
-    queryFn: () => getFilterEmployee(filter),
+    queryFn: () => queryEmployees(filter),
 
     ...queryOptions,
   });
@@ -195,7 +195,7 @@ const ListEmployee = () => {
     }
   }
 
-  function updateFilter(updates: Partial<FilterEmployees>) {
+  function updateFilter(updates: Partial<Filter<FilterEmployees>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
@@ -205,7 +205,7 @@ const ListEmployee = () => {
 
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
-    field: keyof FilterEmployees,
+    field: keyof Filter<FilterEmployees>,
   ) {
     updateFilter({
       index: 1,

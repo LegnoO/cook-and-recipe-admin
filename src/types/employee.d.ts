@@ -25,5 +25,4 @@ type FilterEmployees = {
   groupId: string | null;
   status: string | null;
   gender: Gender | null;
-} & Sort &
-  Paginate;
+};

@@ -24,7 +24,7 @@ import { AddEmployeeSchema } from "@/utils/validations";
 import { createFormData } from "@/utils/helpers";
 
 // ** Services
-import { addEmployee } from "@/services/employeeService";
+import { createEmployee } from "@/services/employeeService";
 
 // ** Types
 type Props = {
@@ -65,7 +65,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
       const formData = createFormData(employeeData);
       const newController = new AbortController();
       setController(newController);
-      await addEmployee(formData, newController);
+      await createEmployee(formData, newController);
       toast.success("Add new employee successfully");
       refetch();
       setLoading(false);

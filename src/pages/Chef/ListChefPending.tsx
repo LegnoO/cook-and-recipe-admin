@@ -27,10 +27,7 @@ import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
 // ** Services
-import {
-  getFilterChefPending,
-  toggleChefRequest,
-} from "@/services/chefService";
+import { queryChefPending, toggleChefRequest } from "@/services/chefService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -84,7 +81,7 @@ const ListChefPending = () => {
       filter.sortBy,
       filter.sortOrder,
     ],
-    queryFn: () => getFilterChefPending(filter),
+    queryFn: () => queryChefPending(filter),
     ...queryOptions,
   });
   const ids = {

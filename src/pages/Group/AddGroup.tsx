@@ -15,7 +15,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 // ** Components
 import PermissionList from "@/components/fields/PermissionList";
 import { Form } from "@/components/ui";
-import { createGroups } from "@/services/groupServices";
+import { createGroup } from "@/services/groupServices";
 
 // ** Types
 type Props = {
@@ -37,7 +37,6 @@ const AddGroup = ({
   const [groupNameError, setGroupNameError] = useState<string>("");
   const [searchPermissions, setSearchPermissions] = useState<string>("");
   const [isLoading, setLoading] = useState(false);
-
 
   const handleChangeGroupName = useDebouncedCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +80,7 @@ const AddGroup = ({
       setLoading(true);
       const newController = new AbortController();
       setController(newController);
-      await createGroups(group, newController);
+      await createGroup(group, newController);
       toast.success("Created group successfully");
       refetch();
       setLoading(false);

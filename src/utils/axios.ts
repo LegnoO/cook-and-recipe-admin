@@ -2,17 +2,17 @@
 import axios, { AxiosError } from "axios";
 
 // ** Services
-import { handleRefresh } from "@/services/authService";
+import { refreshInfo } from "@/services/authService";
 
 // ** Config
 import { STATUS_CODES } from "@/config/status-codes";
-import { handleAxiosError } from "./errorHandler";
 import { loginRoute } from "@/config/url";
+
+// ** Utils
+import { handleAxiosError } from "./errorHandler";
 
 const BASE_URL: string =
   import.meta.env.VITE_DATABASE_URL || import.meta.env.VITE_VERCEL_DATABASE_URL;
-
-if (!BASE_URL) console.log("Wrong Backend URL!");
 
 const AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -54,7 +54,7 @@ AxiosInstance.interceptors.response.use(
       responseUrl !== "/auth/logout"
     ) {
       try {
-        const newToken = await handleRefresh(
+        const newToken = await refreshInfo(
           localStorage.getItem("rememberMe")
             ? JSON.parse(localStorage.getItem("rememberMe")!)
             : false,

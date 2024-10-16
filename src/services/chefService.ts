@@ -3,13 +3,16 @@ import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
 import { createSearchParams } from "@/utils/helpers";
 
-export async function getFilterChef(filter: FilterChef) {
+// ** Config
+import { chefEndpoints } from "@/config/endpoints";
+
+export async function queryChef(filter: FilterChef) {
   try {
     const { ...restFilter } = filter;
 
     const params = createSearchParams(restFilter);
     const response = await AxiosInstance.get<ListChef>(
-      `/chefs?${params.toString()}`,
+      chefEndpoints.queryChef(params.toString()),
     );
 
     return response.data;
@@ -18,13 +21,13 @@ export async function getFilterChef(filter: FilterChef) {
   }
 }
 
-export async function getFilterChefPending(filter: FilterChefPending) {
+export async function queryChefPending(filter: FilterChefPending) {
   try {
     const { ...restFilter } = filter;
 
     const params = createSearchParams(restFilter);
     const response = await AxiosInstance.get<ListChef>(
-      `/chefs/pending?${params.toString()}`,
+      chefEndpoints.queryChefPending(params.toString()),
     );
 
     return response.data;
@@ -36,7 +39,7 @@ export async function getFilterChefPending(filter: FilterChefPending) {
 export async function toggleChefRequest(chefId: string, status: boolean) {
   try {
     const response = await AxiosInstance.patch(
-      `/chefs/pending/${chefId}/approve-or-reject`,
+      chefEndpoints.toggleChefRequest(chefId),
       {
         approveOrReject: status,
       },
@@ -50,7 +53,9 @@ export async function toggleChefRequest(chefId: string, status: boolean) {
 
 export async function disableChef(chefId: string) {
   try {
-    const response = await AxiosInstance.patch(`/chefs/${chefId}/ban`);
+    const response = await AxiosInstance.patch(
+      chefEndpoints.disableChef(chefId),
+    );
 
     return response.data;
   } catch (error) {
@@ -61,7 +66,7 @@ export async function disableChef(chefId: string) {
 export async function activeChef(chefId: string) {
   try {
     const response = await AxiosInstance.patch<ListChef>(
-      `/chefs/${chefId}/unban`,
+      chefEndpoints.activeChef(chefId),
     );
 
     return response.data;
@@ -71,7 +76,9 @@ export async function activeChef(chefId: string) {
 }
 
 export async function getChefDetail(chefId: string) {
-  const response = await AxiosInstance.get<ChefDetail>(`/chefs/${chefId}`);
+  const response = await AxiosInstance.get<ChefDetail>(
+    chefEndpoints.getChefDetail(chefId),
+  );
 
   return response.data;
 }

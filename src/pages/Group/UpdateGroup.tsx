@@ -16,7 +16,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 // ** Components
 import PermissionList from "@/components/fields/PermissionList";
 import { Form } from "@/components/ui";
-import { updateGroups, getGroupDetail } from "@/services/groupServices";
+import { editGroup, getDetailGroup } from "@/services/groupServices";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -32,7 +32,7 @@ type Props = {
 const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
   const { isLoading: isGroupLoading, data: groupData } = useQuery({
     queryKey: ["group-detail", groupId],
-    queryFn: () => getGroupDetail(groupId),
+    queryFn: () => getDetailGroup(groupId),
     ...queryOptions,
   });
 
@@ -85,7 +85,7 @@ const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
       setLoading(true);
       const newController = new AbortController();
       setController(newController);
-      await updateGroups(groupId, group, newController);
+      await editGroup(groupId, group, newController);
       toast.success("Updated group successfully");
       refetch();
       setLoading(false);

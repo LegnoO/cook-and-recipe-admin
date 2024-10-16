@@ -41,7 +41,7 @@ import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { updateEmployeeProfile } from "@/services/employeeService";
+import { updateProfileEmployee } from "@/services/employeeService";
 import { createFormData } from "@/utils/helpers";
 
 // ** Types
@@ -136,7 +136,7 @@ export default function ProfilePage() {
       setLoading(true);
       const formData = createFormData(profileData);
 
-      await updateEmployeeProfile(formData);
+      await updateProfileEmployee(formData);
       refetch();
       refetchInfo();
       toast.success("Updated successfully");
