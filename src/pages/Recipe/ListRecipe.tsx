@@ -22,6 +22,7 @@ import {
   Select,
   ChipStatus,
   ConfirmBox,
+  Tooltip,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
@@ -41,7 +42,6 @@ import useSettings from "@/hooks/useSettings";
 
 // ** Utils
 import { formatDateTime } from "@/utils/helpers";
-
 
 // ** Services
 import {
@@ -80,10 +80,7 @@ const ListRecipe = () => {
   const [filter, setFilter] = useState<Filter<FilterRecipe>>(defaultFilter);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const {
-    data: recipeData,
-
-  } = useQuery({
+  const { data: recipeData } = useQuery({
     queryKey: [
       "list-recipe",
       filter.index,
@@ -200,142 +197,80 @@ const ListRecipe = () => {
     {
       render: (row: RecipePending) => (
         <Fragment>
-          <IconButton
-            disableRipple
-            aria-describedby={row.id}
-            disableFocusRipple
-            onClick={(event) => {
-              setAnchorEl(event.currentTarget);
-              handleToggleAction(row.id);
-            }}>
-            <Icon icon="mingcute:more-2-fill" />
-            <Popover
-              id={row.id}
-              anchorEl={anchorEl}
-              open={activeIds.includes(ids.modalAction(row.id))}
-              onClose={() => handleCloseAction(row.id)}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
+          <Tooltip
+            arrow
+            title={"Recipe Details"}
+            disableHoverListener={activeIds.includes(ids.modalDetail(row.id))}>
+            <IconButton
+              onClick={() => {
+                addId(ids.modalDetail(row.id));
               }}
-              keepMounted
-              sx={{
-                "& .MuiPaper-root": {
-                  cursor: "pointer",
-                  backgroundColor: (theme) => theme.palette.background.default,
-                  boxShadow: (theme) => theme.shadows[3],
-                  paddingInline: "0.5rem",
-                  paddingBlock: "0.375rem",
-                },
-              }}>
-              <Stack
-                sx={{
-                  "& > *": {
-                    borderRadius: (theme) => `${theme.shape.borderRadius}px`,
-                    paddingInline: "0.5rem",
-                    paddingBlock: "0.5rem",
-                    minWidth: 120,
-                  },
-
-                  "& > *:not(:last-child)": { marginBottom: "0.25rem" },
-                  "& > *:hover": {
-                    backgroundColor: (theme) => theme.palette.action.hover,
-                  },
-                }}
-                direction="column">
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2101,
+              disableRipple>
+              <Icon icon="hugeicons:view" />
+              <Modal
+                open={activeIds.includes(ids.modalDetail(row.id))}
+                onClose={() => removeId(ids.modalDetail(row.id))}>
+                <RecipeDetail
+                  closeMenu={() => handleCancel(ids.modalDetail(row.id))}
+                  recipeId={row.id}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            arrow
+            title={"Revoke Verification"}
+            disableHoverListener={activeIds.includes(ids.modalRevoke(row.id))}>
+            <IconButton
+              onClick={() => {
+                addId(ids.modalRevoke(row.id));
+              }}
+              disableRipple>
+              <Icon icon={"icon-park-outline:undo"} />
+              <Modal
+                open={activeIds.includes(ids.modalRevoke(row.id))}
+                onClose={() => removeId(ids.modalRevoke(row.id))}>
+                <ConfirmBox
+                  isLoading={isLoading}
+                  variant={"warning"}
+                  textSubmit={"Yes, revoke !"}
+                  textTitle={`Confirm revoke recipe ${row.name}`}
+                  textContent={`You're about to revoke recipe '${row.name}'. Are you sure?`}
+                  onClick={async () => {
+                    await revokeApprovalRecipe(row.id);
                   }}
-                  onClick={() => {
-                    handleCloseAction(row.id);
-                    addId(ids.modalDetail(row.id));
-                  }}>
-                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="hugeicons:view" />
-                    <Modal
-                      open={activeIds.includes(ids.modalDetail(row.id))}
-                      onClose={() => removeId(ids.modalDetail(row.id))}>
-                      <RecipeDetail
-                        closeMenu={() => handleCancel(ids.modalDetail(row.id))}
-                        recipeId={row.id}
-                      />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="text.secondary">View Recipe</Typography>
-                </Stack>
-
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2102,
+                  onClose={() => handleCancel(ids.modalRevoke(row.id))}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            arrow
+            title={"Private Recipe"}
+            disableHoverListener={activeIds.includes(ids.modalPrivate(row.id))}>
+            <IconButton
+              onClick={() => {
+                addId(ids.modalPrivate(row.id));
+              }}
+              disableRipple>
+              <Icon icon={"material-symbols:lock-outline"} />
+              <Modal
+                open={activeIds.includes(ids.modalPrivate(row.id))}
+                onClose={() => removeId(ids.modalPrivate(row.id))}>
+                <ConfirmBox
+                  isLoading={isLoading}
+                  variant={"warning"}
+                  textSubmit={"Yes, private !"}
+                  textTitle={`Confirm private recipe ${row.name}`}
+                  textContent={`You're about to private recipe '${row.name}'. Are you sure?`}
+                  onClick={async () => {
+                    await privateRecipe(row.id);
                   }}
-                  onClick={() => {
-                    handleCloseAction(row.id);
-                    addId(ids.modalRevoke(row.id));
-                  }}>
-                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="icon-park-outline:undo" />
-                    <Modal
-                      open={activeIds.includes(ids.modalRevoke(row.id))}
-                      onClose={() => removeId(ids.modalRevoke(row.id))}>
-                      <ConfirmBox
-                        isLoading={isLoading}
-                        variant={"warning"}
-                        textSubmit={"Yes, revoke !"}
-                        textTitle={`Confirm revoke recipe ${row.name}`}
-                        textContent={`You're about to revoke recipe '${row.name}'. Are you sure?`}
-                        onClick={async () => {
-                          await revokeApprovalRecipe(row.id);
-                        }}
-                        onClose={() => handleCancel(ids.modalRevoke(row.id))}
-                      />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="text.secondary">
-                    Revoke Verification
-                  </Typography>
-                </Stack>
-
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2103,
-                  }}
-                  onClick={() => {
-                    handleCloseAction(row.id);
-                    addId(ids.modalPrivate(row.id));
-                  }}>
-                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="material-symbols:lock-outline" />
-                    <Modal
-                      open={activeIds.includes(ids.modalPrivate(row.id))}
-                      onClose={() => removeId(ids.modalPrivate(row.id))}>
-                      <ConfirmBox
-                        isLoading={isLoading}
-                        variant={"warning"}
-                        textSubmit={"Yes, private !"}
-                        textTitle={`Confirm private recipe ${row.name}`}
-                        textContent={`You're about to private recipe '${row.name}'. Are you sure?`}
-                        onClick={async () => {
-                          await privateRecipe(row.id);
-                        }}
-                        onClose={() => handleCancel(ids.modalPrivate(row.id))}
-                      />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="text.secondary">Private Recipe</Typography>
-                </Stack>
-              </Stack>
-            </Popover>
-          </IconButton>
+                  onClose={() => handleCancel(ids.modalPrivate(row.id))}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
         </Fragment>
       ),
     },
