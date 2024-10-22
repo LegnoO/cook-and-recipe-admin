@@ -64,7 +64,6 @@ const ListGroup = () => {
   const navigate = useNavigate();
   const { activeIds, addId, removeId } = useSettings();
 
-  const [permissions, setPermissions] = useState<Permissions[]>([]);
   const ids = useMemo(
     () => ({
       loadingSwitch: (id: string) => `loading-switch-${id}`,
@@ -186,12 +185,11 @@ const ListGroup = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS = [
+  const BODY_CELLS: BodyCell<Group>[] = [
     {
       render: (row: Group) => row.name,
     },
     {
-      width: 300,
       render: (row: Group) => (
         <Stack
           sx={{ flexWrap: "wrap", gap: 1 }}
@@ -455,8 +453,6 @@ const ListGroup = () => {
                 open={activeIds.includes(ids.newGroupModal)}
                 onClose={() => removeId(ids.newGroupModal)}>
                 <AddGroup
-                  permissions={permissions}
-                  setPermissions={setPermissions}
                   refetch={refetch}
                   closeMenu={() => handleCancel(ids.newGroupModal)}
                   setController={setController}

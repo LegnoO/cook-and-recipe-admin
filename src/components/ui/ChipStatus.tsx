@@ -10,7 +10,7 @@ import { hexToRGBA, rgbaToHex } from "@/utils/helpers";
 // ** Types
 type Props = {
   label?: string;
-  variant?: ColorVariant;
+  variant?: ColorVariant | "default";
   sx?: SxProps;
 };
 
@@ -18,6 +18,7 @@ const ChipStatus = forwardRef(
   ({ sx, label, variant = "success", ...props }: Props, ref) => {
     const theme = useTheme();
     const statusColorMap = {
+      default: theme.palette.background.paper,
       active: theme.palette.primary.main,
       success: theme.palette.success.main,
       disabled: rgbaToHex(theme.palette.text.disabled),
@@ -37,7 +38,14 @@ const ChipStatus = forwardRef(
           textAlign: "center",
           borderRadius: `${theme.shape.borderRadius - 2}px`,
           backgroundColor: hexToRGBA(statusColorMap[variant]!, 0.25),
-          color: statusColorMap[variant],
+          outline: (theme) =>
+            variant !== "default"
+              ? "none"
+              : `1px solid ${theme.palette.divider}`,
+          color:
+            variant !== "default"
+              ? statusColorMap[variant]
+              : theme.palette.text.primary,
           ...sx,
         }}
         {...props}>

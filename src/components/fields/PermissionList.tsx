@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, memo } from "react";
 
 // ** Mui Imports
 import { Typography, Checkbox, Stack, Box, Collapse } from "@mui/material";
@@ -114,11 +114,6 @@ const PermissionList = ({
           }),
         };
       }) as Permissions[];
-      console.log({ permissionDetail, listPermissions });
-      console.log(
-        "🚀 ~ updatedPermission ~ updatedPermission:",
-        updatedPermission,
-      );
 
       setPermissions(updatedPermission);
     }
@@ -275,4 +270,4 @@ const PermissionList = ({
   );
 };
 
-export default PermissionList;
+export default memo(PermissionList);

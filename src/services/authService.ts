@@ -1,5 +1,9 @@
 // ** Config
-import { userEndpoints } from "@/config/endpoints";
+import {
+  authEndpoints,
+  employeeEndpoints,
+  groupEndpoints,
+} from "@/config/endpoints";
 
 // ** Utils
 import AxiosInstance from "@/utils/axios";
@@ -12,7 +16,7 @@ export async function signIn({
   password,
   rememberMe,
 }: LoginCredentials) {
-  const response = await AxiosInstance.post<AuthTokens>(userEndpoints.login, {
+  const response = await AxiosInstance.post<AuthTokens>(authEndpoints.login, {
     username,
     password,
     rememberMe,
@@ -22,20 +26,20 @@ export async function signIn({
 }
 
 export async function signOut() {
-  const response = await AxiosInstance.post<Messages>(userEndpoints.logout);
+  const response = await AxiosInstance.post<Messages>(authEndpoints.logout);
 
   return response.data;
 }
 
 export async function getUserInfo() {
-  const response = await AxiosInstance.get<User>(userEndpoints.getInfo);
+  const response = await AxiosInstance.get<User>(employeeEndpoints.getInfo);
 
   return response.data;
 }
 
 export async function getUserProfile() {
   const response = await AxiosInstance.get<UserProfile>(
-    userEndpoints.getProfile,
+    employeeEndpoints.getProfile,
   );
 
   return response.data;
@@ -43,7 +47,7 @@ export async function getUserProfile() {
 
 export async function getUserPermission() {
   const response = await AxiosInstance.get<Permission[]>(
-    userEndpoints.getPermissions,
+    groupEndpoints.getPermissions,
   );
 
   return response.data;
@@ -51,7 +55,7 @@ export async function getUserPermission() {
 
 export async function refreshInfo(rememberMe: string) {
   const response = await AxiosInstance.post<AuthTokens>(
-    userEndpoints.refreshInfo,
+    authEndpoints.refreshInfo,
     {
       rememberMe,
     },

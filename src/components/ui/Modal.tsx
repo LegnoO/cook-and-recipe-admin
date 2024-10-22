@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, MouseEventHandler ,memo} from "react";
+import { ReactNode, MouseEventHandler, memo } from "react";
 
 // ** Mui Imports
 import { Box, Backdrop, Fade, SxProps, Modal as MuiModal } from "@mui/material";
@@ -13,7 +13,7 @@ type Props = {
   sx?: SxProps;
 };
 
-const Modal = ({children, onClick, open, onClose, sx, ...rest }: Props) => {
+const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
   return (
     <MuiModal
       aria-modal
@@ -33,7 +33,12 @@ const Modal = ({children, onClick, open, onClose, sx, ...rest }: Props) => {
       {...rest}>
       <Fade in={open}>
         <Box
+          className="overlay"
           sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "fit-content",
             outline: "none",
             position: "absolute",
             top: "50%",

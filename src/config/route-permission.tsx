@@ -13,7 +13,11 @@ const ListEmployee = lazy(() => import("@/pages/Employee/ListEmployee"));
 const ListGroup = lazy(() => import("@/pages/Group/ListGroup"));
 const ListChef = lazy(() => import("@/pages/Chef/ListChef"));
 const ListChefPending = lazy(() => import("@/pages/Chef/ListChefPending"));
+const ListRecipePending = lazy(
+  () => import("@/pages/Recipe/ListRecipePending"),
+);
 const ListRecipe = lazy(() => import("@/pages/Recipe/ListRecipe"));
+const ListCategory = lazy(() => import("@/pages/Category/ListCategory"));
 
 export const protectedRoute: ProtectedRoute[] = [
   {
@@ -81,8 +85,24 @@ export const protectedRoute: ProtectedRoute[] = [
     },
   },
   {
+    path: "/recipes/pending",
+    component: <ListRecipePending />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
+  {
     path: "/recipes",
     component: <ListRecipe />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
+  {
+    path: "/category",
+    component: <ListCategory />,
     permission: {
       page: "user",
       action: "read",

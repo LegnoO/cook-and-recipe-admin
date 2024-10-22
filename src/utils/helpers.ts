@@ -229,3 +229,13 @@ export function compareArrayLengths(
 
   return firstArray.length - secondArray.length;
 }
+
+export function handleToastMessages(toastCallback: (msg: string) => void) {
+  return (messages: string | string[]) => {
+    if (Array.isArray(messages)) {
+      messages.forEach((message) => toastCallback(message));
+    } else {
+      toastCallback(messages);
+    }
+  };
+}

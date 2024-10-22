@@ -21,7 +21,7 @@ import { addEmployeeField } from "@/config/fields/add-employee-field";
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
 import { AddEmployeeSchema } from "@/utils/validations";
-import { createFormData } from "@/utils/helpers";
+import { createFormData, handleToastMessages } from "@/utils/helpers";
 
 // ** Services
 import { createEmployee } from "@/services/employeeService";
@@ -68,12 +68,14 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
       await createEmployee(formData, newController);
       toast.success("Add new employee successfully");
       refetch();
-      setLoading(false);
       setController(null);
       closeMenu();
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
       toast.dismiss(toastLoading);
+      setLoading(false);
     }
   }
 

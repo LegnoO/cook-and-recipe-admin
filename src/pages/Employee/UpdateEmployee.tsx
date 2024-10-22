@@ -25,7 +25,11 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { createFormData, hexToRGBA } from "@/utils/helpers";
+import {
+  createFormData,
+  handleToastMessages,
+  hexToRGBA,
+} from "@/utils/helpers";
 
 // ** Types
 import {
@@ -94,11 +98,14 @@ const UpdateEmployee = ({
       toast.success("Updated successfully");
       refetch();
       closeMenu();
-      setLoading(false);
-      toast.dismiss(toastLoading);
+
       setController(null);
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
+      setLoading(false);
+      toast.dismiss(toastLoading);
     }
   }
 

@@ -108,10 +108,10 @@ const ListEmployee = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS = [
+  const BODY_CELLS: BodyCell<Employee>[] = [
     {
       render: (row: Employee) => (
-        <Stack direction="row" spacing={2} alignItems={"center"}>
+        <Stack direction="row" spacing={1.25} alignItems={"center"}>
           <Avatar src={row.avatar} alt="Avatar user" />
           <Stack direction="column">
             <Typography fontWeight="500" color="text.primary">
@@ -142,7 +142,7 @@ const ListEmployee = () => {
           onChange={() => handleChangeStatus(row.id)}
           disabled={activeIds.includes(ids.loadingSwitch(row.id))}
           checked={
-            employees?.find((employee) => employee.id === row.id)?.status ||
+            row.status ||
             false
           }
         />

@@ -21,18 +21,12 @@ import { createGroup } from "@/services/groupServices";
 type Props = {
   closeMenu: () => void;
   setController: Dispatch<SetStateAction<AbortController | null>>;
-  setPermissions: Dispatch<SetStateAction<Permissions[]>>;
+
   refetch: () => void;
-  permissions: Permissions[];
 };
 
-const AddGroup = ({
-  permissions,
-  setController,
-  closeMenu,
-  refetch,
-  setPermissions,
-}: Props) => {
+const AddGroup = ({ setController, closeMenu, refetch }: Props) => {
+  const [permissions, setPermissions] = useState<Permissions[]>([]);
   const [groupName, setGroupName] = useState<string>("");
   const [groupNameError, setGroupNameError] = useState<string>("");
   const [searchPermissions, setSearchPermissions] = useState<string>("");

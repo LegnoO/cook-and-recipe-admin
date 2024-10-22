@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, ReactNode } from "react";
+import { Fragment } from "react";
 
 // ** Mui Imports
 import { Box, Skeleton, Typography } from "@mui/material";
@@ -17,19 +17,19 @@ import { RenderIf, Repeat } from "@/components";
 import NoDataIcon from "@/assets/ic-content.svg";
 
 // ** Types
-type BodyCell<T> = {
-  render: (row: T) => ReactNode;
-  width?: string | number;
-};
-
-type Props<T,V> = {
+type Props<T, V> = {
   bodyCells: BodyCell<T>[];
   isLoading: boolean;
   filter: Filter<V>;
   data: T[] | null;
 };
 
-const TableBody = <T,V>({ data, bodyCells, filter, isLoading }: Props<T,V>) => {
+const TableBody = <T, V>({
+  data,
+  bodyCells,
+  filter,
+  isLoading,
+}: Props<T, V>) => {
   const renderDataRows = (data: T[]) => {
     return data?.map((row, index) => (
       <TableRow
@@ -37,8 +37,8 @@ const TableBody = <T,V>({ data, bodyCells, filter, isLoading }: Props<T,V>) => {
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
         }}>
-        {bodyCells.map(({ render, width }, index) => (
-          <TableCell sx={{ width }} key={index}>
+        {bodyCells.map(({ align, render }, index) => (
+          <TableCell align={align} key={index}>
             {render(row)}
           </TableCell>
         ))}

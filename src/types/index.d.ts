@@ -26,3 +26,10 @@ type Paginate = {
 type JSONString<T> = string;
 
 type ColorVariant = "active" | "success" | "disabled" | "warning" | "error" | "banned"
+
+type Align = "center" | "inherit" | "justify" | "left" | "right";
+
+type BodyCell<T> = {
+  render: (row: T) => ReactNode;
+  align?: Align;
+};

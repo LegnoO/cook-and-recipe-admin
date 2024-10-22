@@ -42,7 +42,7 @@ import useAuth from "@/hooks/useAuth";
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
 import { updateProfileEmployee } from "@/services/employeeService";
-import { createFormData } from "@/utils/helpers";
+import { createFormData, handleToastMessages } from "@/utils/helpers";
 
 // ** Types
 import { IProfileFormSchema } from "@/utils/validations";
@@ -143,7 +143,11 @@ export default function ProfilePage() {
       setLoading(false);
       toast.dismiss(toastLoading);
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      const showErrorMessages = handleToastMessages((error) =>
+        toast.error(error),
+      );
+      showErrorMessages(errorMessage);
     }
   }
 

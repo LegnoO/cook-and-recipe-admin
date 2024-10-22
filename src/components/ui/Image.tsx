@@ -1,9 +1,16 @@
-import { Box } from "@mui/material";
+// ** React Imports
+import { ImgHTMLAttributes } from "react";
 
-const Image = ({ ...props }) => {
+// ** Mui Imports
+import { Box, BoxProps } from "@mui/material";
+
+// ** Types
+type Props = BoxProps & ImgHTMLAttributes<HTMLImageElement>;
+
+const Image = ({ sx, ...props }: Props) => {
   return (
     <Box
-      sx={{ objectFit: "cover", borderRadius: "inherit" }}
+      sx={{ objectFit: "cover", borderRadius: "inherit", ...sx }}
       {...props}
       component="img"
     />

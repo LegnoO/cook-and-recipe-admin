@@ -8,9 +8,9 @@ import {
   ReactNode,
 } from "react";
 
-// ** Library
+// ** Library Imports
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
-import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 // ** Services
 import {
@@ -22,6 +22,10 @@ import {
 
 // ** Config
 import { loginRoute } from "@/config/url";
+
+// ** Utils
+import { handleToastMessages } from "@/utils/helpers";
+import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Types
 export interface IAuthContext {
@@ -91,9 +95,14 @@ const AuthProvider = ({ children }: Props) => {
       await fetchUserData();
       navigate(searchParams.get("returnUrl") || "/");
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        setLoadingError(error.response.data.message);
+      const errorMessage = handleAxiosError(error);
+      const showErrorMessages = handleToastMessages((error) =>
+        toast.error(error),
+      );
+      if (typeof errorMessage === "string") {
+        setLoadingError(errorMessage);
       }
+      showErrorMessages(errorMessage);
     } finally {
       setLoading(false);
     }

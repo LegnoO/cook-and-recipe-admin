@@ -2,13 +2,13 @@
 import { Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
-import { Stack, Typography, TableCell, SxProps } from "@mui/material";
+import { Stack, Typography, TableCell } from "@mui/material";
 
 // ** Components
 import { TableRow, TableHead as TableHeadMui, Icon } from "@/components/ui";
 
 // ** Types
-type HeadColumns = { sortName: string; title: string | null; sx?: SxProps };
+type HeadColumns = { sortName: string; title: string | null };
 
 type Props<T> = {
   filter: Filter<T>;
@@ -64,31 +64,29 @@ const TableHead = <T,>({
   return (
     <TableHeadMui>
       <TableRow>
-        {headColumns.map((column, index) => (
-          <TableCell key={index} sx={{ ...column.sx }}>
+        {headColumns.map(({ sortName, title }, index) => (
+          <TableCell key={index}>
             <Stack
               sx={{
-                cursor:
-                  !isLoading && column.sortName !== "" ? "pointer" : "auto",
-                width: "fit-content",
+                cursor: !isLoading && sortName !== "" ? "pointer" : "auto",
               }}
               direction="row"
               alignItems="center"
-              spacing={1}
+              spacing={0.25}
               onClick={() => {
-                !isLoading && handleSortColumn(column.sortName);
+                !isLoading && handleSortColumn(sortName);
               }}>
               <Typography
                 variant="body2"
                 sx={{ color: (theme) => theme.palette.text.primary }}>
-                {column.title}
+                {title}
               </Typography>
 
               <Icon
                 fontSize="1rem"
                 icon={getSortIcon(
                   filter.sortOrder as SortOrder,
-                  column.sortName,
+                  sortName,
                   filter.sortBy,
                 )}
               />

@@ -37,42 +37,28 @@ export async function queryChefPending(filter: FilterChefPending) {
 }
 
 export async function toggleChefRequest(chefId: string, status: boolean) {
-  try {
-    const response = await AxiosInstance.patch(
-      chefEndpoints.toggleChefRequest(chefId),
-      {
-        approveOrReject: status,
-      },
-    );
+  const response = await AxiosInstance.patch(
+    chefEndpoints.toggleChefRequest(chefId),
+    {
+      approveOrReject: status,
+    },
+  );
 
-    return response.data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
+  return response.data;
 }
 
 export async function disableChef(chefId: string) {
-  try {
-    const response = await AxiosInstance.patch(
-      chefEndpoints.disableChef(chefId),
-    );
+  const response = await AxiosInstance.patch(chefEndpoints.disableChef(chefId));
 
-    return response.data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
+  return response.data;
 }
 
 export async function activeChef(chefId: string) {
-  try {
-    const response = await AxiosInstance.patch<ListChef>(
-      chefEndpoints.activeChef(chefId),
-    );
+  const response = await AxiosInstance.patch<ListChef>(
+    chefEndpoints.activeChef(chefId),
+  );
 
-    return response.data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
+  return response.data;
 }
 
 export async function getChefDetail(chefId: string) {

@@ -1,5 +1,11 @@
 // ** React Imports
-import { useState, ChangeEvent, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  useEffect,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 // ** Mui Imports
 import { Typography, Button, Stack, Box } from "@mui/material";
@@ -97,6 +103,10 @@ const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
       toast.dismiss(toastLoading);
     }
   }
+
+  useEffect(() => {
+    if (groupData) setGroupName(groupData.name);
+  }, [groupData]);
 
   return (
     <PerfectScrollbar options={{ wheelPropagation: false }}>

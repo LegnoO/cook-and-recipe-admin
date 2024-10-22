@@ -38,14 +38,14 @@ import { toast } from "react-toastify";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Component's
 import ChefDetail from "./ChefDetail";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Types
 
@@ -147,7 +147,8 @@ const ListChefPending = () => {
       toast.success(toastMessage);
       refetch();
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
     } finally {
       if (status) {
         handleCancel(ids.modalConfirmApprove(chefId));
@@ -182,10 +183,10 @@ const ListChefPending = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS = [
+  const BODY_CELLS: BodyCell<Chef>[] = [
     {
       render: (row: Chef) => (
-        <Stack direction="row" spacing={2} alignItems={"center"}>
+        <Stack direction="row" spacing={1.25} alignItems={"center"}>
           <Avatar src={row.userInfo.avatar} alt="Avatar user" />
           <Stack direction="column">
             <Typography fontWeight="500" color="text.primary">
@@ -211,7 +212,6 @@ const ListChefPending = () => {
         />
       ),
     },
-
     {
       render: (row: Chef) => (
         <Fragment>

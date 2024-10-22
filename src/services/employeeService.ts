@@ -41,7 +41,7 @@ export async function updateEmployee(
   controller?: AbortController,
 ) {
   const response = await AxiosInstance.put(
-    `/employees/${employeeId}`,
+    employeeEndpoints.updateEmployee(employeeId),
     employeeData,
     {
       headers: {
@@ -56,7 +56,7 @@ export async function updateEmployee(
 
 export async function getEmployeeDetail(employeeId: string) {
   const response = await AxiosInstance.get<Employee>(
-    employeeEndpoints.updateEmployee(employeeId),
+    employeeEndpoints.getDetailEmployee(employeeId),
   );
 
   return response.data;

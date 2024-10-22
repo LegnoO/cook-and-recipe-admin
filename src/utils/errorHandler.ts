@@ -1,22 +1,17 @@
 // ** Library Imports
 import axios from "axios";
-import { toast } from "react-toastify";
 
 // ** Utils
 import { capitalizeFirstLetter } from "./helpers";
 
-export function handleAxiosError(error: unknown): void {
+export function handleAxiosError(error: unknown): string | string[] {
+  let messages = "An unknown error occurred";
+
   if (axios.isCancel(error)) {
-    const messages = error.message;
-    toast.error(capitalizeFirstLetter(messages!));
+    return error.message ? capitalizeFirstLetter(error.message) : messages;
   }
   if (axios.isAxiosError(error)) {
-    const messages = error.response?.data?.message;
-    if (Array.isArray(messages)) {
-      messages.forEach((msg: string) => toast.error(msg));
-    }
-    if (typeof messages === "string") {
-      toast.error(messages);
-    }
+    return error.response?.data?.message;
   }
+  return messages;
 }

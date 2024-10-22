@@ -41,7 +41,7 @@ import useSettings from "@/hooks/useSettings";
 import ChefDetail from "./ChefDetail";
 
 // ** Utils
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime, handleToastMessages } from "@/utils/helpers";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -137,13 +137,14 @@ const ListChefPending = () => {
   async function handleBanChef(row: Chef) {
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
-    const action = row.status === "banned" ? activeChef : disableChef;
     try {
-      await action(row.id);
+      const action = row.status === "banned" ? activeChef : disableChef;
+      await action(`${row.id}`);
       toast.success("Banned successfully");
       refetch();
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
     } finally {
       handleCancel(ids.modalConfirm(row.id));
       setLoading(false);
@@ -174,10 +175,10 @@ const ListChefPending = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS = [
+  const BODY_CELLS: BodyCell<Chef>[] = [
     {
       render: (row: Chef) => (
-        <Stack direction="row" spacing={2} alignItems={"center"}>
+        <Stack direction="row" spacing={1.25} alignItems={"center"}>
           <Avatar src={row.userInfo.avatar} alt="Avatar user" />
           <Stack direction="column">
             <Typography fontWeight="500" color="text.primary">
@@ -229,7 +230,10 @@ const ListChefPending = () => {
             <IconButton
               sx={{
                 "& svg": {
-                  color: (theme) => theme.palette.secondary.main,
+                  color: (theme) =>
+                    row.status === "banned"
+                      ? theme.palette.success.main
+                      : theme.palette.error.main,
                 },
               }}
               onClick={() => {
@@ -238,9 +242,9 @@ const ListChefPending = () => {
               disableRipple>
               <Icon
                 icon={
-                  row.status == "banned"
-                    ? "clarity:unlock-solid"
-                    : "clarity:lock-solid"
+                  row.status === "banned"
+                    ? "mdi:user-unlocked"
+                    : "basil:user-block-solid"
                 }
               />
               <Modal
