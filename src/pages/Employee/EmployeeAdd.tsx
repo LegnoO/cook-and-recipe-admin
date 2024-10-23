@@ -2,11 +2,11 @@
 import { useState, Fragment, memo, Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
-import { Grid, Typography, Button, Stack, Input } from "@mui/material";
+import { Grid, Typography, Button, Stack, Input, IconButton } from "@mui/material";
 
 // ** Components
 import { GroupSelect, PhoneInput } from "@/components/fields";
-import { Form } from "@/components/ui";
+import { Form, Icon } from "@/components/ui";
 import { RenderIf, UploadImage, RenderFieldsControlled } from "@/components";
 
 // ** Library Imports
@@ -33,7 +33,7 @@ type Props = {
   refetch: () => void;
 };
 
-const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
+const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
 
@@ -84,6 +84,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
       options={{ useBothWheelAxes: true, wheelPropagation: false }}>
       <Form
         sx={{
+          position: "relative",
           maxHeight: "95dvh",
         }}
         noValidate
@@ -99,7 +100,7 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
           <Typography
             fontWeight={500}
             component="h3"
-            sx={{ mb: "2.75rem" }}
+            sx={{ textAlign: { xs: "center", sm: "left" }, mb: "2.75rem" }}
             variant="h4">
             Add New Employee
           </Typography>
@@ -201,8 +202,18 @@ const AddEmployee = ({ refetch, closeMenu, setController }: Props) => {
             </Button>
           </Stack>
         </Stack>
+        <IconButton
+          disableRipple
+          onClick={closeMenu}
+          sx={{
+            position: "absolute",
+            right: "1rem",
+            top: "1rem",
+          }}>
+          <Icon fontSize="1.5rem" icon="si:close-line" />
+        </IconButton>
       </Form>
     </PerfectScrollbar>
   );
 };
-export default memo(AddEmployee);
+export default memo(EmployeeAdd);

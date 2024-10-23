@@ -10,6 +10,7 @@ import {
   Divider,
   IconButton,
   Popover,
+  Box,
 } from "@mui/material";
 
 // ** Components
@@ -30,26 +31,29 @@ import { SearchInput } from "@/components/fields";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
 
 // ** Component's
-import UpdateGroup from "./UpdateGroup";
-import AddGroup from "./AddGroup";
+import GroupUpdate from "./GroupUpdate";
+import GroupAdd from "./GroupAdd";
 import MoveMember from "./MoveMember";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatDateTime } from "@/utils/helpers";
+import { formatDateTime, handleToastMessages } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import { queryGroups, toggleGroupStatus } from "@/services/groupServices";
 
-const ListGroup = () => {
+const GroupList = () => {
+  const navigate = useNavigate();
+  const { activeIds, addId, removeId } = useSettings();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: FilterGroup = {
@@ -61,8 +65,6 @@ const ListGroup = () => {
     sortBy: "",
     sortOrder: "",
   };
-  const navigate = useNavigate();
-  const { activeIds, addId, removeId } = useSettings();
 
   const ids = useMemo(
     () => ({
@@ -117,7 +119,8 @@ const ListGroup = () => {
           ) || prev,
       );
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
     } finally {
       removeId(`loading-switch-${groupId}`);
     }
@@ -154,7 +157,7 @@ const ListGroup = () => {
   );
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...groupData?.paginate });
   }
 
   function handleViewGroupId(groupId: string) {
@@ -224,7 +227,7 @@ const ListGroup = () => {
     },
     {
       render: (row: Group) => (
-        <>
+        <Fragment>
           <IconButton
             disableRipple
             aria-describedby={row.id}
@@ -303,7 +306,7 @@ const ListGroup = () => {
                     <Modal
                       open={activeIds.includes(ids.modalUpdateGroup(row.id))}
                       onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
-                      <UpdateGroup
+                      <GroupUpdate
                         groupId={row.id}
                         refetch={refetch}
                         closeMenu={() =>
@@ -349,7 +352,7 @@ const ListGroup = () => {
               </Stack>
             </Popover>
           </IconButton>
-        </>
+        </Fragment>
       ),
     },
   ];
@@ -364,59 +367,44 @@ const ListGroup = () => {
           boxShadow: "none",
         }}>
         <Stack
-          sx={{ p: 3, flexWrap: "wrap" }}
+          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
           direction={{
-            md: "column",
+            xs: "column",
             lg: "row",
           }}
-          justifyContent="space-between"
-          alignItems={{
-            md: "start",
-            lg: "center",
-          }}
-          spacing={{
-            xs: 2,
-            md: 2,
-          }}>
+          alignItems={"center"}
+          justifyContent="space-between">
+          <SearchInput
+            disabled={isLoading}
+            placeholder="Search Group"
+            onChange={handleSearchGroup}
+            fullWidth
+            sx={{ height: 40, maxWidth: { xs: "100%", lg: 170 } }}
+          />
           <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{
-              xs: 1.5,
-              md: 1.5,
-            }}>
-            <Typography>Show</Typography>
-            <Select
-              sx={{ height: 42, width: 70 }}
-              fullWidth
-              disabled={isLoading}
-              onChange={handleChangeRowPageSelector}
-              value={filter.size}
-              menuItems={pageSizeOptions}
-            />
-          </Stack>
-
-          <Stack
+            sx={{ width: { xs: "100%", lg: "fit-content" } }}
+            spacing={2}
             direction={{
-              sm: "column",
-              md: "row",
+              xs: "column",
+              lg: "row",
             }}
-            alignItems={{
-              sm: "stretch",
-              md: "center",
-            }}
-            spacing={{
-              xs: 2,
-              md: 2,
-            }}>
-            <SearchInput
-              disabled={isLoading}
-              placeholder="Search Permission"
-              onChange={handleSearchGroup}
-              fullWidth
-              sx={{ minWidth: 220 }}
-            />
+            alignItems={"center"}>
+            <Stack
+              sx={{ width: { xs: "100%", lg: "fit-content" }, gap: 1.5 }}
+              direction="row"
+              alignItems="center">
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", lg: 65 } }}
+                fullWidth
+                disabled={isLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
             <Select
+              sx={{ height: 40, maxWidth: { xs: "100%", lg: 150 } }}
               value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "status")
@@ -431,18 +419,25 @@ const ListGroup = () => {
             />
             <Button
               sx={{
-                minWidth: "max-content",
+                height: 40,
+                width: { xs: "100%", lg: 195 },
+                textWrap: "nowrap",
               }}
               disabled={isLoading}
               disableRipple
               color="error"
-              variant="outlined"
+              variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
             </Button>
             <Button
-              sx={{ minWidth: "max-content" }}
+              sx={{
+                height: 40,
+                textWrap: "nowrap",
+                width: "100%",
+                maxWidth: { xs: "100%", lg: 190 },
+              }}
               disabled={isLoading}
               disableRipple
               variant="contained"
@@ -452,7 +447,7 @@ const ListGroup = () => {
               <Modal
                 open={activeIds.includes(ids.newGroupModal)}
                 onClose={() => removeId(ids.newGroupModal)}>
-                <AddGroup
+                <GroupAdd
                   refetch={refetch}
                   closeMenu={() => handleCancel(ids.newGroupModal)}
                   setController={setController}
@@ -489,4 +484,4 @@ const ListGroup = () => {
     </Fragment>
   );
 };
-export default ListGroup;
+export default GroupList;

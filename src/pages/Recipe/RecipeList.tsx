@@ -9,7 +9,6 @@ import {
   Button,
   Divider,
   IconButton,
-  Popover,
 } from "@mui/material";
 
 // ** Components
@@ -50,7 +49,7 @@ import {
   privateRecipe,
 } from "@/services/recipeService";
 
-const ListRecipe = () => {
+const RecipeList = () => {
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterRecipe> = {
     index: 1,
@@ -75,10 +74,9 @@ const ListRecipe = () => {
     [],
   );
 
-  const [recipes, setRecipes] = useState<RecipePending[] | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<Filter<FilterRecipe>>(defaultFilter);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const { data: recipeData } = useQuery({
     queryKey: [
@@ -106,10 +104,6 @@ const ListRecipe = () => {
     updateFilter({ index: value });
   }
 
-  function handleCloseAction(id: string) {
-    removeId(ids.modalAction(id));
-  }
-
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
     field: keyof Filter<FilterRecipe>,
@@ -125,11 +119,7 @@ const ListRecipe = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  function handleToggleAction(id: string) {
-    addId(ids.modalAction(id));
-  }
-
-  const handleSearchGroup = useDebouncedCallback(
+  const handleSearchRecipe = useDebouncedCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setFilter((prev) => ({ ...prev, name: event.target.value }));
     },
@@ -137,7 +127,7 @@ const ListRecipe = () => {
   );
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...recipeData?.paginate });
   }
 
   function handleCancel(modalId: string) {
@@ -165,21 +155,21 @@ const ListRecipe = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS: BodyCell<RecipePending>[] = [
+  const BODY_CELLS: BodyCell<Recipe>[] = [
     {
-      render: (row: RecipePending) => row.name,
+      render: (row: Recipe) => row.name,
     },
     {
-      render: (row: RecipePending) => row.difficulty,
+      render: (row: Recipe) => row.difficulty,
     },
     {
-      render: (row: RecipePending) => formatDateTime(row.createdDate),
+      render: (row: Recipe) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: RecipePending) => row.createdBy.fullName,
+      render: (row: Recipe) => row.createdBy.fullName,
     },
     {
-      render: (row: RecipePending) => (
+      render: (row: Recipe) => (
         <ChipStatus
           label={row.status ? "Public" : "Private"}
           variant={row.status ? "active" : "disabled"}
@@ -187,7 +177,7 @@ const ListRecipe = () => {
       ),
     },
     {
-      render: (row: RecipePending) => (
+      render: (row: Recipe) => (
         <ChipStatus
           label={row.verifyStatus}
           variant={row.verifyStatus === "rejected" ? "error" : "success"}
@@ -195,8 +185,8 @@ const ListRecipe = () => {
       ),
     },
     {
-      render: (row: RecipePending) => (
-        <Fragment>
+      render: (row: Recipe) => (
+        <Stack direction="row" alignItems="center">
           <Tooltip
             arrow
             title={"Recipe Details"}
@@ -271,7 +261,7 @@ const ListRecipe = () => {
               </Modal>
             </IconButton>
           </Tooltip>
-        </Fragment>
+        </Stack>
       ),
     },
   ];
@@ -285,46 +275,18 @@ const ListRecipe = () => {
           borderBottomLeftRadius: 0,
           boxShadow: "none",
         }}>
-        <Box sx={{ p: 2.5 }}>
+        <Stack direction="column" spacing={2} sx={{ p: 3 }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
           <Stack
-            sx={{
-              width: "100%",
-              gap: 2,
-              flexWrap: "wrap",
+            direction={{
+              xs: "column",
+              sm: "row",
             }}
-            direction={"row"}
-            alignItems={{
-              xs: "stretch",
-              sm: "center",
-            }}>
-            <Stack
-              sx={{ flex: { xs: 1, sm: "none" } }}
-              direction="row"
-              alignItems="center"
-              spacing={1.5}>
-              <Typography>Show</Typography>
-              <Select
-                sx={{
-                  height: 42,
-
-                  minWidth: { sm: 70 },
-                }}
-                fullWidth
-                disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
-                value={filter.size}
-                menuItems={pageSizeOptions}
-              />
-            </Stack>
-            <SearchInput
-              disabled={isLoading}
-              placeholder="Search Recipe"
-              onChange={handleSearchGroup}
-              fullWidth
-              sx={{ maxWidth: { xs: "100%", sm: 170 } }}
-            />
+            spacing={3}
+            alignItems="center">
             <Select
-              sx={{ maxWidth: { xs: "100%", sm: 150 } }}
               value={filter.difficulty || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "difficulty")
@@ -341,7 +303,6 @@ const ListRecipe = () => {
               isLoading={isLoading}
             />
             <Select
-              sx={{ maxWidth: { xs: "100%", sm: 180 } }}
               value={filter.verifyStatus || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "verifyStatus")
@@ -355,7 +316,6 @@ const ListRecipe = () => {
               isLoading={isLoading}
             />
             <Select
-              sx={{ maxWidth: { xs: "100%", sm: 140 } }}
               value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "status")
@@ -368,19 +328,63 @@ const ListRecipe = () => {
               fullWidth
               isLoading={isLoading}
             />
+          </Stack>
+        </Stack>
+        <Divider />
+        <Stack
+          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
+          direction={{
+            xs: "column",
+            sm: "row",
+          }}
+          alignItems={"center"}
+          justifyContent="space-between">
+          <SearchInput
+            disabled={isLoading}
+            placeholder="Search Recipe"
+            onChange={handleSearchRecipe}
+            fullWidth
+            sx={{ height: 40, maxWidth: { xs: "100%", sm: 170 } }}
+          />
+
+          <Stack
+            sx={{ width: { xs: "100%", sm: "fit-content" } }}
+            spacing={2}
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
+            alignItems={"center"}>
+            <Stack
+              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
+              direction="row"
+              alignItems="center">
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                fullWidth
+                disabled={isLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
+
             <Button
-              fullWidth
-              sx={{ maxWidth: { xs: "100%", sm: "max-content" } }}
+              sx={{
+                height: 40,
+                width: { xs: "100%", sm: 150 },
+              }}
               disabled={isLoading}
               disableRipple
               color="error"
-              variant="outlined"
+              variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
             </Button>
           </Stack>
-        </Box>
+        </Stack>
       </Paper>
       <Divider />
       <TableContainer>
@@ -409,4 +413,4 @@ const ListRecipe = () => {
     </Fragment>
   );
 };
-export default ListRecipe;
+export default RecipeList;

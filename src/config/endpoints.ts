@@ -58,8 +58,7 @@ export const recipeEndpoints = {
 };
 
 export const categoryEndpoints = {
-  createCategory: `/category/admin`,
-  queryCategory: `/category/admin/find`,
+  queryCategory: (params: string) => `/category/admin/find?${params.toString()}`,
   getDetailCategory: (categoryId: string) =>
     `/category/admin/find/${categoryId}`,
   updateCategory: (categoryId: string) =>

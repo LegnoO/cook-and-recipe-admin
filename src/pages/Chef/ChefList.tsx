@@ -27,7 +27,7 @@ import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
 // ** Services
-import { queryChefPending, toggleChefRequest } from "@/services/chefService";
+import { queryChef, disableChef, activeChef } from "@/services/chefService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -37,15 +37,15 @@ import { toast } from "react-toastify";
 // ** Context
 import useSettings from "@/hooks/useSettings";
 
-// ** Utils
-import { formatDateTime, handleToastMessages } from "@/utils/helpers";
-import { handleAxiosError } from "@/utils/errorHandler";
-
 // ** Component's
 import ChefDetail from "./ChefDetail";
 
+// ** Utils
+import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+
 // ** Config
 import { queryOptions } from "@/config/query-options";
+import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Types
 
@@ -53,19 +53,19 @@ const ListChefPending = () => {
   const pageSizeOptions = ["10", "15", "20"];
 
   const [isLoading, setLoading] = useState(false);
-  const defaultFilter: Filter<FilterChefPending> = {
+  const defaultFilter: Filter<FilterChef> = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
     email: null,
     level: null,
+    chefStatus: null,
     fullName: "",
     sortBy: "",
     sortOrder: "",
   };
 
-  const [filter, setFilter] =
-    useState<Filter<FilterChefPending>>(defaultFilter);
+  const [filter, setFilter] = useState<Filter<FilterChef>>(defaultFilter);
   const {
     isLoading: chefLoading,
     data: chefData,
@@ -80,13 +80,13 @@ const ListChefPending = () => {
       filter.fullName,
       filter.sortBy,
       filter.sortOrder,
+      filter.chefStatus,
     ],
-    queryFn: () => queryChefPending(filter),
+    queryFn: () => queryChef(filter),
     ...queryOptions,
   });
   const ids = {
-    modalConfirmApprove: (id: string) => `modal-confirm-approve-${id}`,
-    modalConfirmReject: (id: string) => `modal-confirm-reject-${id}`,
+    modalConfirm: (id: string) => `modal-confirm-${id}`,
     modalDetail: (id: string) => `modal-detail-${id}`,
   };
 
@@ -102,7 +102,7 @@ const ListChefPending = () => {
     banned: { variant: "banned" },
   };
 
-  function updateFilter(updates: Partial<Filter<FilterChefPending>>) {
+  function updateFilter(updates: Partial<Filter<FilterChef>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
@@ -112,7 +112,7 @@ const ListChefPending = () => {
 
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterChefPending>,
+    field: keyof Filter<FilterChef>,
   ) {
     updateFilter({ index: 1, [field]: event.target.value });
   }
@@ -123,7 +123,7 @@ const ListChefPending = () => {
   }
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...chefData?.paginate });
   }
 
   function handleCancel(modalId: string) {
@@ -134,27 +134,19 @@ const ListChefPending = () => {
     removeId(modalId);
   }
 
-  async function handleApproveOrRejectChef(chefId: string, status: boolean) {
+  async function handleBanChef(row: Chef) {
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
-
-    const toastMessage = status
-      ? "Approve successfully"
-      : "Reject successfully";
-
     try {
-      await toggleChefRequest(chefId, status);
-      toast.success(toastMessage);
+      const action = row.status === "banned" ? activeChef : disableChef;
+      await action(`${row.id}`);
+      toast.success("Banned successfully");
       refetch();
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       handleToastMessages(toast.error)(errorMessage);
     } finally {
-      if (status) {
-        handleCancel(ids.modalConfirmApprove(chefId));
-      } else {
-        handleCancel(ids.modalConfirmReject(chefId));
-      }
+      handleCancel(ids.modalConfirm(row.id));
       setLoading(false);
       toast.dismiss(toastLoading);
     }
@@ -207,11 +199,12 @@ const ListChefPending = () => {
     {
       render: (row: Chef) => (
         <ChipStatus
-          label={row.status || "description"}
+          label={row.status}
           variant={statusColorMap[row.status]?.variant as ColorVariant}
         />
       ),
     },
+
     {
       render: (row: Chef) => (
         <Fragment>
@@ -231,65 +224,42 @@ const ListChefPending = () => {
             </Modal>
           </IconButton>
           <Tooltip
-            disableHoverListener={activeIds.includes(
-              ids.modalConfirmReject(row.id),
-            )}
             arrow
-            title="Reject Promotion">
+            title={row.status === "banned" ? "Unban User" : "Ban User"}
+            disableHoverListener={activeIds.includes(ids.modalConfirm(row.id))}>
             <IconButton
               sx={{
-                "& svg": { color: (theme) => theme.palette.error.main },
+                "& svg": {
+                  color: (theme) =>
+                    row.status === "banned"
+                      ? theme.palette.success.main
+                      : theme.palette.error.main,
+                },
               }}
               onClick={() => {
-                addId(ids.modalConfirmReject(row.id));
+                addId(ids.modalConfirm(row.id));
               }}
               disableRipple>
-              <Icon icon={"mdi:close"} />
+              <Icon
+                icon={
+                  row.status === "banned"
+                    ? "mdi:user-unlocked"
+                    : "basil:user-block-solid"
+                }
+              />
               <Modal
-                open={activeIds.includes(ids.modalConfirmReject(row.id))}
-                onClose={() => removeId(ids.modalConfirmReject(row.id))}>
+                open={activeIds.includes(ids.modalConfirm(row.id))}
+                onClose={() => removeId(ids.modalConfirm(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"warning"}
-                  textSubmit={"Yes, reject !"}
-                  textTitle={`Confirm reject ${row.userInfo.fullName}`}
-                  textContent={`You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`}
+                  variant={row.status === "banned" ? "warning" : "error"}
+                  textSubmit={`Yes, ${row.status === "banned" ? "Unban" : "Ban"} !`}
+                  textTitle={`Confirm ${row.status === "banned" ? "Unban" : "Ban"} ${row.userInfo.fullName}`}
+                  textContent={`You're about to ${row.status === "banned" ? "Unban" : "Ban"} user '${row.userInfo.fullName}'. Are you sure?`}
                   onClick={async () => {
-                    await handleApproveOrRejectChef(row.id, false);
+                    await handleBanChef(row);
                   }}
-                  onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
-                />
-              </Modal>
-            </IconButton>
-          </Tooltip>
-          <Tooltip
-            disableHoverListener={activeIds.includes(
-              ids.modalConfirmApprove(row.id),
-            )}
-            arrow
-            title="Approve Promotion">
-            <IconButton
-              sx={{
-                "& svg": { color: (theme) => theme.palette.success.main },
-              }}
-              onClick={() => {
-                addId(ids.modalConfirmApprove(row.id));
-              }}
-              disableRipple>
-              <Icon icon={"mdi:tick"} />
-              <Modal
-                open={activeIds.includes(ids.modalConfirmApprove(row.id))}
-                onClose={() => removeId(ids.modalConfirmApprove(row.id))}>
-                <ConfirmBox
-                  isLoading={isLoading}
-                  variant={"info"}
-                  textSubmit={"Yes, approve !"}
-                  textTitle={`Confirm approve ${row.userInfo.fullName}`}
-                  textContent={`You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`}
-                  onClick={async () => {
-                    await handleApproveOrRejectChef(row.id, true);
-                  }}
-                  onClose={() => handleCancel(ids.modalConfirmApprove(row.id))}
+                  onClose={() => handleCancel(ids.modalConfirm(row.id))}
                 />
               </Modal>
             </IconButton>
@@ -308,62 +278,34 @@ const ListChefPending = () => {
           borderBottomLeftRadius: 0,
           boxShadow: "none",
         }}>
-        <Stack
-          sx={{ p: 3, flexWrap: "wrap" }}
-          direction={{
-            md: "column",
-            lg: "row",
-          }}
-          justifyContent="space-between"
-          alignItems={{
-            md: "start",
-            lg: "center",
-          }}
-          spacing={{
-            xs: 2,
-            md: 2,
-          }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{
-              xs: 1.5,
-              md: 1.5,
-            }}>
-            <Typography>Show</Typography>
-            <Select
-              sx={{ height: 42, width: 70 }}
-              fullWidth
-              disabled={chefLoading}
-              onChange={handleChangeRowPageSelector}
-              value={filter.size}
-              menuItems={pageSizeOptions}
-            />
-          </Stack>
-
+        <Stack direction="column" spacing={2} sx={{ p: 3 }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
           <Stack
             direction={{
-              sm: "column",
-              md: "row",
+              xs: "column",
+              sm: "row",
             }}
-            alignItems={{
-              sm: "stretch",
-              md: "center",
-            }}
-            spacing={{
-              xs: 2,
-              md: 2,
-            }}>
-            <SearchInput
-              disabled={chefLoading}
-              placeholder="Search Chef"
-              onChange={handleSearchChef}
-              fullWidth
-              sx={{ height: 40, minWidth: 220 }}
-            />
-
+            spacing={3}
+            alignItems="center">
             <Select
-              sx={{ height: 40, minWidth: 140 }}
+              value={filter.chefStatus || ""}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                handleFilterChange(event, "chefStatus")
+              }
+              menuItems={[
+                { label: "Active", value: "active" },
+                { label: "Disabled", value: "disabled" },
+
+                { label: "Rejected", value: "rejected" },
+                { label: "Banned", value: "banned" },
+              ]}
+              defaultOption={"Select Status"}
+              fullWidth
+              isLoading={isLoading}
+            />
+            <Select
               value={filter.level || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "level")
@@ -378,14 +320,60 @@ const ListChefPending = () => {
               fullWidth
               isLoading={chefLoading}
             />
+          </Stack>
+        </Stack>
+        <Divider />
+        <Stack
+          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
+          direction={{
+            xs: "column",
+            sm: "row",
+          }}
+          alignItems={"center"}
+          justifyContent="space-between">
+          <SearchInput
+            fullWidth
+            disabled={isLoading}
+            placeholder="Search User"
+            onChange={handleSearchChef}
+            sx={{
+              height: 40,
+              width: { xs: "100%", sm: 170 },
+            }}
+          />
+
+          <Stack
+            sx={{ width: { xs: "100%", sm: "fit-content" } }}
+            spacing={2}
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
+            alignItems={"center"}>
+            <Stack
+              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
+              direction="row"
+              alignItems="center">
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                fullWidth
+                disabled={isLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
+
             <Button
               sx={{
-                minWidth: "max-content",
+                height: 40,
+                width: { xs: "100%", sm: 150 },
               }}
-              disabled={isLoading || chefLoading}
+              disabled={isLoading}
               disableRipple
               color="error"
-              variant="outlined"
+              variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
@@ -396,13 +384,13 @@ const ListChefPending = () => {
       <Divider />
       <TableContainer>
         <Table>
-          <TableHead<FilterChefPending>
+          <TableHead<FilterChef>
             isLoading={chefLoading}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody<Chef, FilterChefPending>
+          <TableBody<Chef, FilterChef>
             isLoading={chefLoading}
             data={chefs}
             filter={filter}

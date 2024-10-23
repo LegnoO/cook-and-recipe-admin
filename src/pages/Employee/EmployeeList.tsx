@@ -29,19 +29,20 @@ import { SearchInput, GroupSelect } from "@/components/fields";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
 
 // ** Component's
-import UpdateEmployee from "./UpdateEmployee";
-import AddEmployee from "./AddEmployee";
+import EmployeeUpdate from "./EmployeeUpdate";
+import EmployeeAdd from "./EmployeeAdd";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatAddress } from "@/utils/helpers";
+import { formatAddress, handleToastMessages } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
@@ -50,20 +51,12 @@ import {
   toggleStatusEmployee,
 } from "@/services/employeeService";
 
-const ListEmployee = () => {
+const EmployeeList = () => {
   const location = useLocation();
-  const pageSizeOptions = ["10", "15", "20"];
-
-  const ids = {
-    loadingSwitch: (id: string) => `loading-switch-${id}`,
-    modalUpdateEmployee: (id: string) => `modal-update-employee-${id}`,
-    newEmployeeModal: "new-employee-modal",
-  };
-
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
-
+  const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterEmployees> = {
     index: 1,
     size: Number(pageSizeOptions[0]),
@@ -75,8 +68,14 @@ const ListEmployee = () => {
     sortBy: "",
     sortOrder: "",
   };
-
   const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
+  console.log("🚀 ~ ListEmployee ~ filter:", filter);
+
+  const ids = {
+    loadingSwitch: (id: string) => `loading-switch-${id}`,
+    modalUpdateEmployee: (id: string) => `modal-update-employee-${id}`,
+    newEmployeeModal: "new-employee-modal",
+  };
 
   const {
     isLoading,
@@ -141,10 +140,7 @@ const ListEmployee = () => {
           color="success"
           onChange={() => handleChangeStatus(row.id)}
           disabled={activeIds.includes(ids.loadingSwitch(row.id))}
-          checked={
-            row.status ||
-            false
-          }
+          checked={row.status || false}
         />
       ),
     },
@@ -157,7 +153,7 @@ const ListEmployee = () => {
           <Modal
             open={activeIds.includes(ids.modalUpdateEmployee(row.id))}
             onClose={() => removeId(ids.modalUpdateEmployee(row.id))}>
-            <UpdateEmployee
+            <EmployeeUpdate
               employeeId={row.id}
               refetch={refetch}
               closeMenu={() => handleCancel(ids.modalUpdateEmployee(row.id))}
@@ -168,13 +164,6 @@ const ListEmployee = () => {
       ),
     },
   ];
-
-  useEffect(() => {
-    if (employeeData) {
-      setEmployees(employeeData.data);
-      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
-    }
-  }, [employeeData]);
 
   async function handleChangeStatus(employeeId: string) {
     try {
@@ -189,7 +178,8 @@ const ListEmployee = () => {
           ) || prev,
       );
     } catch (error) {
-      handleAxiosError(error);
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
     } finally {
       removeId(`loading-switch-${employeeId}`);
     }
@@ -226,7 +216,7 @@ const ListEmployee = () => {
   );
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...employeeData?.paginate });
   }
 
   function handleCancel(modalId: string) {
@@ -236,6 +226,13 @@ const ListEmployee = () => {
     }
     removeId(modalId);
   }
+
+  useEffect(() => {
+    if (employeeData) {
+      setEmployees(employeeData.data);
+      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
+    }
+  }, [employeeData]);
 
   return (
     <Fragment>
@@ -252,8 +249,8 @@ const ListEmployee = () => {
           </Typography>
           <Stack
             direction={{
-              md: "row",
               xs: "column",
+              sm: "row",
             }}
             spacing={3}
             alignItems="center">
@@ -294,64 +291,51 @@ const ListEmployee = () => {
         </Stack>
         <Divider />
         <Stack
-          sx={{ p: 3, flexWrap: "wrap" }}
+          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
           direction={{
-            md: "column",
-            lg: "row",
+            xs: "column",
+            sm: "row",
           }}
-          justifyContent="space-between"
-          alignItems={{
-            md: "start",
-            lg: "center",
-          }}
-          spacing={{
-            xs: 2,
-            md: 2,
-          }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{
-              xs: 1.5,
-              md: 1.5,
-            }}>
-            <Typography>Show</Typography>
-            <Select
-              sx={{ height: 42, width: 70 }}
-              fullWidth
-              disabled={isLoading}
-              onChange={handleChangeRowPageSelector}
-              value={filter.size}
-              menuItems={pageSizeOptions}
-            />
-          </Stack>
+          alignItems={"center"}
+          justifyContent="space-between">
+          <SearchInput
+            fullWidth
+            disabled={isLoading}
+            placeholder="Search User"
+            onChange={handleSearchEmployee}
+            sx={{
+              height: 40,
+              width: { xs: "100%", sm: 170 },
+            }}
+          />
 
           <Stack
+            sx={{ width: { xs: "100%", sm: "fit-content" } }}
+            spacing={2}
             direction={{
-              sm: "column",
-              md: "row",
+              xs: "column",
+              sm: "row",
             }}
-            alignItems={{
-              sm: "stretch",
-              md: "center",
-            }}
-            spacing={{
-              xs: 2,
-              md: 2,
-            }}>
-            <SearchInput
-              disabled={isLoading}
-              placeholder="Search User"
-              onChange={handleSearchEmployee}
-              fullWidth
-              sx={{
-                height: 42,
-                minWidth: 120,
-              }}
-            />
+            alignItems={"center"}>
+            <Stack
+              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
+              direction="row"
+              alignItems="center">
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                fullWidth
+                disabled={isLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
+
             <Button
               sx={{
-                minWidth: "max-content",
+                height: 40,
+                width: { xs: "100%", sm: 150 },
               }}
               disabled={isLoading}
               disableRipple
@@ -361,9 +345,8 @@ const ListEmployee = () => {
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
             </Button>
-
             <Button
-              sx={{ minWidth: "max-content" }}
+              sx={{ height: 40, width: { xs: "100%", sm: 205 } }}
               disabled={isLoading}
               disableRipple
               variant="contained"
@@ -373,7 +356,7 @@ const ListEmployee = () => {
               <Modal
                 open={activeIds.includes(ids.newEmployeeModal)}
                 onClose={() => removeId(ids.newEmployeeModal)}>
-                <AddEmployee
+                <EmployeeAdd
                   refetch={refetch}
                   closeMenu={() => handleCancel(ids.newEmployeeModal)}
                   setController={setController}
@@ -410,4 +393,4 @@ const ListEmployee = () => {
     </Fragment>
   );
 };
-export default ListEmployee;
+export default EmployeeList;

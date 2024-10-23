@@ -27,7 +27,7 @@ import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
 // ** Services
-import { queryChef, disableChef, activeChef } from "@/services/chefService";
+import { queryChefPending, toggleChefRequest } from "@/services/chefService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -37,35 +37,35 @@ import { toast } from "react-toastify";
 // ** Context
 import useSettings from "@/hooks/useSettings";
 
+// ** Utils
+import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+import { handleAxiosError } from "@/utils/errorHandler";
+
 // ** Component's
 import ChefDetail from "./ChefDetail";
 
-// ** Utils
-import { formatDateTime, handleToastMessages } from "@/utils/helpers";
-
 // ** Config
 import { queryOptions } from "@/config/query-options";
-import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Types
 
-const ListChefPending = () => {
+const ChefPendingList = () => {
   const pageSizeOptions = ["10", "15", "20"];
 
   const [isLoading, setLoading] = useState(false);
-  const defaultFilter: Filter<FilterChef> = {
+  const defaultFilter: Filter<FilterChefPending> = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     total: null,
     email: null,
     level: null,
-    chefStatus: null,
     fullName: "",
     sortBy: "",
     sortOrder: "",
   };
 
-  const [filter, setFilter] = useState<Filter<FilterChef>>(defaultFilter);
+  const [filter, setFilter] =
+    useState<Filter<FilterChefPending>>(defaultFilter);
   const {
     isLoading: chefLoading,
     data: chefData,
@@ -80,13 +80,13 @@ const ListChefPending = () => {
       filter.fullName,
       filter.sortBy,
       filter.sortOrder,
-      filter.chefStatus,
     ],
-    queryFn: () => queryChef(filter),
+    queryFn: () => queryChefPending(filter),
     ...queryOptions,
   });
   const ids = {
-    modalConfirm: (id: string) => `modal-confirm-${id}`,
+    modalConfirmApprove: (id: string) => `modal-confirm-approve-${id}`,
+    modalConfirmReject: (id: string) => `modal-confirm-reject-${id}`,
     modalDetail: (id: string) => `modal-detail-${id}`,
   };
 
@@ -102,7 +102,7 @@ const ListChefPending = () => {
     banned: { variant: "banned" },
   };
 
-  function updateFilter(updates: Partial<Filter<FilterChef>>) {
+  function updateFilter(updates: Partial<Filter<FilterChefPending>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
@@ -112,7 +112,7 @@ const ListChefPending = () => {
 
   function handleFilterChange(
     event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterChef>,
+    field: keyof Filter<FilterChefPending>,
   ) {
     updateFilter({ index: 1, [field]: event.target.value });
   }
@@ -123,7 +123,7 @@ const ListChefPending = () => {
   }
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...chefData?.paginate });
   }
 
   function handleCancel(modalId: string) {
@@ -134,19 +134,27 @@ const ListChefPending = () => {
     removeId(modalId);
   }
 
-  async function handleBanChef(row: Chef) {
+  async function handleApproveOrRejectChef(chefId: string, status: boolean) {
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
+
+    const toastMessage = status
+      ? "Approve successfully"
+      : "Reject successfully";
+
     try {
-      const action = row.status === "banned" ? activeChef : disableChef;
-      await action(`${row.id}`);
-      toast.success("Banned successfully");
+      await toggleChefRequest(chefId, status);
+      toast.success(toastMessage);
       refetch();
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       handleToastMessages(toast.error)(errorMessage);
     } finally {
-      handleCancel(ids.modalConfirm(row.id));
+      if (status) {
+        handleCancel(ids.modalConfirmApprove(chefId));
+      } else {
+        handleCancel(ids.modalConfirmReject(chefId));
+      }
       setLoading(false);
       toast.dismiss(toastLoading);
     }
@@ -199,12 +207,11 @@ const ListChefPending = () => {
     {
       render: (row: Chef) => (
         <ChipStatus
-          label={row.status}
+          label={row.status || "description"}
           variant={statusColorMap[row.status]?.variant as ColorVariant}
         />
       ),
     },
-
     {
       render: (row: Chef) => (
         <Fragment>
@@ -224,42 +231,65 @@ const ListChefPending = () => {
             </Modal>
           </IconButton>
           <Tooltip
+            disableHoverListener={activeIds.includes(
+              ids.modalConfirmReject(row.id),
+            )}
             arrow
-            title={row.status === "banned" ? "Unban User" : "Ban User"}
-            disableHoverListener={activeIds.includes(ids.modalConfirm(row.id))}>
+            title="Reject Promotion">
             <IconButton
               sx={{
-                "& svg": {
-                  color: (theme) =>
-                    row.status === "banned"
-                      ? theme.palette.success.main
-                      : theme.palette.error.main,
-                },
+                "& svg": { color: (theme) => theme.palette.error.main },
               }}
               onClick={() => {
-                addId(ids.modalConfirm(row.id));
+                addId(ids.modalConfirmReject(row.id));
               }}
               disableRipple>
-              <Icon
-                icon={
-                  row.status === "banned"
-                    ? "mdi:user-unlocked"
-                    : "basil:user-block-solid"
-                }
-              />
+              <Icon icon={"mdi:close"} />
               <Modal
-                open={activeIds.includes(ids.modalConfirm(row.id))}
-                onClose={() => removeId(ids.modalConfirm(row.id))}>
+                open={activeIds.includes(ids.modalConfirmReject(row.id))}
+                onClose={() => removeId(ids.modalConfirmReject(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={row.status === "banned" ? "warning" : "error"}
-                  textSubmit={`Yes, ${row.status === "banned" ? "Unban" : "Ban"} !`}
-                  textTitle={`Confirm ${row.status === "banned" ? "Unban" : "Ban"} ${row.userInfo.fullName}`}
-                  textContent={`You're about to ${row.status === "banned" ? "Unban" : "Ban"} user '${row.userInfo.fullName}'. Are you sure?`}
+                  variant={"warning"}
+                  textSubmit={"Yes, reject !"}
+                  textTitle={`Confirm reject ${row.userInfo.fullName}`}
+                  textContent={`You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`}
                   onClick={async () => {
-                    await handleBanChef(row);
+                    await handleApproveOrRejectChef(row.id, false);
                   }}
-                  onClose={() => handleCancel(ids.modalConfirm(row.id))}
+                  onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            disableHoverListener={activeIds.includes(
+              ids.modalConfirmApprove(row.id),
+            )}
+            arrow
+            title="Approve Promotion">
+            <IconButton
+              sx={{
+                "& svg": { color: (theme) => theme.palette.success.main },
+              }}
+              onClick={() => {
+                addId(ids.modalConfirmApprove(row.id));
+              }}
+              disableRipple>
+              <Icon icon={"mdi:tick"} />
+              <Modal
+                open={activeIds.includes(ids.modalConfirmApprove(row.id))}
+                onClose={() => removeId(ids.modalConfirmApprove(row.id))}>
+                <ConfirmBox
+                  isLoading={isLoading}
+                  variant={"info"}
+                  textSubmit={"Yes, approve !"}
+                  textTitle={`Confirm approve ${row.userInfo.fullName}`}
+                  textContent={`You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`}
+                  onClick={async () => {
+                    await handleApproveOrRejectChef(row.id, true);
+                  }}
+                  onClose={() => handleCancel(ids.modalConfirmApprove(row.id))}
                 />
               </Modal>
             </IconButton>
@@ -281,13 +311,13 @@ const ListChefPending = () => {
         <Stack
           sx={{ p: 3, flexWrap: "wrap" }}
           direction={{
-            md: "column",
-            lg: "row",
+            xs: "column",
+            md: "row",
           }}
           justifyContent="space-between"
           alignItems={{
-            md: "start",
-            lg: "center",
+            xs: "start",
+            md: "center",
           }}
           spacing={{
             xs: 2,
@@ -302,7 +332,7 @@ const ListChefPending = () => {
             }}>
             <Typography>Show</Typography>
             <Select
-              sx={{ height: 42, width: 70 }}
+              sx={{ height: 40, width: 65 }}
               fullWidth
               disabled={chefLoading}
               onChange={handleChangeRowPageSelector}
@@ -313,11 +343,11 @@ const ListChefPending = () => {
 
           <Stack
             direction={{
-              sm: "column",
+              xs: "column",
               md: "row",
             }}
             alignItems={{
-              sm: "stretch",
+              xs: "stretch",
               md: "center",
             }}
             spacing={{
@@ -329,27 +359,20 @@ const ListChefPending = () => {
               placeholder="Search Chef"
               onChange={handleSearchChef}
               fullWidth
-              sx={{ height: 40, minWidth: 220 }}
+              sx={{
+                height: 40,
+                width: { xs: "100%", sm: 170 },
+              }}
             />
-            <Select
-              sx={{ height: 40, minWidth: 140 }}
-              value={filter.chefStatus || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "chefStatus")
-              }
-              menuItems={[
-                { label: "Active", value: "active" },
-                { label: "Disabled", value: "disabled" },
 
-                { label: "Rejected", value: "rejected" },
-                { label: "Banned", value: "banned" },
-              ]}
-              defaultOption={"Select Status"}
-              fullWidth
-              isLoading={isLoading}
-            />
             <Select
-              sx={{ height: 40, minWidth: 140 }}
+              sx={{
+                height: 40,
+                maxWidth: {
+                  xs: "100%",
+                  sm: 130,
+                },
+              }}
               value={filter.level || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "level")
@@ -366,6 +389,7 @@ const ListChefPending = () => {
             />
             <Button
               sx={{
+                height: 40,
                 minWidth: "max-content",
               }}
               disabled={isLoading || chefLoading}
@@ -382,13 +406,13 @@ const ListChefPending = () => {
       <Divider />
       <TableContainer>
         <Table>
-          <TableHead<FilterChef>
+          <TableHead<FilterChefPending>
             isLoading={chefLoading}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody<Chef, FilterChef>
+          <TableBody<Chef, FilterChefPending>
             isLoading={chefLoading}
             data={chefs}
             filter={filter}
@@ -406,4 +430,4 @@ const ListChefPending = () => {
     </Fragment>
   );
 };
-export default ListChefPending;
+export default ChefPendingList;

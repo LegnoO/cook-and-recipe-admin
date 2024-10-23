@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 
 // ** Components
-import { UploadImage, RenderFieldsControlled } from "@/components/";
+import { UploadImage, RenderFieldsControlled } from "@/components";
 import { Container, Modal, Image, Form } from "@/components/ui";
 
 // ** Library Imports
@@ -135,25 +135,25 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const formData = createFormData(profileData);
-
       await updateProfileEmployee(formData);
       refetch();
       refetchInfo();
       toast.success("Updated successfully");
-      setLoading(false);
-      toast.dismiss(toastLoading);
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       const showErrorMessages = handleToastMessages((error) =>
         toast.error(error),
       );
       showErrorMessages(errorMessage);
+    } finally {
+      setLoading(false);
+      toast.dismiss(toastLoading);
     }
   }
 
   return (
-    <>
-      <Box sx={{ mb: 2.5 }}>
+    <Fragment>
+      <Box>
         <Typography
           sx={{ fontWeight: 550 }}
           variant="h3"
@@ -259,6 +259,6 @@ export default function ProfilePage() {
           </Box>
         </StyledPaper>
       </Container>
-    </>
+    </Fragment>
   );
 }

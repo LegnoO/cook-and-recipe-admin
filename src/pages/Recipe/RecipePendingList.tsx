@@ -42,7 +42,7 @@ import {
   toggleRecipeRequest,
 } from "@/services/recipeService";
 
-const ListRecipePending = () => {
+const RecipePendingList = () => {
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterRecipePending> = {
     index: 1,
@@ -64,15 +64,12 @@ const ListRecipePending = () => {
     [],
   );
 
-  const [recipes, setRecipes] = useState<RecipePending[] | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[] | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] =
     useState<Filter<FilterRecipePending>>(defaultFilter);
 
-  const {
-    data: recipeData,
-    refetch,
-  } = useQuery({
+  const { data: recipeData, refetch } = useQuery({
     queryKey: [
       "list-recipe-pending",
       filter.index,
@@ -119,7 +116,7 @@ const ListRecipePending = () => {
   );
 
   function handleResetFilter() {
-    setFilter(defaultFilter);
+    setFilter({ ...defaultFilter, ...recipeData?.paginate });
   }
 
   async function handleApproveOrRejectRecipe(
@@ -176,29 +173,29 @@ const ListRecipePending = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS: BodyCell<RecipePending>[] = [
+  const BODY_CELLS: BodyCell<Recipe>[] = [
     {
-      render: (row: RecipePending) => row.name,
+      render: (row: Recipe) => row.name,
     },
     {
-      render: (row: RecipePending) => row.difficulty,
-    },
-    {
-      align: "center",
-      render: (row: RecipePending) => row.timeToCook,
+      render: (row: Recipe) => row.difficulty,
     },
     {
       align: "center",
-      render: (row: RecipePending) => row.serves,
+      render: (row: Recipe) => row.timeToCook,
     },
     {
-      render: (row: RecipePending) => formatDateTime(row.createdDate),
+      align: "center",
+      render: (row: Recipe) => row.serves,
     },
     {
-      render: (row: RecipePending) => row.createdBy.fullName,
+      render: (row: Recipe) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: RecipePending) => (
+      render: (row: Recipe) => row.createdBy.fullName,
+    },
+    {
+      render: (row: Recipe) => (
         <Fragment>
           <Stack direction="row" alignItems={"center"}>
             <IconButton
@@ -321,7 +318,7 @@ const ListRecipePending = () => {
             }}>
             <Typography>Show</Typography>
             <Select
-              sx={{ height: 42, width: 70 }}
+              sx={{ height: 40, width: 65 }}
               fullWidth
               disabled={isLoading}
               onChange={handleChangeRowPageSelector}
@@ -348,7 +345,10 @@ const ListRecipePending = () => {
               placeholder="Search Recipe"
               onChange={handleSearchGroup}
               fullWidth
-              sx={{ minWidth: 220 }}
+              sx={{
+                height: 40,
+                width: { xs: "100%", sm: 170 },
+              }}
             />
             <Select
               value={filter.difficulty || ""}
@@ -368,6 +368,7 @@ const ListRecipePending = () => {
             />
             <Button
               sx={{
+                height: 40,
                 minWidth: "max-content",
               }}
               disabled={isLoading}
@@ -408,4 +409,4 @@ const ListRecipePending = () => {
     </Fragment>
   );
 };
-export default ListRecipePending;
+export default RecipePendingList;

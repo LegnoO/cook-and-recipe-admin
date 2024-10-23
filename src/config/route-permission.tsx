@@ -9,15 +9,15 @@ import TestPage from "@/pages/TestPage";
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const ListEmployee = lazy(() => import("@/pages/Employee/ListEmployee"));
-const ListGroup = lazy(() => import("@/pages/Group/ListGroup"));
-const ListChef = lazy(() => import("@/pages/Chef/ListChef"));
-const ListChefPending = lazy(() => import("@/pages/Chef/ListChefPending"));
-const ListRecipePending = lazy(
-  () => import("@/pages/Recipe/ListRecipePending"),
+const EmployeeList = lazy(() => import("@/pages/Employee/EmployeeList"));
+const GroupList = lazy(() => import("@/pages/Group/GroupList"));
+const ChefList = lazy(() => import("@/pages/Chef/ChefList"));
+const ChefPendingList = lazy(() => import("@/pages/Chef/ChefPendingList"));
+const RecipePendingList = lazy(
+  () => import("@/pages/Recipe/RecipePendingList"),
 );
-const ListRecipe = lazy(() => import("@/pages/Recipe/ListRecipe"));
-const ListCategory = lazy(() => import("@/pages/Category/ListCategory"));
+const RecipeList = lazy(() => import("@/pages/Recipe/RecipeList"));
+const CategoryList = lazy(() => import("@/pages/Category/CategoryList"));
 
 export const protectedRoute: ProtectedRoute[] = [
   {
@@ -46,7 +46,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/employees",
-    component: <ListEmployee />,
+    component: <EmployeeList />,
     permission: {
       page: "user",
       action: "read",
@@ -62,7 +62,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/groups",
-    component: <ListGroup />,
+    component: <GroupList />,
     permission: {
       page: "user",
       action: "read",
@@ -70,7 +70,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/chefs",
-    component: <ListChef />,
+    component: <ChefList />,
     permission: {
       page: "user",
       action: "read",
@@ -78,7 +78,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/chefs/pending",
-    component: <ListChefPending />,
+    component: <ChefPendingList />,
     permission: {
       page: "user",
       action: "read",
@@ -86,7 +86,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/recipes/pending",
-    component: <ListRecipePending />,
+    component: <RecipePendingList />,
     permission: {
       page: "user",
       action: "read",
@@ -94,7 +94,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/recipes",
-    component: <ListRecipe />,
+    component: <RecipeList />,
     permission: {
       page: "user",
       action: "read",
@@ -102,7 +102,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/category",
-    component: <ListCategory />,
+    component: <CategoryList />,
     permission: {
       page: "user",
       action: "read",

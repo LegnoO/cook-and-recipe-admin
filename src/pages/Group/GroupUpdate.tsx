@@ -35,7 +35,7 @@ type Props = {
   refetch: () => void;
 };
 
-const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
+const GroupUpdate = ({ groupId, setController, closeMenu, refetch }: Props) => {
   const { isLoading: isGroupLoading, data: groupData } = useQuery({
     queryKey: ["group-detail", groupId],
     queryFn: () => getDetailGroup(groupId),
@@ -176,4 +176,4 @@ const UpdateGroup = ({ groupId, setController, closeMenu, refetch }: Props) => {
     </PerfectScrollbar>
   );
 };
-export default UpdateGroup;
+export default GroupUpdate;

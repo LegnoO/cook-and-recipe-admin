@@ -9,7 +9,7 @@ type FilterRecipe = {
 
 type FilterRecipePending = Omit<FilterRecipe, "status" | "verifyStatus">;
 
-type RecipePending = {
+type Recipe = {
   id: string;
   name: string;
   timeToCook: number;

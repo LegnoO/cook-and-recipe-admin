@@ -25,7 +25,7 @@ type Props = {
   refetch: () => void;
 };
 
-const AddGroup = ({ setController, closeMenu, refetch }: Props) => {
+const GroupAdd = ({ setController, closeMenu, refetch }: Props) => {
   const [permissions, setPermissions] = useState<Permissions[]>([]);
   const [groupName, setGroupName] = useState<string>("");
   const [groupNameError, setGroupNameError] = useState<string>("");
@@ -152,4 +152,4 @@ const AddGroup = ({ setController, closeMenu, refetch }: Props) => {
     </PerfectScrollbar>
   );
 };
-export default AddGroup;
+export default GroupAdd;

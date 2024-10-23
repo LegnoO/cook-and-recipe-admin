@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 
 // ** Components
-import { ChipStatus, Icon, Image } from "@/components/ui";
+import { ModalLoading, ChipStatus, Icon, Image } from "@/components/ui";
+import { RenderIf } from "@/components";
 
 // ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -24,7 +25,6 @@ import { getDetailRecipe } from "@/services/recipeService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-import { RenderIf } from "@/components";
 
 // ** Types
 type Props = {
@@ -33,6 +33,7 @@ type Props = {
 };
 
 const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
+  const title = "Recipe Detail";
   const { data: recipeData } = useQuery({
     queryKey: ["recipe-detail", recipeId],
     queryFn: () => getDetailRecipe(recipeId),
@@ -67,7 +68,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
   }, [recipeData]);
 
   if (!recipe) {
-    return <>...</>;
+    return <ModalLoading title={title} closeMenu={closeMenu} />;
   }
 
   return (
@@ -80,7 +81,6 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
           md: "500px",
         },
         maxHeight: "95dvh",
-
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
       }}>
@@ -95,7 +95,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
           fontWeight={500}
           component="h2"
           variant="h4">
-          Recipe Detail
+          {title}
         </Typography>
         <IconButton
           disableRipple

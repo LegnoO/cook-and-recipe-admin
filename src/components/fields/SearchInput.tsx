@@ -10,6 +10,7 @@ type Props = {} & TextFieldProps;
 const SearchInput = ({ ...rest }: Props) => {
   return (
     <TextField
+      fullWidth
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
