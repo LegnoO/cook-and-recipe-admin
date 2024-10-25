@@ -112,7 +112,6 @@ const LoginPage = () => {
                 md: "inherit",
               },
             }}
-            className="hehe"
             noPaper
             noValidate
             autoComplete="off"
