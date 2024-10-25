@@ -106,6 +106,13 @@ const LoginPage = () => {
           </Box>
 
           <Form
+            sx={{
+              minWidth: {
+                sm: "100%",
+                md: "inherit",
+              },
+            }}
+            className="hehe"
             noPaper
             noValidate
             autoComplete="off"

@@ -9,6 +9,13 @@ type Category = {
   status: boolean;
 };
 
+type CategoryDetail = Category & { disabledBy?: ChefUserInfo };
+
+type CategoryUpdate = {
+  name: string;
+  description: string;
+};
+
 type ListCategory = {
   data: Category[];
   paginate: Filter<FilterCategory>;

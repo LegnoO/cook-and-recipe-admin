@@ -16,6 +16,7 @@ export { default as Switch } from "./Switch";
 export { default as ConfirmBox } from "./ConfirmBox";
 export { default as ModalLoading } from "./ModalLoading";
 export { default as Spinner } from "./Spinner";
+export { default as EmptyData } from "./EmptyData";
 
 export {
   Table,

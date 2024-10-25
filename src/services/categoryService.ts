@@ -32,15 +32,12 @@ export async function toggleStatusCategory(groupId: string) {
 }
 
 export async function updateCategory(
-  groupId: string,
-  category: {
-    name: string;
-    description: string;
-  },
+  id: string,
+  category: CategoryUpdate,
   controller?: AbortController,
 ) {
   const response = await AxiosInstance.put(
-    categoryEndpoints.updateCategory(groupId),
+    categoryEndpoints.updateCategory(id),
     category,
     {
       signal: controller?.signal,
@@ -49,9 +46,9 @@ export async function updateCategory(
   return response.data;
 }
 
-export async function getDetailCategory(groupId: string) {
+export async function getDetailCategory(id: string) {
   const response = await AxiosInstance.get<any>(
-    categoryEndpoints.getDetailCategory(groupId),
+    categoryEndpoints.getDetailCategory(id),
   );
 
   return response.data;

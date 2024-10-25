@@ -274,6 +274,7 @@ const EmployeeUpdate = ({
               Cancel
             </Button>
             <Button
+              disabled={isLoading}
               type="submit"
               sx={{
                 width: { xs: "100%", md: "auto" },

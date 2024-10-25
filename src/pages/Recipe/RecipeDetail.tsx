@@ -18,13 +18,15 @@ import { RenderIf } from "@/components";
 // ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { useQuery } from "@tanstack/react-query";
-import { formatDateTime, hexToRGBA } from "@/utils/helpers";
 
 // ** Services
 import { getDetailRecipe } from "@/services/recipeService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
+
+// ** Utils
+import { formatDateTime, hexToRGBA } from "@/utils/helpers";
 
 // ** Types
 type Props = {

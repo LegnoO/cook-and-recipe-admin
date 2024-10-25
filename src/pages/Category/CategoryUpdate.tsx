@@ -1,45 +1,46 @@
 // ** React Imports
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  ChangeEvent,
+} from "react";
 
 // ** Mui Imports
-import {
-  Stack,
-  Typography,
-  Box,
-  IconButton,
-  Avatar,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Stack, Typography, Box, IconButton, Button } from "@mui/material";
 
 // ** Components
-import {
-  ModalLoading,
-  ChipStatus,
-  Icon,
-  Image,
-  TextField,
-} from "@/components/ui";
-import { RenderIf } from "@/components";
+import { ModalLoading, Icon, TextField } from "@/components/ui";
 
 // ** Library Imports
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { useQuery } from "@tanstack/react-query";
-import { formatDateTime, hexToRGBA } from "@/utils/helpers";
+import { toast } from "react-toastify";
 
 // ** Services
-import { getDetailCategory } from "@/services/categoryService";
+import { getDetailCategory, updateCategory } from "@/services/categoryService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
+
+// ** Utils
+import { handleAxiosError } from "@/utils/errorHandler";
+import { handleToastMessages } from "@/utils/helpers";
 
 // ** Types
 type Props = {
   categoryId: string;
   closeMenu: () => void;
+  refetch: () => void;
+  setController: Dispatch<SetStateAction<AbortController | null>>;
 };
 
-const CategoryUpdate = ({ categoryId, closeMenu }: Props) => {
+const CategoryUpdate = ({
+  categoryId,
+  closeMenu,
+  refetch,
+  setController,
+}: Props) => {
   const title = "Category Update";
   const { data: categoryData } = useQuery({
     queryKey: ["category-detail", categoryId],
@@ -47,15 +48,55 @@ const CategoryUpdate = ({ categoryId, closeMenu }: Props) => {
     ...queryOptions,
   });
 
-  const [category, setCategory] = useState<CategoryDetail>();
+  const [isLoading, setLoading] = useState(false);
+  const [category, setCategory] = useState<Partial<CategoryUpdate>>();
+
+  function handleChangeCategory(
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: keyof CategoryUpdate,
+  ) {
+    const value = event.target.value;
+    if (value) setCategory((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubmit() {
+    const toastLoading = toast.loading("Loading...");
+
+    try {
+      setLoading(true);
+      const newController = new AbortController();
+      setController(newController);
+
+      await updateCategory(
+        categoryId,
+        category as CategoryUpdate,
+        newController,
+      );
+
+      toast.success("Updated successfully");
+      refetch();
+      closeMenu();
+
+      setController(null);
+    } catch (error) {
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
+      setLoading(false);
+      toast.dismiss(toastLoading);
+    }
+  }
 
   useEffect(() => {
     if (categoryData) {
-      setCategory(categoryData);
+      setCategory({
+        name: categoryData.name,
+        description: categoryData.description,
+      });
     }
   }, [categoryData]);
 
-  if (!category) {
+  if (!categoryData) {
     return <ModalLoading title={title} closeMenu={closeMenu} />;
   }
 
@@ -79,7 +120,7 @@ const CategoryUpdate = ({ categoryId, closeMenu }: Props) => {
           paddingInline: "1.5rem",
         }}>
         <Typography
-          sx={{ textAlign: "center" }}
+          sx={{ textAlign: { xs: "center", sm: "left" } }}
           fontWeight={500}
           component="h2"
           variant="h4">
@@ -97,21 +138,38 @@ const CategoryUpdate = ({ categoryId, closeMenu }: Props) => {
         </IconButton>
       </Box>
 
-      <Stack direction="column" spacing={2}>
-        <TextField fullWidth label="Category Name" />
-        <TextField
-          fullWidth
-          label="Category Description"
-          multiline
-          placeholder="test"
-        />
+      <Stack
+        sx={{
+          paddingTop: "1.5rem",
+          paddingInline: "1.5rem",
+        }}
+        direction="column"
+        spacing={2}>
+        <Stack spacing={1} direction="row" alignItems={"center"}>
+          <TextField
+            onChange={(event) => handleChangeCategory(event, "name")}
+            value={category?.name}
+            fullWidth
+            label="Name"
+          />
+        </Stack>
+        <Stack spacing={1} direction="row" alignItems={"center"}>
+          <TextField
+            onChange={(event) => handleChangeCategory(event, "description")}
+            value={category?.description}
+            fullWidth
+            multiline
+            placeholder="test"
+            label="Description"
+          />
+        </Stack>
       </Stack>
 
       <Stack
         direction="row"
         justifyContent="end"
         spacing={1.5}
-        sx={{ mt: "1rem", pt: "1.5rem" }}>
+        sx={{ paddingBlock: "1.5rem", paddingInline: "1.5rem" }}>
         <Button
           onClick={closeMenu}
           sx={{ width: { xs: "100%", md: "auto" } }}
@@ -120,6 +178,8 @@ const CategoryUpdate = ({ categoryId, closeMenu }: Props) => {
           Cancel
         </Button>
         <Button
+          disabled={isLoading}
+          onClick={handleSubmit}
           type="submit"
           sx={{
             width: { xs: "100%", md: "auto" },

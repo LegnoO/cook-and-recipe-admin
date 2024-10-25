@@ -2,14 +2,7 @@
 import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
 
 // ** Mui Imports
-import {
-  Stack,
-  Typography,
-  Button,
-  Divider,
-  IconButton,
-  Box,
-} from "@mui/material";
+import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
 
 // ** Components
 import {
@@ -20,7 +13,6 @@ import {
   Paper,
   Select,
   Switch,
-  ChipStatus,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
@@ -32,6 +24,10 @@ import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
+
+// ** Component's
+import CategoryUpdate from "./CategoryUpdate";
+import CategoryDetail from "./CategoryDetail";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -62,6 +58,7 @@ const CategoryList = () => {
   const ids = useMemo(
     () => ({
       modalUpdate: (id: string) => `modal-update-${id}`,
+      modalDetail: (id: string) => `modal-detail-${id}`,
     }),
     [],
   );
@@ -176,6 +173,9 @@ const CategoryList = () => {
         row.updatedDate ? formatDateTime(row.updatedDate) : "not update yet",
     },
     {
+      render: (row: Category) => row.createdBy.fullName,
+    },
+    {
       render: (row: Category) => (
         <Switch
           color="success"
@@ -189,22 +189,38 @@ const CategoryList = () => {
     },
     {
       render: (row: Category) => (
-        <IconButton
-          disableRipple
-          onClick={() => addId(ids.modalUpdate(row.id))}>
-          <Icon icon="heroicons:pencil-solid" />
-          <Modal
-            open={activeIds.includes(ids.modalUpdate(row.id))}
-            onClose={() => removeId(ids.modalUpdate(row.id))}>
-            {/* <UpdateEmployee
-              employeeId={row.id}
-              refetch={refetch}
-              closeMenu={() => handleCancel(ids.modalUpdate(row.id))}
-              setController={setController}
-            /> */}
-            test
-          </Modal>
-        </IconButton>
+        <Stack direction="row" alignItems={"center"}>
+          <IconButton
+            onClick={() => {
+              addId(ids.modalDetail(row.id));
+            }}
+            disableRipple>
+            <Icon icon="hugeicons:view" />
+            <Modal
+              open={activeIds.includes(ids.modalDetail(row.id))}
+              onClose={() => removeId(ids.modalDetail(row.id))}>
+              <CategoryDetail
+                closeMenu={() => handleCancel(ids.modalDetail(row.id))}
+                categoryId={row.id}
+              />
+            </Modal>
+          </IconButton>
+          <IconButton
+            disableRipple
+            onClick={() => addId(ids.modalUpdate(row.id))}>
+            <Icon icon="heroicons:pencil-solid" />
+            <Modal
+              open={activeIds.includes(ids.modalUpdate(row.id))}
+              onClose={() => removeId(ids.modalUpdate(row.id))}>
+              <CategoryUpdate
+                categoryId={row.id}
+                refetch={refetch}
+                closeMenu={() => handleCancel(ids.modalUpdate(row.id))}
+                setController={setController}
+              />
+            </Modal>
+          </IconButton>
+        </Stack>
       ),
     },
   ];
@@ -231,7 +247,7 @@ const CategoryList = () => {
             placeholder="Search Category"
             onChange={handleSearchGroup}
             fullWidth
-            sx={{ height: 40, maxWidth: { xs: "100%", lg: 170 } }}
+            sx={{ height: 40, maxWidth: { xs: "100%", lg: 190 } }}
           />
           <Stack
             sx={{ width: { xs: "100%", lg: "fit-content" } }}

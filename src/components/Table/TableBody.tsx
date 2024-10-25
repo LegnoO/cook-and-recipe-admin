@@ -2,19 +2,16 @@
 import { Fragment } from "react";
 
 // ** Mui Imports
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 
 // ** Components
 import {
-  Image,
   TableCell,
   TableRow,
   TableBody as TableBodyMui,
+  EmptyData,
 } from "@/components/ui";
 import { RenderIf, Repeat } from "@/components";
-
-// ** Assets
-import NoDataIcon from "@/assets/ic-content.svg";
 
 // ** Types
 type Props<T, V> = {
@@ -64,31 +61,7 @@ const TableBody = <T, V>({
     return (
       <TableRow>
         <TableCell colSpan={bodyCells.length} align="center">
-          <Box
-            className="no-data-found"
-            sx={{
-              display: "flex",
-              textAlign: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              gap: 1,
-              paddingInline: "1.5rem",
-              paddingBlock: "4rem",
-            }}>
-            <Image
-              sx={{ mx: "auto" }}
-              width="150px"
-              height="150px"
-              alt="no data icon"
-              src={NoDataIcon}
-            />
-            <Typography
-              sx={{ color: (theme) => theme.palette.text.disabled }}
-              fontWeight="600"
-              variant="subtitle1">
-              No Data
-            </Typography>
-          </Box>
+          <EmptyData />
         </TableCell>
       </TableRow>
     );
