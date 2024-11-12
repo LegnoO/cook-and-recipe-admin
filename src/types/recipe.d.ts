@@ -38,17 +38,18 @@ interface Ingredient {
   measurement?: string;
 }
 
-interface Instruction {
+interface Instructions {
   step: number;
   description: string;
 }
+[];
 
 interface RecipeDetail {
   id: string;
   name: string;
   description: string;
   ingredients: Ingredient[];
-  instructions: Instruction[];
+  instructionSections: { title: string; instructions: Instructions[] }[];
   timeToCook: string;
   difficulty: Difficulty;
   serves: number;
@@ -58,6 +59,11 @@ interface RecipeDetail {
   createdDate: Date;
   approvalDate: Date | null;
   categories: string[];
-  createdBy: ChefUserInfo;
+  createdBy: {
+    level: ChefLevel;
+    startedDate: Date;
+    description: string;
+    userInfo: ChefUserInfo;
+  };
   approvalBy?: ChefUserInfo;
 }

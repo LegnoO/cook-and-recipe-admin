@@ -12,7 +12,15 @@ import {
 } from "@mui/material";
 
 // ** Components
-import { ModalLoading, ChipStatus, Icon, Image } from "@/components/ui";
+import {
+  ModalLoading,
+  ChipStatus,
+  Icon,
+  Image,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@/components/ui";
 import { RenderIf } from "@/components";
 
 // ** Library Imports
@@ -63,6 +71,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
     return Object.values(ingredient).join(" ");
   }
 
+  console.log("🚀 ~ RecipeDetail ~ recipeData:", recipeData);
   useEffect(() => {
     if (recipeData) {
       setRecipe(recipeData);
@@ -118,7 +127,11 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
             height: "100%",
             maxHeight: "calc(95dvh - 100px)",
           }}>
-          <Stack direction="column" spacing={2}>
+          <Stack
+            direction="column"
+            sx={{
+              gap: 2,
+            }}>
             <Stack
               sx={{
                 height: "15rem",
@@ -256,15 +269,15 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   alignItems={"center"}>
                   <Stack direction="row" spacing={1} alignItems={"center"}>
                     <Avatar
-                      src={recipe.createdBy.avatar}
-                      alt={`Avatar ${recipe.createdBy.fullName}`}
+                      src={recipe.createdBy.userInfo.avatar}
+                      alt={`Avatar ${recipe.createdBy.userInfo.fullName}`}
                     />
                     <Stack direction="column">
                       <Typography fontWeight="500" color="text.primary">
-                        {recipe.createdBy.fullName}
+                        {recipe.createdBy.userInfo.fullName}
                       </Typography>
                       <Typography color="text.secondary">
-                        {recipe.createdBy.email}
+                        {recipe.createdBy.userInfo.email}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -332,17 +345,14 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
               </Stack>
             </RenderIf>
 
-            <Stack
-              direction="column"
-              spacing={2}
-              sx={{ paddingInline: "1.5rem" }}>
-              <Stack direction="column" spacing={1}>
-                <Typography fontWeight={500} variant="h5">
+            <Stack direction="column" sx={{ paddingInline: "1.5rem" }}>
+              <Stack sx={{ gap: 1 }} direction="column">
+                <Typography fontWeight={500} sx={{ mb: 0.25 }} variant="h5">
                   Ingredients
                 </Typography>
                 {recipe.ingredients.map((ingredient, index) => (
                   <Stack key={index} direction="row" alignItems={"center"}>
-                    <Icon icon="radix-icons:dot-filled" />
+                    <Icon fontSize="1.15rem" icon="radix-icons:dot-filled" />
                     <Typography lineHeight={1} variant="subtitle1">
                       {formatIngredient(ingredient)}
                     </Typography>
@@ -353,26 +363,40 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
 
             <Stack
               direction="column"
-              spacing={2}
-              sx={{ paddingInline: "1.5rem", paddingBottom: "1.5rem" }}>
-              <Stack direction="column" spacing={1}>
-                <Typography fontWeight={500} variant="h5">
+              sx={{
+                marginTop: 2,
+                paddingInline: "1.5rem",
+                paddingBottom: "1.5rem",
+              }}>
+              <Stack sx={{ gap: 1.5 }} direction="column">
+                <Typography sx={{ mb: 0.25 }} fontWeight={500} variant="h5">
                   Instructions
                 </Typography>
-                {recipe.instructions.map((instruction, index) => (
-                  <Stack
-                    key={index}
-                    sx={{ paddingInline: "0.5rem" }}
-                    spacing={0.5}
-                    direction="row"
-                    alignItems={"center"}>
-                    <Typography lineHeight={1} variant="subtitle1">
-                      {instruction.step}.
-                    </Typography>
-                    <Typography lineHeight={1} variant="subtitle1">
-                      {instruction.description}
-                    </Typography>
-                  </Stack>
+                {recipe.instructionSections.map((section, index) => (
+                  <Accordion key={index}>
+                    <AccordionSummary
+                      expandIcon={<Icon icon="ic:twotone-expand-more" />}>
+                      {section.title}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Stack direction="column" sx={{ gap: 2 }}>
+                        {section.instructions.map((instruction) => (
+                          <Stack
+                            key={index}
+                            sx={{ gap: 1, paddingInline: "0.5rem" }}
+                            direction="row"
+                            alignItems={"center"}>
+                            <Typography lineHeight={1} variant="subtitle1">
+                              {instruction.step}.
+                            </Typography>
+                            <Typography lineHeight={1} variant="subtitle1">
+                              {instruction.description}
+                            </Typography>
+                          </Stack>
+                        ))}
+                      </Stack>
+                    </AccordionDetails>
+                  </Accordion>
                 ))}
               </Stack>
             </Stack>
