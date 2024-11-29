@@ -24,7 +24,6 @@ import { LoginFormSchema } from "@/utils/validations";
 import { ILoginFormSchema } from "@/utils/validations";
 
 // ** Config
-import { RenderIf } from "@/components";
 import { PasswordInput, RememberCheckBox } from "@/components/fields";
 
 // ** Styled Components
@@ -150,16 +149,8 @@ const LoginPage = () => {
                   Forgot Password?
                 </Typography>
               </Box>
-              <RenderIf
-                condition={!isLoading}
-                fallback={
-                  <Button
-                    sx={{ minHeight: 38, fontWeight: 500 }}
-                    fullWidth
-                    variant="contained">
-                    <BouncingDotsLoader />
-                  </Button>
-                }>
+
+              {!isLoading ? (
                 <Box>
                   {loadingError && (
                     <Typography sx={{ mb: 1.75 }} color="error">
@@ -174,7 +165,14 @@ const LoginPage = () => {
                     Login
                   </Button>
                 </Box>
-              </RenderIf>
+              ) : (
+                <Button
+                  sx={{ minHeight: 38, fontWeight: 500 }}
+                  fullWidth
+                  variant="contained">
+                  <BouncingDotsLoader />
+                </Button>
+              )}
             </Box>
           </Form>
         </CardContent>

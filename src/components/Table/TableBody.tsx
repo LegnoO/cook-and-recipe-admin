@@ -11,7 +11,7 @@ import {
   TableBody as TableBodyMui,
   EmptyData,
 } from "@/components/ui";
-import { RenderIf, Repeat } from "@/components";
+import { Repeat } from "@/components";
 
 // ** Types
 type Props<T, V> = {
@@ -70,17 +70,14 @@ const TableBody = <T, V>({
   return (
     <TableBodyMui>
       <Fragment>
-        <RenderIf condition={!isLoading && data !== null && data.length > 0}>
-          {renderDataRows(data as T[])}
-        </RenderIf>
+        {!isLoading &&
+          data !== null &&
+          data.length > 0 &&
+          renderDataRows(data as T[])}
 
-        <RenderIf condition={isLoading || data === null}>
-          {renderLoadingRows()}
-        </RenderIf>
+        {isLoading || (data === null && renderLoadingRows())}
 
-        <RenderIf condition={!isLoading && data !== null && data.length === 0}>
-          {renderDataEmpty()}
-        </RenderIf>
+        {!isLoading && data !== null && data.length === 0 && renderDataEmpty()}
       </Fragment>
     </TableBodyMui>
   );

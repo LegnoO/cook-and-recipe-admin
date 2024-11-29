@@ -109,7 +109,7 @@ const UserDropDown = () => {
                 flexDirection: "column",
               }}>
               <Typography sx={{ fontWeight: 500 }}>{user?.fullName}</Typography>
-              <Typography variant="body2">{user?.group}</Typography>
+              <Typography variant="body2">{user?.group.name}</Typography>
             </Box>
           </Box>
         </Box>

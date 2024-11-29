@@ -2,21 +2,25 @@
 import { useState, Fragment, memo, Dispatch, SetStateAction } from "react";
 
 // ** Mui Imports
-import { Grid, Typography, Button, Stack, Input, IconButton } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Button,
+  Stack,
+  Input,
+  IconButton,
+} from "@mui/material";
 
 // ** Components
 import { GroupSelect, PhoneInput } from "@/components/fields";
 import { Form, Icon } from "@/components/ui";
-import { RenderIf, UploadImage, RenderFieldsControlled } from "@/components";
+import { UploadImage, RenderFieldsControlled } from "@/components";
 
 // ** Library Imports
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import PerfectScrollbar from "react-perfect-scrollbar";
-
-// ** Config
-import { addEmployeeField } from "@/config/fields/add-employee-field";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
@@ -34,10 +38,98 @@ type Props = {
 };
 
 const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
+  const addEmployeeField: FormField[] = [
+    {
+      name: "fullName",
+      label: "Full name",
+      placeholder: "Enter full name",
+      type: "input",
+      required: true,
+      size: { md: 6 },
+    },
+
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "Enter email",
+      type: "input",
+      required: true,
+      size: { md: 6 },
+    },
+    {
+      name: "password",
+      label: "Password",
+      placeholder: "Enter password",
+      type: "input",
+      required: true,
+      size: { md: 6 },
+    },
+    {
+      menuItems: ["Male", "Female", "Other"],
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      required: true,
+      size: { md: 6 },
+    },
+    {
+      name: "dateOfBirth",
+      label: "Date of birth",
+      type: "date",
+      size: { md: 6 },
+    },
+    {
+      type: "children",
+      children: [
+        {
+          name: "address.number",
+          label: "Number address",
+          placeholder: "Enter number",
+          type: "input",
+          required: true,
+          size: { md: 6 },
+        },
+
+        {
+          name: "address.street",
+          label: "Street address",
+          placeholder: "Enter street address",
+          type: "input",
+          required: true,
+          size: { md: 6 },
+        },
+        {
+          name: "address.ward",
+          label: "Ward address",
+          placeholder: "Enter ward address",
+          type: "input",
+          required: true,
+          size: { md: 6 },
+        },
+        {
+          name: "address.district",
+          label: "District address",
+          placeholder: "Enter district address",
+          type: "input",
+          required: true,
+          size: { md: 6 },
+        },
+        {
+          name: "address.city",
+          label: "City address",
+          placeholder: "Enter city address",
+          type: "input",
+          required: true,
+          size: { md: 6 },
+        },
+      ],
+    },
+  ];
+
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
 
-  const { control, handleSubmit } = useForm({
+  const form = useForm({
     resolver: zodResolver(AddEmployeeSchema),
   });
 
@@ -88,7 +180,7 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
           maxHeight: "95dvh",
         }}
         noValidate
-        onSubmit={handleSubmit(onSubmit)}>
+        onSubmit={form.handleSubmit(onSubmit)}>
         <Stack
           sx={{
             borderRadius: "inherit",
@@ -107,33 +199,34 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
           <Grid container rowSpacing={3} columnSpacing={3}>
             {addEmployeeField.map((field, index) => (
               <Fragment key={index}>
-                <RenderIf condition={index === 3}>
+                {index === 3 && (
                   <Grid item md={6} xs={12}>
                     <GroupSelect
                       label="Group"
                       fullWidth
-                      control={control}
-                      name="groupId"
+                      form={form}
+                      name="group"
                       required
                     />
                   </Grid>
-                </RenderIf>
-                <RenderIf condition={index === 5}>
+                )}
+
+                {index === 5 && (
                   <Grid item md={6} xs={12}>
                     <PhoneInput
                       fullWidth
                       label="Phone number"
                       name="phone"
                       placeholder="Enter number phnone"
-                      control={control}
+                      form={form}
                       required
                     />
                   </Grid>
-                </RenderIf>
+                )}
 
                 <RenderFieldsControlled
                   field={field}
-                  control={control}
+                  control={form.control}
                   id={String(index)}
                 />
               </Fragment>

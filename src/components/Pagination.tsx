@@ -9,9 +9,6 @@ import {
   Box,
 } from "@mui/material";
 
-// ** Components
-import RenderIf from "./RenderIf";
-
 // ** Types
 type Props = {
   paginatePage: number;
@@ -42,11 +39,12 @@ const Pagination = ({
         alignItems={"center"}
         justifyContent={dataLength ? "space-between" : "end"}
         spacing={2}>
-        <RenderIf condition={Boolean(dataLength)}>
+        {dataLength && (
           <Typography color="secondary">
             Showing 1 to {dataLength} of {dataLength} entries
           </Typography>
-        </RenderIf>
+        )}
+
         <MuiPagination
           color="primary"
           disabled={isLoading}

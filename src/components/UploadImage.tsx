@@ -4,15 +4,12 @@ import { ReactNode, useRef, useState, ChangeEvent } from "react";
 // ** Mui Imports
 import { Button, SxProps, Box } from "@mui/material";
 
-// ** Components
-import { RenderIf } from "@/components";
-
 type Props = {
   name?: string;
   maxSize?: number;
   onFileSelect: (file?: File, imageDataUrl?: string) => void;
   accept?: string;
-  type?: "node" | "button";
+  type?: "react-node" | "button";
   sx?: SxProps;
   children: ReactNode;
   [key: string]: any;
@@ -69,7 +66,8 @@ const UploadImage = ({
         accept={accept || "image/*"}
         onChange={handleReviewImage}
       />
-      <RenderIf condition={type === "button"}>
+
+      {type === "button" && (
         <Button
           sx={{ width: "fit-content", fontWeight: 500, ...sx }}
           onClick={triggerSelect}
@@ -77,11 +75,9 @@ const UploadImage = ({
           {...rest}>
           {children}
         </Button>
-      </RenderIf>
+      )}
 
-      <RenderIf condition={type === "node"}>
-        <Box onClick={triggerSelect}>{children}</Box>
-      </RenderIf>
+      {type === "react-node" && <Box onClick={triggerSelect}>{children}</Box>}
     </>
   );
 };

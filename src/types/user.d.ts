@@ -4,7 +4,7 @@ type User = {
   email: string;
   dateOfBirth: Date | null;
   avatar: string;
-  group: string;
+  group: { name: string; id: string };
 } & Permission;
 
 type UserProfile = {

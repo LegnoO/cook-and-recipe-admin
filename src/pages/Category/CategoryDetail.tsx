@@ -20,8 +20,6 @@ import { getDetailCategory } from "@/services/categoryService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-import { RenderIf } from "@/components";
-
 // ** Types
 type Props = {
   categoryId: string;
@@ -177,7 +175,7 @@ const CategoryDetail = ({ closeMenu, categoryId }: Props) => {
           </Stack>
         </Stack>
 
-        <RenderIf condition={Boolean(categoryData.disabledBy)}>
+        {categoryData.disabledBy && (
           <Stack
             direction="column"
             spacing={2}
@@ -220,7 +218,7 @@ const CategoryDetail = ({ closeMenu, categoryId }: Props) => {
               </Stack>
             </Stack>
           </Stack>
-        </RenderIf>
+        )}
       </Stack>
     </Box>
   );

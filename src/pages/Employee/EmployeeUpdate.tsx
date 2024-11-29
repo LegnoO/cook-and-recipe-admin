@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 
 // ** Components
-import { RenderIf, RenderFieldsControlled, UploadImage } from "@/components";
+import { RenderFieldsControlled, UploadImage } from "@/components";
 import { Form, Icon, ModalLoading } from "@/components/ui";
 import { GroupSelect, PhoneInput } from "@/components/fields";
 
@@ -72,10 +72,9 @@ const EmployeeUpdate = ({
 
   const [isLoading, setLoading] = useState(false);
 
-  const { setValue, control, handleSubmit } =
-    useForm<IEmployeeUpdateFormSchema>({
-      resolver: zodResolver(EmployeeUpdateFormSchema),
-    });
+  const form = useForm<IEmployeeUpdateFormSchema>({
+    resolver: zodResolver(EmployeeUpdateFormSchema),
+  });
 
   function handleFileSelect(file?: File, imageDataUrl?: string) {
     const newFileUpdated = { file, url: imageDataUrl };
@@ -89,7 +88,7 @@ const EmployeeUpdate = ({
 
     const employeeData = {
       fullName: data.fullName,
-      groupId: data.groupId,
+      groupId: data.group,
       address: JSON.stringify(data.address),
       email: data.email,
       gender: data.gender,
@@ -120,16 +119,13 @@ const EmployeeUpdate = ({
 
   useEffect(() => {
     if (employeeData) {
-      const { id, disabledDate, createdDate, status, ...employeeInfo } =
+      let employeeInfo: Partial<IEmployeeUpdateFormSchema> = {};
+      const { id, disabledDate, createdDate, status, group, ...rest } =
         employeeData;
+      employeeInfo = rest;
+      employeeInfo.group = employeeData.group.id;
 
-      Object.entries(employeeInfo).forEach(([key, value]) => {
-        if (value) {
-          setValue(key as keyof IEmployeeUpdateFormSchema, value, {
-            shouldValidate: true,
-          });
-        }
-      });
+      form.reset(employeeInfo);
     }
   }, [employeeData]);
 
@@ -143,7 +139,7 @@ const EmployeeUpdate = ({
       <Form
         sx={{ position: "relative", maxHeight: "95dvh" }}
         noValidate
-        onSubmit={handleSubmit(onSubmit)}>
+        onSubmit={form.handleSubmit(onSubmit)}>
         <Stack
           sx={{
             borderRadius: "inherit",
@@ -180,7 +176,7 @@ const EmployeeUpdate = ({
                 />
 
                 <UploadImage
-                  type="node"
+                  type="react-node"
                   name="avatar"
                   onFileSelect={handleFileSelect}>
                   <Stack
@@ -227,33 +223,34 @@ const EmployeeUpdate = ({
             <Grid container rowSpacing={3} columnSpacing={3}>
               {updateEmployeeField.map((field, index) => (
                 <Fragment key={index}>
-                  <RenderIf condition={index === 3}>
+                  {index === 3 && (
                     <Grid item md={6} xs={12}>
-                      <GroupSelect
+                      <GroupSelect<IEmployeeUpdateFormSchema>
                         label="Group"
                         fullWidth
-                        control={control}
-                        name="groupId"
+                        form={form}
+                        name="group"
                         required
                       />
                     </Grid>
-                  </RenderIf>
-                  <RenderIf condition={index === 5}>
+                  )}
+
+                  {index === 5 && (
                     <Grid item md={6} xs={12}>
                       <PhoneInput
                         fullWidth
                         label="Phone number"
                         name="phone"
                         placeholder="Enter number phnone"
-                        control={control}
+                        form={form}
                         required
                       />
                     </Grid>
-                  </RenderIf>
+                  )}
 
                   <RenderFieldsControlled
                     field={field}
-                    control={control}
+                    control={form.control}
                     id={String(index)}
                   />
                 </Fragment>

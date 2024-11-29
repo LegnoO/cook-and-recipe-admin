@@ -52,6 +52,7 @@ import {
 } from "@/services/employeeService";
 
 const EmployeeList = () => {
+  const [isLoading, setLoading] = useState(true);
   const location = useLocation();
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<Employee[] | null>(null);
@@ -69,7 +70,6 @@ const EmployeeList = () => {
     sortOrder: "",
   };
   const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
-  console.log("🚀 ~ ListEmployee ~ filter:", filter);
 
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
@@ -78,7 +78,7 @@ const EmployeeList = () => {
   };
 
   const {
-    isLoading,
+    isLoading: queryLoading,
     data: employeeData,
     refetch,
   } = useQuery({
@@ -132,7 +132,7 @@ const EmployeeList = () => {
       ),
     },
     {
-      render: (row: Employee) => row.group,
+      render: (row: Employee) => row.group.name,
     },
     {
       render: (row: Employee) => (
@@ -232,6 +232,8 @@ const EmployeeList = () => {
       setEmployees(employeeData.data);
       setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
     }
+
+    setLoading(queryLoading);
   }, [employeeData]);
 
   return (

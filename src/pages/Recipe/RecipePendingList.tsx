@@ -192,7 +192,7 @@ const RecipePendingList = () => {
       render: (row: Recipe) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: Recipe) => row.createdBy.fullName,
+      render: (row: Recipe) => row.createdBy.userInfo.fullName,
     },
     {
       render: (row: Recipe) => (
@@ -345,10 +345,7 @@ const RecipePendingList = () => {
               placeholder="Search Recipe"
               onChange={handleSearchGroup}
               fullWidth
-              sx={{
-                height: 40,
-                width: { xs: "100%", sm: 170 },
-              }}
+              sx={{ height: 40, maxWidth: { xs: "100%", lg: 200 } }}
             />
             <Select
               value={filter.difficulty || ""}

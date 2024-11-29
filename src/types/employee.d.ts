@@ -6,18 +6,17 @@ type ListEmployees = {
 type Employee = {
   address: Address;
   avatar: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   email: string;
   fullName: string;
-  group: string;
+  group: { name: string; id: string };
   id: string;
   phone?: string;
   status: boolean;
   gender?: Gender;
   id: string;
-  disabledDate?: Date;
-  createdDate: Date;
-  groupId?: string;
+  disabledDate?: string;
+  createdDate: string;
 };
 
 type FilterEmployees = {

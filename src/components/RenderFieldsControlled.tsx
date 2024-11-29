@@ -1,12 +1,11 @@
 // ** React Imports
-import { ReactNode, memo } from "react";
+import { Fragment, ReactNode, memo } from "react";
 
 // ** Mui Imports
 import { Grid, InputAdornment, IconButton } from "@mui/material";
 
 // ** Components
 import { Icon, TextField, DatePicker, Select } from "@/components/ui";
-import { RenderIf } from "@/components";
 
 // ** Library Imports
 import { Controller, Control } from "react-hook-form";
@@ -41,20 +40,19 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
     );
   };
 
-  const Children = () => {
-    return (
-      <RenderIf condition={Boolean(children)} fallback={<></>}>
-        {children?.map((field, index) => (
-          <RenderFieldsControlled
-            key={String(index)}
-            field={field}
-            control={control}
-            id={String(index)}
-          />
-        ))}
-      </RenderIf>
+  const Children = () =>
+    children ? (
+      children.map((field, index) => (
+        <RenderFieldsControlled
+          key={String(index)}
+          field={field}
+          control={control}
+          id={String(index)}
+        />
+      ))
+    ) : (
+      <Fragment />
     );
-  };
 
   const DateField = () => {
     return renderGridItem(

@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { Grid, Typography, Button, Stack, Avatar, Box } from "@mui/material";
 
 // ** Components
-import { RenderIf } from "@/components";
 import { BouncingDotsLoader, Form, TextField } from "@/components/ui";
 
 // ** Config
@@ -54,13 +53,8 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
             variant="h4">
             Chef Detail Information
           </Typography>
-          <RenderIf
-            condition={Boolean(chefData)}
-            fallback={
-              <Box sx={{ justifyContent: "center", display: "flex" }}>
-                <BouncingDotsLoader />
-              </Box>
-            }>
+
+          {chefData ? (
             <Box className="modal-loading-info">
               <Stack sx={{ mb: 5 }} direction="column" alignItems="center">
                 <Box
@@ -151,7 +145,11 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
                 </Grid> */}
               </Grid>
             </Box>
-          </RenderIf>
+          ) : (
+            <Box sx={{ justifyContent: "center", display: "flex" }}>
+              <BouncingDotsLoader />
+            </Box>
+          )}
           <Stack
             direction="row"
             justifyContent="end"

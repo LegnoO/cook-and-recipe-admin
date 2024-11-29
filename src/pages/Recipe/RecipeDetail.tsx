@@ -21,7 +21,6 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@/components/ui";
-import { RenderIf } from "@/components";
 
 // ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -300,7 +299,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
               </Stack>
             </Stack>
 
-            <RenderIf condition={Boolean(recipe.approvalBy)}>
+            {recipe.approvalBy && (
               <Stack
                 direction="column"
                 spacing={2}
@@ -343,7 +342,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   </Stack>
                 </Stack>
               </Stack>
-            </RenderIf>
+            )}
 
             <Stack direction="column" sx={{ paddingInline: "1.5rem" }}>
               <Stack sx={{ gap: 1 }} direction="column">

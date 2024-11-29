@@ -40,7 +40,6 @@ const phoneSchema = z
     },
   );
 
-const nullableDateSchema = z.coerce.date().optional();
 const addressSchema = z
   .object({
     number: z.string(),
@@ -68,8 +67,8 @@ export const ProfileFormSchema = z.object({
   group: z.string(),
   username: usernameSchema,
   gender: genderSchemaOptional,
-  dateOfBirth: nullableDateSchema,
-  createdDate: nullableDateSchema,
+  dateOfBirth: z.string(),
+  createdDate: z.string(),
   address: addressSchema,
 });
 
@@ -77,18 +76,18 @@ export const EmployeeUpdateFormSchema = z.object({
   fullName: fullNameSchema,
   address: addressSchema,
   email: emailSchema,
-  dateOfBirth: nullableDateSchema,
+  dateOfBirth: z.string(),
   avatar: z.string(),
   gender: genderSchema,
   phone: phoneSchema,
-  groupId: z.string(),
+  group: z.string(),
 });
 
 export const AddEmployeeSchema = z.object({
   fullName: fullNameSchema,
   password: passwordSchema,
   email: emailSchema,
-  dateOfBirth: nullableDateSchema,
+  dateOfBirth: z.string(),
   address: addressSchema,
   gender: genderSchema,
   phone: phoneSchema,
