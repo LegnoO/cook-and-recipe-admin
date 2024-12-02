@@ -36,6 +36,7 @@ interface ChefUserInfo {
   fullName: string;
   email: string;
   avatar: string;
+  userInfo: ChefUserInfo;
 }
 
 type ListChef = {

@@ -18,7 +18,7 @@ type Props<T, V> = {
   bodyCells: BodyCell<T>[];
   isLoading: boolean;
   filter: Filter<V>;
-  data: T[] | null;
+  data?: T[];
 };
 
 const TableBody = <T, V>({
@@ -70,14 +70,11 @@ const TableBody = <T, V>({
   return (
     <TableBodyMui>
       <Fragment>
-        {!isLoading &&
-          data !== null &&
-          data.length > 0 &&
-          renderDataRows(data as T[])}
+        {!isLoading && data && data.length > 0 && renderDataRows(data as T[])}
 
-        {isLoading || (data === null && renderLoadingRows())}
+        {(isLoading || !data) && renderLoadingRows()}
 
-        {!isLoading && data !== null && data.length === 0 && renderDataEmpty()}
+        {!isLoading && data && data.length === 0 && renderDataEmpty()}
       </Fragment>
     </TableBodyMui>
   );

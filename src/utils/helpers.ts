@@ -1,18 +1,17 @@
+export const regex = {
+  number: /[^0-9]/g,
+  space: /\s+/g,
+  hex: /^#([A-Fa-f0-9]{3,8})$/,
+  rgb: /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/,
+  rgba: /^rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/,
+};
+
 export function isObjectEmpty(objectName: Object) {
   return Object.keys(objectName).length === 0;
 }
 
-// const rgbTupleRegex = /^\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
-const cssRgbRegex = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
-// const cssRgbaRegex =
-//   /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|1|0?\.\d+)\s*\)$/;
-
-const hexColorRegex = /^#([A-Fa-f0-9]{3,8})$/;
-
-const rgbaStrRegex = /^rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/;
-
 export function rgbaToHex(rgba: string) {
-  const result = rgba.match(rgbaStrRegex);
+  const result = rgba.match(regex.rgba);
 
   if (!result) {
     return null;
@@ -28,7 +27,6 @@ export function rgbaToHex(rgba: string) {
     return hex.toUpperCase();
   };
 
-  // Convert alpha from 0-1 range to 0-255 range and then to hex
   const alpha = Math.round(a * 255);
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(alpha)}`;
@@ -39,13 +37,12 @@ export function hexToRGBA(
   opacity?: number,
   percent?: number,
 ): string {
-  if (!hexColorRegex.test(hexColor)) {
+  if (!regex.hex.test(hexColor)) {
     throw new Error(`Invalid color format: ${hexColor}`);
   }
 
   let hex = hexColor.substring(1);
 
-  // Handle 3-character shorthand hex (e.g., #FFF)
   if (hex.length === 3) {
     hex = hex
       .split("")
@@ -53,24 +50,20 @@ export function hexToRGBA(
       .join("");
   }
 
-  // Extract RGB values
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
 
-  let alpha = 1; // Default alpha value
+  let alpha = 1;
 
-  // If it's an 8-character hex code, extract and convert the alpha channel
   if (hex.length === 8) {
     alpha = parseInt(hex.substring(6, 8), 16) / 255;
   }
 
-  // If the `opacity` argument is provided, use it instead of the alpha from the hex
   if (typeof opacity === "number") {
     alpha = opacity;
   }
 
-  // Apply percentage adjustment to RGB if needed
   const adjustedR = percent ? Math.min(255, r + percent) : r;
   const adjustedG = percent ? Math.min(255, g + percent) : g;
   const adjustedB = percent ? Math.min(255, b + percent) : b;
@@ -84,8 +77,8 @@ export function adjustRgbColor(
   type: string,
 ): string {
   let r, g, b;
-  const rgbMatch = rgbColor.match(cssRgbRegex);
-  const hexMatch = rgbColor.match(hexColorRegex);
+  const rgbMatch = rgbColor.match(regex.rgb);
+  const hexMatch = rgbColor.match(regex.hex);
 
   if (rgbMatch) {
     [r, g, b] = rgbMatch.slice(1).map(Number);
@@ -156,22 +149,18 @@ export function removeDuplicates<T>(data: T[]): T[] {
   return uniqueArray;
 }
 
-export function formatPhoneNumber(number: string) {
-  // const vnRegex = /^(0[9|8|7|3|5|4][0-9]{8}|(0[1-9]{1}[0-9]{8}))$/;
-  let splitNumber = number.split("");
+export const formatPhoneNumber = (phoneNumber: string) => {
+  const numberOnly = phoneNumber.replace(regex.number, "");
 
-  if (splitNumber.length >= 4 && splitNumber[4] !== " ") {
-    splitNumber.push(" ");
-  }
-  if (splitNumber.length >= 8 && splitNumber[8] !== " ") {
-    splitNumber.push(" ");
-  }
+  const part1 = numberOnly.slice(0, 4);
+  const part2 = numberOnly.slice(4, 7);
+  const part3 = numberOnly.slice(7, 10);
 
-  return splitNumber.join("");
-}
+  return `${part1} ${part2} ${part3}`.trim();
+};
 
-export function removeWhiteSpace(input: string) {
-  return input.replace(/\s+/g, "");
+export function removeSpace(input: string) {
+  return input.replace(regex.space, "");
 }
 
 export function capitalizeFirstLetter(string: string) {

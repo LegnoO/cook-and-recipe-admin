@@ -1,33 +1,33 @@
 // ** React Imports
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 
 // ** Mui Imports
+import { Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Box, CardContent, Typography, Button, Card } from "@mui/material";
+import { Grid, InputAdornment, IconButton } from "@mui/material";
+import MuiFormControlLabel, {
+  FormControlLabelProps,
+} from "@mui/material/FormControlLabel";
 
 // ** Components
+import { Icon, TextField } from "@/components/ui";
 import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
-import RenderFieldsControlled from "@/components/RenderFieldsControlled";
 
 // ** Library
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // ** Hooks
 import useAuth from "@/hooks/useAuth";
 import useStorage from "@/hooks/useStorage";
 
-// ** Utils
-import { LoginFormSchema } from "@/utils/validations";
-import { ILoginFormSchema } from "@/utils/validations";
-
-// ** Config
-import { PasswordInput, RememberCheckBox } from "@/components/fields";
+// ** Schemas
+import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
 
 // ** Styled Components
-
 const LinkStyled = styled(Link)(({ theme }) => ({
   textDecoration: "none",
   color: `${theme.palette.primary.main} !important`,
@@ -43,15 +43,14 @@ const Wrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
+const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
+  ({ theme }) => ({
+    "& .MuiFormControlLabel-label": {
+      color: theme.palette.text.secondary,
+    },
+  }),
+);
 const LoginPage = () => {
-  const userNameField: FormField = {
-    name: "username",
-    label: "Username",
-    placeholder: "Enter your username",
-    type: "input",
-    size: { md: 6 },
-  };
-
   const { login, isLoading, loadingError } = useAuth();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useStorage<boolean>(
@@ -60,17 +59,25 @@ const LoginPage = () => {
     "local",
   );
 
-  const { handleSubmit, control } = useForm<ILoginFormSchema>({
+  const form = useForm<LoginFormValues>({
     defaultValues: {
       username: "admin123",
       password: "admin1234",
       rememberMe: rememberMe,
     },
-    resolver: zodResolver(LoginFormSchema),
+    resolver: zodResolver(loginFormSchema),
   });
 
   function togglePasswordVisibility() {
     setShowPassword((prev) => !prev);
+  }
+
+  function toggleRememberMe(
+    event: ChangeEvent<HTMLInputElement>,
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void,
+  ) {
+    onChange(event);
+    setRememberMe(event.target.checked);
   }
 
   return (
@@ -114,23 +121,74 @@ const LoginPage = () => {
             noPaper
             noValidate
             autoComplete="off"
-            onSubmit={handleSubmit(login)}>
+            onSubmit={form.handleSubmit(login)}>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 gap: "1.25rem",
               }}>
-              <RenderFieldsControlled
-                field={userNameField}
-                control={control}
-                id={userNameField.name as string}
+              <Grid item md={6} xs={6}>
+                <Controller
+                  name={"username"}
+                  control={form.control}
+                  render={({
+                    field: { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                    <TextField
+                      fullWidth
+                      id={"username-field"}
+                      label="Username"
+                      placeholder="Enter your username"
+                      variant="outlined"
+                      value={value || ""}
+                      onChange={onChange}
+                      error={Boolean(error)}
+                      helperText={error?.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Controller
+                name="password"
+                control={form.control}
+                rules={{ required: true }}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="Password"
+                    onChange={onChange}
+                    value={value}
+                    placeholder="············"
+                    type={showPassword ? "text" : "password"}
+                    error={Boolean(error)}
+                    helperText={error?.message}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            edge="end"
+                            onClick={togglePasswordVisibility}
+                            onMouseDown={(e) => e.preventDefault()}>
+                            <Icon
+                              fontSize="1.25rem"
+                              icon={
+                                showPassword ? "tabler:eye" : "tabler:eye-off"
+                              }
+                            />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
               />
-              <PasswordInput
-                showPassword={showPassword}
-                togglePassword={togglePasswordVisibility}
-                control={control}
-              />
+
               <Box
                 sx={{
                   display: "flex",
@@ -138,9 +196,22 @@ const LoginPage = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}>
-                <RememberCheckBox
-                  setRememberMe={setRememberMe}
-                  control={control}
+                <Controller
+                  name="rememberMe"
+                  control={form.control}
+                  render={({ field: { onChange, value } }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={value}
+                          onChange={(event) =>
+                            toggleRememberMe(event, onChange)
+                          }
+                        />
+                      }
+                      label="Remember Me"
+                    />
+                  )}
                 />
 
                 <Typography
@@ -149,7 +220,6 @@ const LoginPage = () => {
                   Forgot Password?
                 </Typography>
               </Box>
-
               {!isLoading ? (
                 <Box>
                   {loadingError && (

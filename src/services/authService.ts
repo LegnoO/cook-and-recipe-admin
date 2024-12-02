@@ -38,7 +38,7 @@ export async function getUserInfo() {
 }
 
 export async function getUserProfile() {
-  const response = await AxiosInstance.get<UserProfile>(
+  const response = await AxiosInstance.get<EmployeeProfile>(
     employeeEndpoints.getProfile,
   );
 

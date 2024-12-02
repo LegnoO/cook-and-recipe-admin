@@ -77,6 +77,7 @@ const MoveMember = ({ group, setController, closeMenu, refetch }: Props) => {
           </Typography>
         </Stack>
         <GroupSelect
+          name="group"
           disabled={isLoading}
           onChange={handleChangeGroupName}
           value={groupId}

@@ -1,11 +1,11 @@
 type Gender = "Male" | "Female" | "Other";
 
 type Address = {
-  number: string;
-  street: string;
-  ward: string;
-  district: string;
-  city: string;
+  number?: string;
+  street?: string;
+  ward?: string;
+  district?: string;
+  city?: string;
 };
 
 type SortOrder = "" | "asc" | "desc";
@@ -25,7 +25,13 @@ type Paginate = {
 
 type JSONString<T> = string;
 
-type ColorVariant = "active" | "success" | "disabled" | "warning" | "error" | "banned"
+type ColorVariant =
+  | "active"
+  | "success"
+  | "disabled"
+  | "warning"
+  | "error"
+  | "banned";
 
 type Align = "center" | "inherit" | "justify" | "left" | "right";
 

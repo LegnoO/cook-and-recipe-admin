@@ -7,7 +7,7 @@ import { Button, SxProps, Box } from "@mui/material";
 type Props = {
   name?: string;
   maxSize?: number;
-  onFileSelect: (file?: File, imageDataUrl?: string) => void;
+  onFileSelect: (file: File, imageDataUrl: string) => void;
   accept?: string;
   type?: "react-node" | "button";
   sx?: SxProps;
@@ -69,6 +69,7 @@ const UploadImage = ({
 
       {type === "button" && (
         <Button
+          disableRipple
           sx={{ width: "fit-content", fontWeight: 500, ...sx }}
           onClick={triggerSelect}
           variant="contained"

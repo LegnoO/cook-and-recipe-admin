@@ -2,21 +2,27 @@ type User = {
   id: string;
   fullName: string;
   email: string;
-  dateOfBirth: Date | null;
+
   avatar: string;
   group: { name: string; id: string };
 } & Permission;
 
 type UserProfile = {
-  username: string;
-  phone: string | null;
-  createdDate: Date | null;
-  gender?: Gender;
-  address: Address;
-  groupId?: string;
-} & Omit<User, "permission">;
-
-type UserProfileDraft = Omit<
-  UserProfile,
-  "group" | "email" | "avatar" | "gender" | "address" | "username"
->;
+  fullName: string;
+  email: string;
+  dateOfBirth?: Date;
+  avatar: string;
+  address?: Address;
+  gender: Gender;
+  phone?: string;
+  createdDate: Date;
+  group: string;
+  chefInfo: {
+    startedDate?: Date;
+    description?: string;
+    level: ChefLevel;
+    status: ChefStatus;
+    approvalDate?: Date;
+    disabledDate?: Date;
+  };
+};

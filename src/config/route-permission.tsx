@@ -9,7 +9,7 @@ import TestPage from "@/pages/TestPage";
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const EmployeeList = lazy(() => import("@/pages/Employee/EmployeeList"));
+const EmployeePage = lazy(() => import("@/pages/EmployeePage"));
 const GroupList = lazy(() => import("@/pages/Group/GroupList"));
 const ChefList = lazy(() => import("@/pages/Chef/ChefList"));
 const ChefPendingList = lazy(() => import("@/pages/Chef/ChefPendingList"));
@@ -46,7 +46,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/employees",
-    component: <EmployeeList />,
+    component: <EmployeePage />,
     permission: {
       page: "user",
       action: "read",

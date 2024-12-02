@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, ReactNode, memo } from "react";
+import { Fragment, ReactNode } from "react";
 
 // ** Mui Imports
 import { Grid, InputAdornment, IconButton } from "@mui/material";
@@ -8,19 +8,24 @@ import { Grid, InputAdornment, IconButton } from "@mui/material";
 import { Icon, TextField, DatePicker, Select } from "@/components/ui";
 
 // ** Library Imports
-import { Controller, Control } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
+import { Controller, Path, UseFormReturn, FieldValues } from "react-hook-form";
 
 // ** Types
-type RenderFieldsProps = {
+type Props<T extends FieldValues> = {
+  name: Path<T>;
+  form: UseFormReturn<T>;
   id: string;
   field: FormField;
-  control: Control<any>;
 };
 
-const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
+const RenderFieldsControlled = <T extends FieldValues>({
+  field,
+  form,
+  id,
+  name,
+}: Props<T>) => {
   const {
-    name,
     type,
     label,
     placeholder,
@@ -40,25 +45,29 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
     );
   };
 
-  const Children = () =>
-    children ? (
-      children.map((field, index) => (
-        <RenderFieldsControlled
-          key={String(index)}
-          field={field}
-          control={control}
+  const RenderChildren = <T extends FieldValues>({
+    children,
+    form,
+  }: {
+    children: FormField[];
+    form: UseFormReturn<T>;
+  }) =>
+    children.map((field, index) => (
+      <Fragment key={index}>
+        <RenderFieldsControlled<T>
           id={String(index)}
+          name={field.name as Path<T>}
+          field={field}
+          form={form}
         />
-      ))
-    ) : (
-      <Fragment />
-    );
+      </Fragment>
+    ));
 
   const DateField = () => {
     return renderGridItem(
       <Controller
-        name={name as string}
-        control={control}
+        name={name}
+        control={form.control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <DatePicker
             disabled={disabled}
@@ -87,8 +96,8 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
   const InputField = () => {
     return renderGridItem(
       <Controller
-        name={name as string}
-        control={control}
+        name={name}
+        control={form.control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <TextField
             required={required}
@@ -120,8 +129,8 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
   const SelectField = () => {
     return renderGridItem(
       <Controller
-        name={name as string}
-        control={control}
+        name={name}
+        control={form.control}
         render={({ field: { onChange, value }, fieldState: { error } }) => (
           <Select
             fullWidth
@@ -143,10 +152,10 @@ const RenderFieldsControlled = ({ field, control, id }: RenderFieldsProps) => {
     date: <DateField />,
     input: <InputField />,
     select: <SelectField />,
-    children: <Children />,
+    children: <RenderChildren children={children || []} form={form} />,
   };
 
   return types[type];
 };
 
-export default memo(RenderFieldsControlled);
+export default RenderFieldsControlled;

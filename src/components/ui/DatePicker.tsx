@@ -9,6 +9,7 @@ const DatePicker = styled(MuiDatePicker)({
     height: "22px",
     width: "22px",
   },
+  "& .MuiInputBase-root .MuiTouchRipple-root": { display: "none" },
 });
 
 export default DatePicker;

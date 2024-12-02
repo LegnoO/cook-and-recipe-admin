@@ -18,7 +18,6 @@ import { Form, Icon, ModalLoading } from "@/components/ui";
 import { GroupSelect, PhoneInput } from "@/components/fields";
 
 // ** Config
-import { updateEmployeeField } from "@/config/fields/update-employee-field";
 import { queryOptions } from "@/config/query-options";
 
 // ** Services
@@ -26,7 +25,7 @@ import { getEmployeeDetail, updateEmployee } from "@/services/employeeService";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, Path, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -35,15 +34,18 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import { handleAxiosError } from "@/utils/errorHandler";
 import {
   createFormData,
+  formatPhoneNumber,
   handleToastMessages,
   hexToRGBA,
 } from "@/utils/helpers";
 
-// ** Types
+// ** Schemas
 import {
-  EmployeeUpdateFormSchema,
-  IEmployeeUpdateFormSchema,
-} from "@/utils/validations";
+  updateEmployeeSchema,
+  UpdateEmployeeValues,
+} from "@/schemas/updateEmployeeSchema";
+
+// ** Types
 
 type Props = {
   employeeId: string;
@@ -58,48 +60,132 @@ const EmployeeUpdate = ({
   setController,
   refetch,
 }: Props) => {
-  const title = "Update Information";
-  const { data: employeeData, isLoading: employeeLoading } = useQuery({
+  const TITLE = "Update Information";
+  const updateEmployeeField: FormField[] = [
+    {
+      name: "fullName",
+      label: "Full name",
+      placeholder: "Enter fullName",
+      type: "input",
+      size: { md: 6 },
+    },
+    {
+      name: "username",
+      label: "User name",
+      placeholder: "Enter fullName",
+      type: "input",
+      size: { md: 6 },
+      disabled: true,
+    },
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "Enter email",
+      type: "input",
+      size: { md: 6 },
+    },
+    {
+      menuItems: ["Male", "Female", "Other"],
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      required: true,
+      size: { md: 6 },
+    },
+    {
+      name: "dateOfBirth",
+      label: "Date of birth",
+      type: "date",
+      size: { md: 6 },
+    },
+    {
+      type: "children",
+      children: [
+        {
+          name: "address.number",
+          label: "Number",
+          placeholder: "Enter your number",
+
+          type: "input",
+          size: { md: 6 },
+        },
+
+        {
+          name: "address.street",
+          label: "Street address",
+          placeholder: "Enter street address",
+
+          type: "input",
+          size: { md: 6 },
+        },
+        {
+          name: "address.ward",
+          label: "Ward address",
+          placeholder: "Enter ward address",
+
+          type: "input",
+          size: { md: 6 },
+        },
+        {
+          name: "address.district",
+          label: "District address",
+          placeholder: "Enter district address",
+
+          type: "input",
+          size: { md: 6 },
+        },
+        {
+          name: "address.city",
+          label: "City address",
+          placeholder: "Enter city address",
+
+          type: "input",
+          size: { md: 6 },
+        },
+      ],
+    },
+  ];
+
+  const { data: employeeDetail, isLoading: employeeLoading } = useQuery({
     queryKey: ["employee-detail", employeeId],
 
     queryFn: () => getEmployeeDetail(employeeId),
     ...queryOptions,
   });
 
-  const [avatarFileState, setAvatarFileState] = useState<
-    Partial<{ file?: File; url?: string }>
-  >({});
-
   const [isLoading, setLoading] = useState(false);
 
-  const form = useForm<IEmployeeUpdateFormSchema>({
-    resolver: zodResolver(EmployeeUpdateFormSchema),
+  const form = useForm<UpdateEmployeeValues>({
+    resolver: zodResolver(updateEmployeeSchema),
   });
 
-  function handleFileSelect(file?: File, imageDataUrl?: string) {
+  const avatar = form.watch("avatar");
+
+  function handleFileSelect(file: File, imageDataUrl: string) {
     const newFileUpdated = { file, url: imageDataUrl };
     if (newFileUpdated) {
-      setAvatarFileState(newFileUpdated);
+      form.setValue("avatar", newFileUpdated);
     }
   }
 
-  async function onSubmit(data: IEmployeeUpdateFormSchema) {
+  async function onSubmit(data: UpdateEmployeeValues) {
+    console.log("🚀 ~ onSubmit ~ data:", data);
     const toastLoading = toast.loading("Loading...");
 
-    const employeeData = {
+    const employeePayload = {
       fullName: data.fullName,
-      groupId: data.group,
+      groupId: data.groupId,
       address: JSON.stringify(data.address),
       email: data.email,
       gender: data.gender,
       phone: data.phone,
-      avatar: avatarFileState.file,
+      avatar: avatar ? avatar.file : employeeDetail?.avatar,
       dateOfBirth: String(data.dateOfBirth),
     };
 
     try {
       setLoading(true);
-      const formData = createFormData(employeeData);
+      const formData = createFormData(employeePayload);
       const newController = new AbortController();
       setController(newController);
       await updateEmployee(formData, employeeId, newController);
@@ -118,19 +204,18 @@ const EmployeeUpdate = ({
   }
 
   useEffect(() => {
-    if (employeeData) {
-      let employeeInfo: Partial<IEmployeeUpdateFormSchema> = {};
-      const { id, disabledDate, createdDate, status, group, ...rest } =
-        employeeData;
-      employeeInfo = rest;
-      employeeInfo.group = employeeData.group.id;
-
-      form.reset(employeeInfo);
+    if (employeeDetail) {
+      console.log("🚀 ~ useEffect ~ employeeDetail:", employeeDetail);
+      form.reset({
+        ...employeeDetail,
+        groupId: employeeDetail.group.id,
+        avatar: { url: employeeDetail.avatar },
+      });
     }
-  }, [employeeData]);
+  }, [employeeDetail]);
 
   if (employeeLoading) {
-    return <ModalLoading title={title} closeMenu={closeMenu} />;
+    return <ModalLoading title={TITLE} closeMenu={closeMenu} />;
   }
 
   return (
@@ -153,7 +238,7 @@ const EmployeeUpdate = ({
             component="h3"
             sx={{ textAlign: { xs: "center", sm: "left" }, mb: "2.75rem" }}
             variant="h4">
-            {title}
+            {TITLE}
           </Typography>
 
           <Box className="modal-loading-info">
@@ -170,8 +255,8 @@ const EmployeeUpdate = ({
                   },
                 }}>
                 <Avatar
-                  alt={`Avatar ${employeeData?.fullName ?? "default"}`}
-                  src={avatarFileState?.url || employeeData?.avatar}
+                  alt={`Avatar ${employeeDetail?.fullName ?? "default"}`}
+                  src={avatar?.url}
                   sx={{ height: "100%", width: "100%" }}
                 />
 
@@ -225,33 +310,57 @@ const EmployeeUpdate = ({
                 <Fragment key={index}>
                   {index === 3 && (
                     <Grid item md={6} xs={12}>
-                      <GroupSelect<IEmployeeUpdateFormSchema>
-                        label="Group"
-                        fullWidth
-                        form={form}
-                        name="group"
-                        required
+                      <Controller
+                        name="groupId"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <GroupSelect
+                            {...field}
+                            required
+                            fullWidth
+                            label="Group"
+                            value={field.value || ""}
+                            error={Boolean(fieldState.error)}
+                            helperText={fieldState.error?.message}
+                            onChange={field.onChange}
+                          />
+                        )}
                       />
                     </Grid>
                   )}
 
                   {index === 5 && (
                     <Grid item md={6} xs={12}>
-                      <PhoneInput
-                        fullWidth
-                        label="Phone number"
+                      <Controller
                         name="phone"
-                        placeholder="Enter number phnone"
-                        form={form}
-                        required
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <PhoneInput
+                            {...field}
+                            ref={field.ref}
+                            required
+                            fullWidth
+                            label="Phone number"
+                            placeholder="Enter number phone"
+                            value={formatPhoneNumber(field.value || "")}
+                            error={Boolean(fieldState.error)}
+                            helperText={fieldState.error?.message}
+                            onChange={(event) =>
+                              field.onChange(
+                                formatPhoneNumber(event.target.value),
+                              )
+                            }
+                          />
+                        )}
                       />
                     </Grid>
                   )}
 
                   <RenderFieldsControlled
                     field={field}
-                    control={form.control}
+                    form={form}
                     id={String(index)}
+                    name={field.name as Path<UpdateEmployeeValues>}
                   />
                 </Fragment>
               ))}

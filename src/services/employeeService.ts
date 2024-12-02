@@ -55,7 +55,7 @@ export async function updateEmployee(
 }
 
 export async function getEmployeeDetail(employeeId: string) {
-  const response = await AxiosInstance.get<Employee>(
+  const response = await AxiosInstance.get<EmployeeDetail>(
     employeeEndpoints.getDetailEmployee(employeeId),
   );
 

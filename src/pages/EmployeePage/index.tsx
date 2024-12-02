@@ -51,11 +51,11 @@ import {
   toggleStatusEmployee,
 } from "@/services/employeeService";
 
-const EmployeeList = () => {
+const EmployeePage = () => {
   const [isLoading, setLoading] = useState(true);
   const location = useLocation();
   const { activeIds, addId, removeId } = useSettings();
-  const [employees, setEmployees] = useState<Employee[] | null>(null);
+  const [employees, setEmployees] = useState<EmployeeDetail[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterEmployees> = {
@@ -107,9 +107,9 @@ const EmployeeList = () => {
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS: BodyCell<Employee>[] = [
+  const BODY_CELLS: BodyCell<EmployeeDetail>[] = [
     {
-      render: (row: Employee) => (
+      render: (row: EmployeeDetail) => (
         <Stack direction="row" spacing={1.25} alignItems={"center"}>
           <Avatar src={row.avatar} alt="Avatar user" />
           <Stack direction="column">
@@ -122,20 +122,20 @@ const EmployeeList = () => {
       ),
     },
     {
-      render: (row: Employee) => row.phone,
+      render: (row: EmployeeDetail) => row.phone,
     },
     {
-      render: (row: Employee) => (
+      render: (row: EmployeeDetail) => (
         <Tooltip title={<Typography>{formatAddress(row.address)}</Typography>}>
           <Typography>{formatAddress(row.address, 26)}</Typography>
         </Tooltip>
       ),
     },
     {
-      render: (row: Employee) => row.group.name,
+      render: (row: EmployeeDetail) => row.group.name,
     },
     {
-      render: (row: Employee) => (
+      render: (row: EmployeeDetail) => (
         <Switch
           color="success"
           onChange={() => handleChangeStatus(row.id)}
@@ -145,7 +145,7 @@ const EmployeeList = () => {
       ),
     },
     {
-      render: (row: Employee) => (
+      render: (row: EmployeeDetail) => (
         <IconButton
           disableRipple
           onClick={() => addId(ids.modalUpdateEmployee(row.id))}>
@@ -377,7 +377,7 @@ const EmployeeList = () => {
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody<Employee, FilterEmployees>
+          <TableBody<EmployeeDetail, FilterEmployees>
             isLoading={isLoading}
             data={employees}
             filter={filter}
@@ -395,4 +395,4 @@ const EmployeeList = () => {
     </Fragment>
   );
 };
-export default EmployeeList;
+export default EmployeePage;

@@ -17,15 +17,21 @@ import { Form, Icon } from "@/components/ui";
 import { UploadImage, RenderFieldsControlled } from "@/components";
 
 // ** Library Imports
-import { useForm } from "react-hook-form";
+import { useForm, Path, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // ** Utils
+import { formatPhoneNumber } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
-import { AddEmployeeSchema } from "@/utils/validations";
 import { createFormData, handleToastMessages } from "@/utils/helpers";
+
+// ** Schemas
+import {
+  addEmployeeSchema,
+  AddEmployeeValues,
+} from "@/schemas/addEmployeeSchema";
 
 // ** Services
 import { createEmployee } from "@/services/employeeService";
@@ -126,18 +132,19 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
     },
   ];
 
-  const [file, setFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(AddEmployeeSchema),
+  const form = useForm<AddEmployeeValues>({
+    resolver: zodResolver(addEmployeeSchema),
   });
 
-  function handleFileSelect(file?: File, _imageDataUrl?: string) {
-    if (file) setFile(file);
+  const avatar = form.watch("avatar");
+
+  async function handleFileSelect(file?: File, _imageDataUrl?: string) {
+    form.setValue("avatar", file);
   }
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: AddEmployeeValues) {
     const toastLoading = toast.loading("Loading...");
 
     const employeeData = {
@@ -148,8 +155,8 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
       fullName: data.fullName,
       password: data.password,
       phone: data.phone,
-      dateOfBirth: data.dateOfBirth || undefined,
-      avatar: file || undefined,
+      dateOfBirth: data.dateOfBirth,
+      avatar,
     };
 
     try {
@@ -201,33 +208,57 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
               <Fragment key={index}>
                 {index === 3 && (
                   <Grid item md={6} xs={12}>
-                    <GroupSelect
-                      label="Group"
-                      fullWidth
-                      form={form}
-                      name="group"
-                      required
+                    <Controller
+                      name="groupId"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <GroupSelect
+                          {...field}
+                          required
+                          fullWidth
+                          label="Group"
+                          value={field.value || ""}
+                          error={Boolean(fieldState.error)}
+                          helperText={fieldState.error?.message}
+                          onChange={field.onChange}
+                        />
+                      )}
                     />
                   </Grid>
                 )}
 
                 {index === 5 && (
                   <Grid item md={6} xs={12}>
-                    <PhoneInput
-                      fullWidth
-                      label="Phone number"
+                    <Controller
                       name="phone"
-                      placeholder="Enter number phnone"
-                      form={form}
-                      required
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <PhoneInput
+                          {...field}
+                          ref={field.ref}
+                          required
+                          fullWidth
+                          label="Phone number"
+                          placeholder="Enter number phone"
+                          value={field.value || ""}
+                          error={Boolean(fieldState.error)}
+                          helperText={fieldState.error?.message}
+                          onChange={(event) =>
+                            field.onChange(
+                              formatPhoneNumber(event.target.value),
+                            )
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                 )}
 
                 <RenderFieldsControlled
                   field={field}
-                  control={form.control}
+                  form={form}
                   id={String(index)}
+                  name={field.name as Path<AddEmployeeValues>}
                 />
               </Fragment>
             ))}
@@ -267,7 +298,7 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
                     border: "1px solid transparent",
                     outline: "none",
                   }}
-                  value={file?.name || "No file chosen"}
+                  value={avatar?.name || "No file chosen"}
                 />
               </Stack>
             </Grid>
@@ -278,6 +309,7 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
             spacing={1.5}
             sx={{ width: "100%", mt: "1rem", pt: "1.5rem" }}>
             <Button
+              disableRipple
               onClick={closeMenu}
               sx={{ width: { xs: "100%", md: "auto" } }}
               color="secondary"
@@ -285,6 +317,7 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
               Cancel
             </Button>
             <Button
+              disableRipple
               disabled={isLoading}
               type="submit"
               sx={{
