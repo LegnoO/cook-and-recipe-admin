@@ -91,7 +91,7 @@ const ChefPendingList = () => {
   };
 
   const { activeIds, addId, removeId } = useSettings();
-  const [chefs, setChefs] = useState<Chef[] | null>(null);
+  const [chefs, setChefs] = useState<Chef[]>();
   const [controller, setController] = useState<AbortController | null>(null);
 
   const statusColorMap = {

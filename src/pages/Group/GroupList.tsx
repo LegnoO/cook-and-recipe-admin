@@ -76,7 +76,7 @@ const GroupList = () => {
     [],
   );
 
-  const [groups, setGroups] = useState<Group[] | null>(null);
+  const [groups, setGroups] = useState<Group[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<FilterGroup>(defaultFilter);
 

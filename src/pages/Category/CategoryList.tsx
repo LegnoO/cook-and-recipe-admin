@@ -63,7 +63,7 @@ const CategoryList = () => {
     [],
   );
 
-  const [category, setCategory] = useState<Category[] | null>(null);
+  const [category, setCategory] = useState<Category[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<Filter<FilterCategory>>(defaultFilter);
 

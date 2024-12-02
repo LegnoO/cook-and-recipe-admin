@@ -64,7 +64,7 @@ const RecipePendingList = () => {
     [],
   );
 
-  const [recipes, setRecipes] = useState<Recipe[] | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] =
     useState<Filter<FilterRecipePending>>(defaultFilter);

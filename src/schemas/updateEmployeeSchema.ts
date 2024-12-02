@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 // ** Utils
-import { formatPhoneNumber, removeSpace } from "@/utils/helpers";
+import { removeSpace } from "@/utils/helpers";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = [

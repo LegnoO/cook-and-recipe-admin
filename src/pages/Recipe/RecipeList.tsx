@@ -2,13 +2,7 @@
 import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
 
 // ** Mui Imports
-import {
-  Stack,
-  Typography,
-  Button,
-  Divider,
-  IconButton,
-} from "@mui/material";
+import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
 
 // ** Components
 import {
@@ -73,7 +67,7 @@ const RecipeList = () => {
     [],
   );
 
-  const [recipes, setRecipes] = useState<Recipe[] | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<Filter<FilterRecipe>>(defaultFilter);
 
