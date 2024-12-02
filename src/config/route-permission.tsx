@@ -10,16 +10,16 @@ const HomePage = lazy(() => import("@/pages/HomePage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeePage = lazy(() => import("@/pages/EmployeePage"));
-const GroupList = lazy(() => import("@/pages/Group/GroupList"));
-const ChefList = lazy(() => import("@/pages/Chef/ChefList"));
-const ChefPendingList = lazy(() => import("@/pages/Chef/ChefPendingList"));
+const GroupPage = lazy(() => import("@/pages/GroupPage"));
+const ChefList = lazy(() => import("@/pages/ChefPage/ChefList"));
+const ChefPendingList = lazy(() => import("@/pages/ChefPage/ChefPendingList"));
 const RecipePendingList = lazy(
-  () => import("@/pages/Recipe/RecipePendingList"),
+  () => import("@/pages/RecipePage/RecipePendingList"),
 );
-const RecipeList = lazy(() => import("@/pages/Recipe/RecipeList"));
-const CategoryList = lazy(() => import("@/pages/Category/CategoryList"));
+const RecipeList = lazy(() => import("@/pages/RecipePage/RecipeList"));
+const CategoryPage = lazy(() => import("@/pages/CategoryPage"));
 
-export const protectedRoute: ProtectedRoute[] = [
+export const protectedRoute: Route[] = [
   {
     path: homeRoute,
     component: <HomePage />,
@@ -62,7 +62,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/groups",
-    component: <GroupList />,
+    component: <GroupPage />,
     permission: {
       page: "user",
       action: "read",
@@ -70,39 +70,41 @@ export const protectedRoute: ProtectedRoute[] = [
   },
   {
     path: "/chefs",
-    component: <ChefList />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
+    permission: { page: "", action: "read" },
+    children: [
+      {
+        path: "",
+        component: <ChefList />,
+        permission: { page: "user", action: "read" },
+      },
+      {
+        path: "pending",
+        component: <ChefPendingList />,
+        permission: { page: "user", action: "read" },
+      },
+    ],
   },
-  {
-    path: "/chefs/pending",
-    component: <ChefPendingList />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
-  },
-  {
-    path: "/recipes/pending",
-    component: <RecipePendingList />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
-  },
+
   {
     path: "/recipes",
-    component: <RecipeList />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
+    permission: { page: "", action: "read" },
+    children: [
+      {
+        path: "",
+        component: <RecipeList />,
+        permission: { page: "user", action: "read" },
+      },
+      {
+        path: "pending",
+        component: <RecipePendingList />,
+        permission: { page: "user", action: "read" },
+      },
+    ],
   },
+
   {
-    path: "/category",
-    component: <CategoryList />,
+    path: "/categories",
+    component: <CategoryPage />,
     permission: {
       page: "user",
       action: "read",
@@ -110,7 +112,7 @@ export const protectedRoute: ProtectedRoute[] = [
   },
 ];
 
-export const publicRoute: PublicRoute[] = [
+export const publicRoute: Route[] = [
   {
     component: <LoginPage />,
     path: loginRoute,

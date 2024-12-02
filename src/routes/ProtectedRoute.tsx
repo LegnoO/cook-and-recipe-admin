@@ -23,8 +23,8 @@ const ProtectedRoute = () => {
     .filter((route) =>
       user?.permission.some(
         (perm) =>
-          perm.page === route.permission.page &&
-          perm.actions.includes(route.permission.action),
+          perm.page === route.permission?.page &&
+          perm.actions.includes(route.permission?.action),
       ),
     )
     .map((route) => route.path);
