@@ -6,8 +6,8 @@ import MuiToolbar, { ToolbarProps } from "@mui/material/Toolbar";
 
 // ** Components
 import Icon from "@/components/ui/Icon";
-import UserDropDown from "@/components/UserDropDown";
 import ModeToggler from "@/components/ModeToggler";
+import UserDropdown from "./UserDropdown";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -87,7 +87,7 @@ const AppBar = () => {
             gap: "0.5rem",
           }}>
           <ModeToggler />
-          <UserDropDown />
+          <UserDropdown />
         </Box>
       </Toolbar>
     </StyledAppBar>

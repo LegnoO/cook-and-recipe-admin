@@ -55,7 +55,7 @@ const ButtonLogout = styled(Button)<ButtonProps>(({ theme }) => ({
   }),
 }));
 
-const UserDropDown = () => {
+const UserDropdown = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -174,4 +174,4 @@ const UserDropDown = () => {
   );
 };
 
-export default UserDropDown;
+export default UserDropdown;

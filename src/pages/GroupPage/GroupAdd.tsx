@@ -21,11 +21,11 @@ import { createGroup } from "@/services/groupServices";
 type Props = {
   closeMenu: () => void;
   setController: Dispatch<SetStateAction<AbortController | null>>;
-
   refetch: () => void;
 };
 
 const GroupAdd = ({ setController, closeMenu, refetch }: Props) => {
+  const title = "Create Group";
   const [permissions, setPermissions] = useState<Permissions[]>([]);
   const [groupName, setGroupName] = useState<string>("");
   const [groupNameError, setGroupNameError] = useState<string>("");
@@ -56,7 +56,7 @@ const GroupAdd = ({ setController, closeMenu, refetch }: Props) => {
 
     const group = {
       name: groupName,
-      permissions: [...permissions]
+      permissions: [...permissions!]
         .map((permission) =>
           permission.checked
             ? {
@@ -105,7 +105,7 @@ const GroupAdd = ({ setController, closeMenu, refetch }: Props) => {
             alignItems={"center"}
             justifyContent={"space-between"}>
             <Typography fontWeight={500} component="h3" variant="h4">
-              Create Group
+              {title}
             </Typography>
           </Stack>
           <PerfectScrollbar options={{ wheelPropagation: false }}>

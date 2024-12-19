@@ -1,8 +1,22 @@
 // ** React Imports
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, memo } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  memo,
+  Fragment,
+} from "react";
 
 // ** Mui Imports
-import { Typography, Checkbox, Stack, Box, Collapse } from "@mui/material";
+import {
+  Typography,
+  Checkbox,
+  Stack,
+  Box,
+  Collapse,
+  Skeleton,
+} from "@mui/material";
 
 // ** Components
 import { Icon, TextField } from "@/components/ui";
@@ -17,6 +31,7 @@ import { getPermissions } from "@/services/permissionServices";
 
 // ** Utils
 import { hexToRGBA } from "@/utils/helpers";
+import Repeat from "../Repeat";
 
 // ** Types
 type Props = {
@@ -42,7 +57,7 @@ const PermissionList = ({
   permissionDetail,
   groupNameError,
 }: Props) => {
-  const { data: listPermissions } = useQuery({
+  const { isLoading: permissionLoading, data: listPermissions } = useQuery({
     queryKey: ["all-permission"],
     queryFn: getPermissions,
     ...queryOptions,
@@ -118,13 +133,13 @@ const PermissionList = ({
     }
   }, [listPermissions, permissionDetail]);
 
-  if (!listPermissions) {
-    return null;
-  }
+  // if (!listPermissions) {
+  //   return null;
+  // }
 
   return (
     <Stack
-      sx={{ width: "100%", paddingRight: "0.75rem" }}
+      sx={{ minWidth: "300px", width: "100%", paddingRight: "0.75rem" }}
       direction="column"
       spacing={1.5}>
       {groupName && (
@@ -144,6 +159,7 @@ const PermissionList = ({
           borderRadius: (theme) => `${theme.shape.borderRadius}px`,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           p: 2.5,
+          width: "100%",
         }}
         direction="column"
         spacing={1.5}>
@@ -151,115 +167,134 @@ const PermissionList = ({
           fullWidth
           onChange={handleChangeSearchPermissions}
           placeholder="Search Permission"
-          // disabled={isLoading}
+          disabled={permissionLoading}
         />
-        {listPermissions
-          ?.filter((permission) => permission.page.includes(searchPermissions))
-          .map((permission, index) => (
-            <Stack
-              key={index}
-              sx={{
-                borderRadius: (theme) => `${theme.shape.borderRadius - 2}px`,
-                border: (theme) => `1px solid ${theme.palette.divider}`,
-                width: 400,
-              }}
-              direction="column"
-              spacing={1}>
-              <Stack
-                sx={{
-                  "&": {
-                    borderBottom: (theme) =>
-                      `${
-                        isPermissionSelected(permission.page) ? 0 : 1
-                      }px solid ${theme.palette.divider}`,
-                    backgroundColor: (theme) =>
-                      hexToRGBA(theme.palette.background.paper, 1, 15),
-                    paddingBlock: 0,
-                    paddingInline: "0.5rem",
-                    minHeight: 45,
-                    gap: 0.5,
-                    cursor: "pointer",
-                    transition:
-                      "background-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-                  },
-                  "&:hover": {
-                    backgroundColor: (theme) =>
-                      hexToRGBA(theme.palette.background.paper, 1, 10),
-                  },
-                }}
-                direction="row"
-                alignItems={"center"}
-                onClick={() => handlePermissionChange(permission)}>
-                <Checkbox
-                  checked={isPermissionSelected(permission.page) || false}
-                  disableRipple
-                />
-                <Typography
-                  fontWeight={400}
-                  variant="subtitle2"
-                  color="text.primary">
-                  {permission.page}
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignitems: "center",
-                    transition:
-                      "transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-                    marginLeft: "auto",
-                    transform:
-                      permissions.length > 0 &&
-                      Boolean(
-                        permissions.find(
-                          (perm) => perm.page === permission.page,
-                        ),
-                      )
-                        ? "rotate(0deg)"
-                        : "rotate(180deg)",
-                  }}>
-                  <Icon fontSize="1.125rem" icon={"ic:sharp-expand-more"} />
-                </Box>
-              </Stack>
-              <Collapse
-                sx={{ marginTop: "0 !important" }}
-                in={isPermissionSelected(permission.page) || false}>
+        {permissionLoading ? (
+          <Repeat times={3}>
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={40}
+              sx={{ borderRadius: 1, marginBottom: 2 }}
+            />
+          </Repeat>
+        ) : (
+          <Fragment>
+            {listPermissions
+              ?.filter((permission) =>
+                permission.page.includes(searchPermissions),
+              )
+              .map((permission, index) => (
                 <Stack
-                  sx={{ paddingBlock: "0.5rem", paddingLeft: "0.75rem" }}
+                  key={index}
+                  sx={{
+                    borderRadius: (theme) =>
+                      `${theme.shape.borderRadius - 2}px`,
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    width: 400,
+                  }}
                   direction="column"
                   spacing={1}>
-                  {permissions.length > 0 &&
-                    permissions
-                      ?.find((perm) => perm.page === permission.page)
-                      ?.actions.map((action, index) => (
-                        <Stack
-                          key={index}
-                          sx={{
-                            paddingBlock: 0,
-                            paddingInline: "0.5rem",
-                          }}
-                          direction="row"
-                          alignItems={"center"}
-                          spacing={0.5}>
-                          <Checkbox
-                            onClick={() =>
-                              handlePermissionSelected(permission.page, action)
-                            }
-                            checked={action.checked || false}
-                            disabled={action.name === "read"}
-                            disableRipple
-                          />
-                          <Typography
-                            fontWeight={400}
-                            variant="subtitle2"
-                            color="text.primary">
-                            {action.name}
-                          </Typography>
-                        </Stack>
-                      ))}
+                  <Stack
+                    sx={{
+                      "&": {
+                        borderBottom: (theme) =>
+                          `${
+                            isPermissionSelected(permission.page) ? 0 : 1
+                          }px solid ${theme.palette.divider}`,
+                        backgroundColor: (theme) =>
+                          hexToRGBA(theme.palette.background.paper, 1, 15),
+                        paddingBlock: 0,
+                        paddingInline: "0.5rem",
+                        minHeight: 45,
+                        gap: 0.5,
+                        cursor: "pointer",
+                        transition:
+                          "background-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                      },
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          hexToRGBA(theme.palette.background.paper, 1, 10),
+                      },
+                    }}
+                    direction="row"
+                    alignItems={"center"}
+                    onClick={() => handlePermissionChange(permission)}>
+                    <Checkbox
+                      checked={isPermissionSelected(permission.page) || false}
+                      disableRipple
+                    />
+                    <Typography
+                      fontWeight={400}
+                      variant="subtitle2"
+                      color="text.primary">
+                      {permission.page}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignitems: "center",
+                        transition:
+                          "transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                        marginLeft: "auto",
+                        transform:
+                          permissions.length > 0 &&
+                          Boolean(
+                            permissions.find(
+                              (perm) => perm.page === permission.page,
+                            ),
+                          )
+                            ? "rotate(0deg)"
+                            : "rotate(180deg)",
+                      }}>
+                      <Icon fontSize="1.125rem" icon={"ic:sharp-expand-more"} />
+                    </Box>
+                  </Stack>
+                  <Collapse
+                    sx={{ marginTop: "0 !important" }}
+                    in={isPermissionSelected(permission.page) || false}>
+                    <Stack
+                      sx={{ paddingBlock: "0.5rem", paddingLeft: "0.75rem" }}
+                      direction="column"
+                      spacing={1}>
+                      {permissions.length > 0 &&
+                        permissions
+                          ?.find((perm) => perm.page === permission.page)
+                          ?.actions.map((action, index) => (
+                            <Stack
+                              key={index}
+                              sx={{
+                                paddingBlock: 0,
+                                paddingInline: "0.5rem",
+                              }}
+                              direction="row"
+                              alignItems={"center"}
+                              spacing={0.5}>
+                              <Checkbox
+                                onClick={() =>
+                                  handlePermissionSelected(
+                                    permission.page,
+                                    action,
+                                  )
+                                }
+                                checked={action.checked || false}
+                                disabled={action.name === "read"}
+                                disableRipple
+                              />
+                              <Typography
+                                fontWeight={400}
+                                variant="subtitle2"
+                                color="text.primary">
+                                {action.name}
+                              </Typography>
+                            </Stack>
+                          ))}
+                    </Stack>
+                  </Collapse>
                 </Stack>
-              </Collapse>
-            </Stack>
-          ))}
+              ))}
+          </Fragment>
+        )}
       </Stack>
     </Stack>
   );
