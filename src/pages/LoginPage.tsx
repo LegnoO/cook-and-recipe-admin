@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 
 // ** Mui Imports
 import { Checkbox } from "@mui/material";
@@ -16,13 +16,16 @@ import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Library
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // ** Hooks
 import useAuth from "@/hooks/useAuth";
 import useStorage from "@/hooks/useStorage";
+
+// ** Config
+import { homeRoute } from "@/config/url";
 
 // ** Schemas
 import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
@@ -51,7 +54,8 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
   }),
 );
 const LoginPage = () => {
-  const { login, isLoading, loadingError } = useAuth();
+  const navigate = useNavigate();
+  const { user, login, isLoading, loadingError } = useAuth();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useStorage<boolean>(
     "rememberMe",
@@ -79,6 +83,12 @@ const LoginPage = () => {
     onChange(event);
     setRememberMe(event.target.checked);
   }
+
+  useEffect(() => {
+    if (user) {
+      navigate(homeRoute);
+    }
+  }, []);
 
   return (
     <Wrapper className="LoginPage-Wrapper">

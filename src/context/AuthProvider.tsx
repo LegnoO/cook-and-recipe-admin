@@ -37,6 +37,7 @@ export interface IAuthContext {
   login: ({ username, password, rememberMe }: LoginCredentials) => void;
   loadingError: string | null;
   refetchInfo: () => void;
+  can: (page: string, action: string | string[]) => boolean;
 }
 
 type Props = {
@@ -47,8 +48,8 @@ type Props = {
 export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = ({ children }: Props) => {
-  const location = useLocation();
-  const currentPathname = location.pathname;
+  const { pathname } = useLocation();
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
@@ -59,7 +60,9 @@ const AuthProvider = ({ children }: Props) => {
     const userInfo = await getUserInfo();
     const userPermission = await getUserPermission();
 
-    setUser({ ...userInfo, permission: userPermission });
+    const updatedUser = { ...userInfo, permission: userPermission };
+
+    setUser(updatedUser);
   }
 
   async function refreshUserData() {
@@ -68,14 +71,21 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const accessTokenSession = localStorage.getItem("access-token");
+    if (!user) {
+      const redirectToLogin =
+        pathname !== loginRoute
+          ? `${loginRoute}?returnUrl=${pathname}`
+          : loginRoute;
+      navigate(redirectToLogin);
+    }
 
     async function initializeAuth() {
       try {
-        if (accessTokenSession) await fetchUserData();
-
-        if (!accessTokenSession) await refreshUserData();
-        if (window.location.pathname === loginRoute)
-          navigate(searchParams.get("returnUrl") || "/");
+        if (accessTokenSession) {
+          await fetchUserData();
+        } else {
+          await refreshUserData();
+        }
       } catch (error) {
         handleLogout();
       } finally {
@@ -108,10 +118,10 @@ const AuthProvider = ({ children }: Props) => {
     }
   }
 
-  const handleLogout = async () => {
+  async function handleLogout() {
     const isLoginPage = "/login";
     try {
-      if (currentPathname !== isLoginPage) {
+      if (pathname !== isLoginPage) {
         await signOut();
         navigate(isLoginPage);
         localStorage.removeItem("access-token");
@@ -120,7 +130,28 @@ const AuthProvider = ({ children }: Props) => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
+
+  function can(page: string, action: string | string[]): boolean {
+    if (!user || !user.permission) {
+      return false;
+    }
+
+    const pagePermission = user.permission.find((perm) => perm.page === page);
+    if (!pagePermission) {
+      return false;
+    }
+
+    if (typeof action === "string") {
+      return pagePermission.actions.includes(action);
+    }
+
+    if (Array.isArray(action)) {
+      return action.every((item) => pagePermission.actions.includes(item));
+    }
+
+    return false;
+  }
 
   return (
     <AuthContext.Provider
@@ -133,6 +164,7 @@ const AuthProvider = ({ children }: Props) => {
         setLoading,
         loadingError,
         refetchInfo: refreshUserData,
+        can,
       }}>
       {children}
     </AuthContext.Provider>

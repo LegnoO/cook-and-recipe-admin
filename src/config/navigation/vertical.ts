@@ -34,11 +34,16 @@ export const verticalNavItems: IVerticalNavItemsType = [
   {
     title: "Category",
     icon: "tabler:category-2",
-    path: "/category",
+    path: "/categories",
     action: "read",
     page: "user",
   },
-  
+  {
+    title: "Approve",
+    path: "/recipes",
+    action: "read",
+    page: "user",
+  },
   {
     title: "Recipe",
     icon: "ic:baseline-edit-note",

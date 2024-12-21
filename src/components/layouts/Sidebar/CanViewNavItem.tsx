@@ -4,9 +4,6 @@ import { ReactNode } from "react";
 // ** Hooks
 import useAuth from "@/hooks/useAuth";
 
-// ** Utils
-import { isUndefined } from "@/utils/helpers";
-
 // ** Types
 import { INavGroup, INavLink, INavSectionTitle } from "./types";
 
@@ -16,27 +13,19 @@ type Props = {
 };
 
 const CanViewNavItem = ({ children, navItem }: Props) => {
-  const { user } = useAuth();
+  const { can } = useAuth();
 
-  if (navItem) {
-    if (isUndefined(navItem.action) && isUndefined(navItem.page)) {
-      return children;
-    }
+  if (!navItem) return null;
 
-    if (
-      !isUndefined(navItem.action) &&
-      !isUndefined(navItem.page) &&
-      user?.permission.some(
-        (perm) =>
-          perm.page === navItem.page &&
-          perm.actions.includes(navItem.action as string),
-      )
-    ) {
+  if (!navItem.action || !navItem.page) {
+    return children;
+  }
+
+  if (navItem.page && navItem.action) {
+    if (can(navItem.page, navItem.action)) {
       return children;
     }
   }
-
-  return null;
 };
 
 export default CanViewNavItem;

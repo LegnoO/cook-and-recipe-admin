@@ -1,5 +1,5 @@
 interface Route {
-  path: string;
+  path?: string;
   component?: JSX.Element;
   permission?: {
     page: string;

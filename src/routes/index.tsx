@@ -18,8 +18,7 @@ import ErrorBoundary from "@/layouts/ErrorBoundary";
 import BouncingDotsLoader from "@/components/ui/BouncingDotsLoader";
 
 // ** Routes
-import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
+import RouteGuard from "./RouteGuard";
 
 // ** Config
 import { homeRoute } from "@/config/url";
@@ -34,7 +33,7 @@ const renderRoutes = (routes: Route[]) => {
   return routes.map((route, index) => {
     if (route.children && route.children.length > 0) {
       return (
-        <Route path={route.path} key={index}>
+        <Route path={route.path || undefined} key={index}>
           {renderRoutes(route.children)}
         </Route>
       );
@@ -51,26 +50,16 @@ const router = createBrowserRouter(
         <Route index path="/" element={<Navigate to={homeRoute} />} />
         <Route path="*" element={<Navigate to="/notfound" replace />} />
         <Route index path={"/notfound"} element={<NotFoundScreen />} />
-        <Route element={<ProtectedRoute />}>
+        <Route element={<RouteGuard />}>
           <Route element={<DefaultLayout />}>
             <Route
               element={<Suspense fallback={<BouncingDotsLoader layout />} />}>
               {renderRoutes(protectedRoute)}
             </Route>
           </Route>
-        </Route>
-        <Route element={<PublicRoute />}>
           <Route element={<BlankLayout />}>
             <Route element={<Suspense fallback={<LoadingScreen />} />}>
-              {publicRoute.map((route, index) => {
-                return (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    element={route.component}
-                  />
-                );
-              })}
+              {renderRoutes(publicRoute)}
             </Route>
           </Route>
         </Route>

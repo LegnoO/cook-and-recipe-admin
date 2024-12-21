@@ -114,6 +114,8 @@ export function adjustRgbColor(
 export function isUrlPatternMatched(inputUrl: string, all_url: string[]) {
   const baseUrls = all_url.map((url) => url.split("/:")[0]);
   const inputBaseUrl = inputUrl.split("/").slice(0, 2).join("/");
+  console.log("🚀", { inputUrl, all_url, baseUrls, inputBaseUrl });
+
   return baseUrls.some((baseUrl) => baseUrl === inputBaseUrl);
 }
 
@@ -125,10 +127,6 @@ export function formatAddress(address: Address, maxLength: number = 100) {
   }
 
   return formattedAddress;
-}
-
-export function isUndefined<T>(value: T) {
-  return value === undefined;
 }
 
 export function uuid(length = 36) {
@@ -227,4 +225,20 @@ export function handleToastMessages(toastCallback: (msg: string) => void) {
       toastCallback(messages);
     }
   };
+}
+
+export function extractPaths(routes: Route[]) {
+  const paths: string[] = [];
+
+  routes.forEach((route) => {
+    if (route.path) {
+      paths.push(route.path);
+    }
+
+    if (route.children) {
+      paths.push(extractPaths(route.children)[0]);
+    }
+  });
+
+  return paths;
 }
