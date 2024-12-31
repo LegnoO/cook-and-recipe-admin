@@ -1,5 +1,12 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Fragment,
+  useMemo,
+  useRef,
+} from "react";
 
 // ** Mui Imports
 import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
@@ -43,6 +50,7 @@ import {
 } from "@/services/categoryService";
 
 const CategoryList = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { activeIds, addId, removeId } = useSettings();
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterCategory> = {
@@ -126,14 +134,23 @@ const CategoryList = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchGroup = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, name: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        name: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchGroup = () => {
+    searchDebounced();
+  };
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
     setFilter({ ...defaultFilter, ...categoryData?.paginate });
   }
 
@@ -243,6 +260,7 @@ const CategoryList = () => {
           alignItems={"center"}
           justifyContent="space-between">
           <SearchInput
+            ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Category"
             onChange={handleSearchGroup}

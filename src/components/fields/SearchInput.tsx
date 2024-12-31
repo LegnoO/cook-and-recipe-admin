@@ -1,3 +1,6 @@
+// ** React Imports
+import { forwardRef } from "react";
+
 // ** Mui Imports
 import { IconButton, InputAdornment, TextFieldProps } from "@mui/material";
 
@@ -5,17 +8,18 @@ import { IconButton, InputAdornment, TextFieldProps } from "@mui/material";
 import { Icon, TextField } from "@/components/ui";
 
 // ** Types
-type Props = {} & TextFieldProps;
+type Props = TextFieldProps;
 
-const SearchInput = ({ ...rest }: Props) => {
+const SearchInput = forwardRef<HTMLInputElement, Props>(({ ...rest }, ref) => {
   return (
     <TextField
+      ref={ref}
       fullWidth
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
             <IconButton disableRipple edge="start">
-              <Icon fontSize="1.25rem" icon={"basil:search-outline"} />
+              <Icon fontSize="1.25rem" icon="basil:search-outline" />
             </IconButton>
           </InputAdornment>
         ),
@@ -23,5 +27,6 @@ const SearchInput = ({ ...rest }: Props) => {
       {...rest}
     />
   );
-};
+});
+
 export default SearchInput;

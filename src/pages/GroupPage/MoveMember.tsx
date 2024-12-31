@@ -82,7 +82,7 @@ const MoveMember = ({ group, setController, closeMenu, refetch }: Props) => {
           onChange={handleChangeGroupName}
           value={groupId}
           fullWidth
-          label="Group"
+          label="Select New Group"
         />
         <Stack
           direction="row"

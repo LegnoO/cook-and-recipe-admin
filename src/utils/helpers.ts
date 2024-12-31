@@ -230,15 +230,19 @@ export function handleToastMessages(toastCallback: (msg: string) => void) {
 export function extractPaths(routes: Route[]) {
   const paths: string[] = [];
 
-  routes.forEach((route) => {
-    if (route.path) {
-      paths.push(route.path);
-    }
+  function traverse(items: Route[]) {
+    items.forEach((item) => {
+      if (item.path) {
+        paths.push(item.path);
+      }
 
-    if (route.children) {
-      paths.push(extractPaths(route.children)[0]);
-    }
-  });
+      if (item.children) {
+        traverse(item.children);
+      }
+    });
+  }
+
+  traverse(routes);
 
   return paths;
 }

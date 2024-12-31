@@ -20,6 +20,7 @@ type Recipe = {
   verifyStatus: string;
   createdDate: Date;
   createdBy: ChefUserInfo;
+  approvalBy: ChefUserInfo;
 };
 
 type ListRecipe = {

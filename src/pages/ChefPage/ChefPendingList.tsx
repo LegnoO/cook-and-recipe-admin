@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect, ChangeEvent, Fragment } from "react";
+import { useState, useEffect, ChangeEvent, Fragment, useRef } from "react";
 
 // ** Mui Imports
 import {
@@ -50,6 +50,8 @@ import { queryOptions } from "@/config/query-options";
 // ** Types
 
 const ChefPendingList = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const pageSizeOptions = ["10", "15", "20"];
 
   const [isLoading, setLoading] = useState(false);
@@ -123,6 +125,10 @@ const ChefPendingList = () => {
   }
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+
     setFilter({ ...defaultFilter, ...chefData?.paginate });
   }
 
@@ -160,12 +166,18 @@ const ChefPendingList = () => {
     }
   }
 
-  const handleSearchChef = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, fullName: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        fullName: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchChef = () => {
+    searchDebounced();
+  };
 
   useEffect(() => {
     if (chefData) {
@@ -355,6 +367,7 @@ const ChefPendingList = () => {
               md: 2,
             }}>
             <SearchInput
+              ref={searchInputRef}
               disabled={chefLoading}
               placeholder="Search Chef"
               onChange={handleSearchChef}

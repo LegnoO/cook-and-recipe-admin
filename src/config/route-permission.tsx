@@ -29,14 +29,6 @@ export const protectedRoute: Route[] = [
     },
   },
   {
-    path: `${homeRoute}/:id`,
-    component: <HomePage />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
-  },
-  {
     path: "/profile",
     component: <ProfilePage />,
     permission: {
@@ -72,12 +64,12 @@ export const protectedRoute: Route[] = [
     permission: { page: "user", action: "read" },
     children: [
       {
-        path: "",
+        path: "/chefs",
         component: <ChefList />,
         permission: { page: "user", action: "read" },
       },
       {
-        path: "pending",
+        path: "/chefs/pending",
         component: <ChefPendingList />,
         permission: { page: "user", action: "read" },
       },
@@ -85,15 +77,14 @@ export const protectedRoute: Route[] = [
   },
 
   {
-    path: "/recipes",
     permission: { page: "user", action: "read" },
     children: [
       {
-        path: "",
+        path: "/recipes",
         component: <RecipeList />,
       },
       {
-        path: "pending",
+        path: "/recipes/pending",
         component: <RecipePendingList />,
       },
     ],

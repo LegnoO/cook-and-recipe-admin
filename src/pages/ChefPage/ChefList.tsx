@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect, ChangeEvent, Fragment } from "react";
+import { useState, useEffect, ChangeEvent, Fragment, useRef } from "react";
 
 // ** Mui Imports
 import {
@@ -50,6 +50,8 @@ import { handleAxiosError } from "@/utils/errorHandler";
 // ** Types
 
 const ListChefPending = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const pageSizeOptions = ["10", "15", "20"];
 
   const [isLoading, setLoading] = useState(false);
@@ -123,8 +125,24 @@ const ListChefPending = () => {
   }
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
     setFilter({ ...defaultFilter, ...chefData?.paginate });
   }
+
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        fullName: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchChef = () => {
+    searchDebounced();
+  };
 
   function handleCancel(modalId: string) {
     if (controller) {
@@ -151,13 +169,6 @@ const ListChefPending = () => {
       toast.dismiss(toastLoading);
     }
   }
-
-  const handleSearchChef = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, fullName: event.target.value }));
-    },
-    300,
-  );
 
   useEffect(() => {
     if (chefData) {
@@ -332,6 +343,7 @@ const ListChefPending = () => {
           alignItems={"center"}
           justifyContent="space-between">
           <SearchInput
+            ref={searchInputRef}
             fullWidth
             disabled={isLoading}
             placeholder="Search User"

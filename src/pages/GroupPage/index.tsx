@@ -1,5 +1,12 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Fragment,
+  useMemo,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
 
 // ** Mui Imports
@@ -51,6 +58,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 import { queryGroups, toggleGroupStatus } from "@/services/groupServices";
 
 const GroupList = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { activeIds, addId, removeId } = useSettings();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -148,14 +156,23 @@ const GroupList = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchGroup = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, name: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        name: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchGroup = () => {
+    searchDebounced();
+  };
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
     setFilter({ ...defaultFilter, ...groupData?.paginate });
   }
 
@@ -374,6 +391,7 @@ const GroupList = () => {
           alignItems={"center"}
           justifyContent="space-between">
           <SearchInput
+            ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Group"
             onChange={handleSearchGroup}

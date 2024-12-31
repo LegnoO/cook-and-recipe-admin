@@ -16,7 +16,7 @@ import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Library
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -55,6 +55,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(
 );
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, login, isLoading, loadingError } = useAuth();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useStorage<boolean>(
@@ -85,9 +86,12 @@ const LoginPage = () => {
   }
 
   useEffect(() => {
+    const returnUrlParam = searchParams.get("returnUrl");
     if (user) {
-      navigate(homeRoute);
+      navigate(returnUrlParam || homeRoute);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

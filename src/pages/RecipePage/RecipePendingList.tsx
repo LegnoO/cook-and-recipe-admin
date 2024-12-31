@@ -1,5 +1,12 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Fragment,
+  useMemo,
+  useRef,
+} from "react";
 
 // ** Mui Imports
 import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
@@ -43,6 +50,8 @@ import {
 } from "@/services/recipeService";
 
 const RecipePendingList = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterRecipePending> = {
     index: 1,
@@ -108,14 +117,23 @@ const RecipePendingList = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchGroup = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, name: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        name: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchRecipe = () => {
+    searchDebounced();
+  };
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
     setFilter({ ...defaultFilter, ...recipeData?.paginate });
   }
 
@@ -341,9 +359,10 @@ const RecipePendingList = () => {
               md: 2,
             }}>
             <SearchInput
+              ref={searchInputRef}
               disabled={isLoading}
               placeholder="Search Recipe"
-              onChange={handleSearchGroup}
+              onChange={handleSearchRecipe}
               fullWidth
               sx={{ height: 40, maxWidth: { xs: "100%", lg: 200 } }}
             />

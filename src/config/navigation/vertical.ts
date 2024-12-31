@@ -39,12 +39,6 @@ export const verticalNavItems: IVerticalNavItemsType = [
     page: "user",
   },
   {
-    title: "Approve",
-    path: "/recipes",
-    action: "read",
-    page: "user",
-  },
-  {
     title: "Recipe",
     icon: "ic:baseline-edit-note",
     action: "read",

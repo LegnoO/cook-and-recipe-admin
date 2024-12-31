@@ -31,6 +31,10 @@ import { protectedRoute, publicRoute } from "@/config/route-permission";
 
 const renderRoutes = (routes: Route[]) => {
   return routes.map((route, index) => {
+    if (!route.children && route.path) {
+      return <Route key={index} path={route.path} element={route.component} />;
+    }
+
     if (route.children && route.children.length > 0) {
       return (
         <Route path={route.path || undefined} key={index}>
@@ -39,7 +43,7 @@ const renderRoutes = (routes: Route[]) => {
       );
     }
 
-    return <Route key={index} path={route.path} element={route.component} />;
+    return null;
   });
 };
 

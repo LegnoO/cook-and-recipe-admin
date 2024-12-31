@@ -1,5 +1,12 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment, useMemo } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Fragment,
+  useMemo,
+  useRef,
+} from "react";
 
 // ** Mui Imports
 import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
@@ -43,6 +50,7 @@ import {
 } from "@/services/recipeService";
 
 const RecipeList = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterRecipe> = {
     index: 1,
@@ -112,14 +120,23 @@ const RecipeList = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchRecipe = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, name: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        name: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchRecipe = () => {
+    searchDebounced();
+  };
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
     setFilter({ ...defaultFilter, ...recipeData?.paginate });
   }
 
@@ -159,7 +176,7 @@ const RecipeList = () => {
       render: (row: Recipe) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: Recipe) => row.createdBy.fullName,
+      render: (row: Recipe) => row.approvalBy.fullName,
     },
     {
       render: (row: Recipe) => (
@@ -333,6 +350,7 @@ const RecipeList = () => {
           alignItems={"center"}
           justifyContent="space-between">
           <SearchInput
+            ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Recipe"
             onChange={handleSearchRecipe}

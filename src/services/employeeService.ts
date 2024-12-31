@@ -22,9 +22,7 @@ export async function updateProfileEmployee(formData: FormData) {
 
 export async function queryEmployees(filter: FilterEmployees) {
   try {
-    const { ...restFilter } = filter;
-
-    const params = createSearchParams(restFilter);
+    const params = createSearchParams(filter);
     const response = await AxiosInstance.get<ListEmployees>(
       employeeEndpoints.queryEmployees(params.toString()),
     );

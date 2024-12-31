@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, useState, useEffect, Fragment } from "react";
+import { ChangeEvent, useState, useEffect, Fragment, useRef } from "react";
 
 // ** Mui Imports
 import {
@@ -52,6 +52,7 @@ import {
 } from "@/services/employeeService";
 
 const EmployeePage = () => {
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setLoading] = useState(true);
   const location = useLocation();
   const { activeIds, addId, removeId } = useSettings();
@@ -208,14 +209,24 @@ const EmployeePage = () => {
     updateFilter({ index: 1, size: Number(newSize) });
   }
 
-  const handleSearchEmployee = useDebouncedCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setFilter((prev) => ({ ...prev, fullName: event.target.value }));
-    },
-    300,
-  );
+  const searchDebounced = useDebouncedCallback(() => {
+    if (searchInputRef.current) {
+      setFilter((prev) => ({
+        ...prev,
+        fullName: searchInputRef.current!.value,
+      }));
+    }
+  }, 300);
+
+  const handleSearchEmployee = () => {
+    searchDebounced();
+  };
 
   function handleResetFilter() {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+
     setFilter({ ...defaultFilter, ...employeeData?.paginate });
   }
 
@@ -298,10 +309,11 @@ const EmployeePage = () => {
             xs: "column",
             sm: "row",
           }}
-          alignItems={"center"}
+          alignItems="center"
           justifyContent="space-between">
           <SearchInput
             fullWidth
+            ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search User"
             onChange={handleSearchEmployee}
