@@ -55,8 +55,8 @@ export const IconWrapper = styled("span")(({ theme }) => ({
     color: theme.palette.text.primary,
     display: "flex",
     alignItems: "center",
-    marginRight: "0.75rem",
-    marginLeft: "0.375rem",
+    marginRight: "1.075rem",
+    marginLeft: "0.175rem",
   },
 
   "&.icon-custom": {

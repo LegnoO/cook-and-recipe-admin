@@ -51,7 +51,7 @@ const AuthProvider = ({ children }: Props) => {
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+
   const [user, setUser] = useState<User | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
@@ -76,6 +76,7 @@ const AuthProvider = ({ children }: Props) => {
         pathname !== loginRoute
           ? `${loginRoute}?returnUrl=${pathname}`
           : loginRoute;
+
       navigate(redirectToLogin);
     }
 
@@ -83,6 +84,8 @@ const AuthProvider = ({ children }: Props) => {
       try {
         if (accessTokenSession) {
           await fetchUserData();
+          const searchParams = new URLSearchParams(window.location.search);
+          navigate(searchParams.get("returnUrl") || "/");
         } else {
           await refreshUserData();
         }
@@ -103,6 +106,7 @@ const AuthProvider = ({ children }: Props) => {
       setLoading(true);
       await signIn(data);
       await fetchUserData();
+      const searchParams = new URLSearchParams(window.location.search);
       navigate(searchParams.get("returnUrl") || "/");
     } catch (error) {
       const errorMessage = handleAxiosError(error);

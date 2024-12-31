@@ -41,7 +41,7 @@ export const StyledNavGroup = styled("li")(() => () => ({
 
   "&.sub-nav-group": {
     "& .nav-link .icon-wrapper": {
-      marginLeft: "0.75rem",
+      marginLeft: "0.5rem",
     },
   },
 }));
