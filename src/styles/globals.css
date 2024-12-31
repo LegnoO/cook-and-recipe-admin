@@ -32,3 +32,12 @@ li {
 .ps-scrollbar-y-rail {
   /* margin-left: 100px; */
 }
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

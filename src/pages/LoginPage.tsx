@@ -16,7 +16,7 @@ import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Library
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,10 +28,10 @@ import useStorage from "@/hooks/useStorage";
 import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
 
 // ** Styled Components
-const LinkStyled = styled(Link)(({ theme }) => ({
-  textDecoration: "none",
-  color: `${theme.palette.primary.main} !important`,
-}));
+// const LinkStyled = styled(Link)(({ theme }) => ({
+//   textDecoration: "none",
+//   color: `${theme.palette.primary.main} !important`,
+// }));
 
 const Wrapper = styled(Box)(({ theme }) => ({
   marginTop: "1.5rem",
@@ -214,11 +214,9 @@ const LoginPage = () => {
                   )}
                 />
 
-                <Typography
-                  component={LinkStyled}
-                  to="/pages/auth/forgot-password-v1">
+                {/* <Typography component={LinkStyled} to="/login">
                   Forgot Password?
-                </Typography>
+                </Typography> */}
               </Box>
               {!isLoading ? (
                 <Box>

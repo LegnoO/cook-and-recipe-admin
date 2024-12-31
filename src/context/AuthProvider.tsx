@@ -9,7 +9,7 @@ import {
 } from "react";
 
 // ** Library Imports
-import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // ** Services

@@ -1,12 +1,12 @@
 // ** React
-import { useState, useEffect, useRef, MouseEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent, Fragment } from "react";
 
 // ** Library
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 // ** Mui Imports
-import { Typography, IconButton } from "@mui/material";
+import { Typography, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiMenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 
@@ -44,7 +44,10 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   },
 }));
 
-const ModeToggler = ({ drag }: { drag?: boolean }) => {
+// ** Types
+type Props = { drag?: boolean };
+
+const ModeToggler = ({ drag }: Props) => {
   const modeTogglerRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const { mode, setMode } = useMode();
@@ -89,40 +92,73 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
   }, []);
 
   return (
-    <>
+    <Fragment>
       {drag ? (
         <motion.div
           ref={modeTogglerRef}
           drag
           dragConstraints={constraints}
-          style={{ position: "absolute", bottom: "70%", right: "40%" }}>
-          <IconButton
+          style={{
+            position: "absolute",
+            bottom: "70%",
+            right: "40%",
+          }}>
+          <Box
             sx={{
-              "&": {
-                backgroundColor: (theme) =>
-                  hexToRGBA(theme.palette.customColors.main, 0.04),
+              borderRadius: "99px",
+              position: "relative",
+              padding: "2px",
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                inset: 0,
+                background: (theme) =>
+                  `linear-gradient(45deg, ${theme.palette.secondary.light}, ${theme.palette.primary.dark})`,
+                borderRadius: "99px",
+                animation: "rotate 4s linear infinite",
+                zIndex: 0,
+                pointerEvents: "none",
               },
-              "&:hover": {
-                backgroundColor: (theme) =>
-                  hexToRGBA(theme.palette.customColors.main, 0.1),
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                inset: "2px",
+                borderRadius: "99px",
+                background: (theme) => theme.palette.background.paper,
+                zIndex: 1,
+                pointerEvents: "none",
               },
-            }}
-            onClick={handleDropdownOpen}>
-            <Icon
-              fontSize="1.625rem"
-              icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
-            />
-          </IconButton>
+            }}>
+            <IconButton
+              sx={{
+                position: "relative",
+                zIndex: 2,
+                width: "100%",
+                height: "100%",
+                "&": {
+                  backgroundColor: (theme) =>
+                    hexToRGBA(theme.palette.customColors.main, 0.04),
+                },
+                "&:hover": {
+                  backgroundColor: (theme) =>
+                    hexToRGBA(theme.palette.customColors.main, 0.1),
+                },
+              }}
+              onClick={handleDropdownOpen}>
+              <Icon
+                fontSize="1.625rem"
+                icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
+              />
+            </IconButton>
+          </Box>
         </motion.div>
       ) : (
-        <>
-          <IconButton onClick={handleDropdownOpen}>
-            <Icon
-              fontSize="1.625rem"
-              icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
-            />
-          </IconButton>
-        </>
+        <IconButton onClick={handleDropdownOpen}>
+          <Icon
+            fontSize="1.625rem"
+            icon={mode === "dark" ? "tabler:moon-stars" : "tabler:sun"}
+          />
+        </IconButton>
       )}
       <Menu
         className="menu"
@@ -133,6 +169,9 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
           },
           "& .MuiMenuItem-root.selected": {
             background: (theme) => theme.palette.primary.main,
+          },
+          "& .MuiMenuItem-root.selected:hover": {
+            background: (theme) => theme.palette.primary.dark,
           },
           "& .MuiMenuItem-root.selected .MuiTypography-root": {
             color: (theme) => theme.palette.primary.contrastText,
@@ -162,7 +201,7 @@ const ModeToggler = ({ drag }: { drag?: boolean }) => {
           </MenuItem>
         ))}
       </Menu>
-    </>
+    </Fragment>
   );
 };
 
