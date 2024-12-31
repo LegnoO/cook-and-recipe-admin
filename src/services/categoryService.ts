@@ -31,6 +31,23 @@ export async function toggleStatusCategory(groupId: string) {
   return response.data;
 }
 
+export async function createCategory(
+  formData: FormData,
+  controller?: AbortController,
+) {
+  const response = await AxiosInstance.post(
+    categoryEndpoints.createCategory,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      signal: controller?.signal,
+    },
+  );
+  return response.data;
+}
+
 export async function updateCategory(
   id: string,
   category: CategoryUpdate,

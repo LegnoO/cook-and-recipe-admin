@@ -83,7 +83,7 @@ export const MenuButton = styled("button")(() => ({ theme }) => ({
 export const IconWrapper = styled("span")(() => () => ({
   display: "flex",
   alignItems: "center",
-  marginRight: "0.875rem",
+  marginRight: "0.5625rem",
 }));
 
 export const Label = styled("span")(() => () => ({

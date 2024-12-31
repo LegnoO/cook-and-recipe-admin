@@ -68,7 +68,7 @@ const RouteGuard = () => {
     ...publicPathnames,
   ].some((pattern) => matchPatternWithParams(pattern));
 
-  if (isLoading) return <LoadingScreen />;
+  if (isLoading && pathname !== "/login") return <LoadingScreen />;
 
   if (!user && publicPathnames.includes(pathname)) return <Outlet />;
 

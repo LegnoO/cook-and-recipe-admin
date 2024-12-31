@@ -9,6 +9,12 @@ type Category = {
   status: boolean;
 };
 
+type CategorySubmit = {
+  name: string;
+  description: string;
+  image: File;
+};
+
 type CategoryDetail = Category & { disabledBy?: ChefUserInfo };
 
 type CategoryUpdate = {

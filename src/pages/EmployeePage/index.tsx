@@ -349,7 +349,8 @@ const EmployeePage = () => {
             <Button
               sx={{
                 height: 40,
-                width: { xs: "100%", sm: 150 },
+                minWidth: { xs: "100%", lg: "max-content" },
+                textWrap: "nowrap",
               }}
               disabled={isLoading}
               disableRipple

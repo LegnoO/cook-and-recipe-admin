@@ -3,19 +3,13 @@ import { IVerticalNavItemsType } from "@/components/layouts/Sidebar/types";
 
 export const verticalNavItems: IVerticalNavItemsType = [
   {
-    title: "Home",
-    icon: "tabler:mail",
+    title: "Dashboard",
+    icon: "iconoir:mail-open",
     path: "/home",
     action: "read",
     page: "user",
   },
-  {
-    title: "Settings",
-    icon: "uil:setting",
-    path: "/profile",
-    action: "read",
-    page: "user",
-  },
+
   {
     title: "Employees",
     icon: "lucide:user-round",
@@ -45,13 +39,13 @@ export const verticalNavItems: IVerticalNavItemsType = [
     page: "user",
     children: [
       {
-        title: "Approve",
+        title: "Published Recipes",
         path: "/recipes",
         action: "read",
         page: "user",
       },
       {
-        title: "Pending",
+        title: "Pending Review",
         path: "/recipes/pending",
         action: "read",
         page: "user",
@@ -77,5 +71,12 @@ export const verticalNavItems: IVerticalNavItemsType = [
         page: "user",
       },
     ],
+  },
+  {
+    title: "Settings",
+    icon: "uil:setting",
+    path: "/profile",
+    action: "read",
+    page: "user",
   },
 ];

@@ -65,9 +65,15 @@ export async function editGroup(
 }
 
 export async function getDetailGroup(groupId: string) {
-  const response = await AxiosInstance.get<any>(
+  const response = await AxiosInstance.get(
     groupEndpoints.getDetailGroup(groupId),
   );
+
+  return response.data;
+}
+
+export async function deleteGroup(groupId: string) {
+  const response = await AxiosInstance.get(groupEndpoints.deleteGroup(groupId));
 
   return response.data;
 }

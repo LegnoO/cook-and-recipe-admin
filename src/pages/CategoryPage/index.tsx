@@ -35,6 +35,7 @@ import { queryOptions } from "@/config/query-options";
 // ** Component's
 import CategoryUpdate from "./CategoryUpdate";
 import CategoryDetail from "./CategoryDetail";
+import CategoryAdd from "./CategoryAdd";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -67,6 +68,7 @@ const CategoryList = () => {
     () => ({
       modalUpdate: (id: string) => `modal-update-${id}`,
       modalDetail: (id: string) => `modal-detail-${id}`,
+      newCategoryModal: "new-category-modal",
     }),
     [],
   );
@@ -306,7 +308,7 @@ const CategoryList = () => {
             <Button
               sx={{
                 height: 40,
-                width: { xs: "100%", lg: 195 },
+                minWidth: { xs: "100%", lg: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -316,6 +318,30 @@ const CategoryList = () => {
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Reset Filter
+            </Button>
+            <Button
+              sx={{
+                height: 40,
+                textWrap: "nowrap",
+                width: "100%",
+                minWidth: { xs: "100%", lg: "max-content" },
+                maxWidth: { xs: "100%", lg: 190 },
+              }}
+              disabled={isLoading}
+              disableRipple
+              variant="contained"
+              startIcon={<Icon icon="ic:sharp-plus" />}
+              onClick={() => addId(ids.newCategoryModal)}>
+              Add Category
+              <Modal
+                open={activeIds.includes(ids.newCategoryModal)}
+                onClose={() => removeId(ids.newCategoryModal)}>
+                <CategoryAdd
+                  refetch={refetch}
+                  closeMenu={() => handleCancel(ids.newCategoryModal)}
+                  setController={setController}
+                />
+              </Modal>
             </Button>
           </Stack>
         </Stack>

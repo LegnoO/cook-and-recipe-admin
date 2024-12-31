@@ -30,6 +30,7 @@ import {
   Switch,
   ChipStatus,
   Tooltip,
+  ConfirmBox,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
@@ -55,7 +56,11 @@ import { formatDateTime, handleToastMessages } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
-import { queryGroups, toggleGroupStatus } from "@/services/groupServices";
+import {
+  queryGroups,
+  toggleGroupStatus,
+  deleteGroup,
+} from "@/services/groupServices";
 
 const GroupList = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -79,6 +84,7 @@ const GroupList = () => {
       modalUpdateGroup: (id: string) => `modal-update-employee-${id}`,
       modalAction: (id: string) => `modal-action-${id}`,
       modalMoveMember: (id: string) => `modal-move-member-${id}`,
+      modalDeleteGroup: (id: string) => `modal-delete-group-${id}`,
       newGroupModal: "new-group-modal",
     }),
     [],
@@ -365,6 +371,40 @@ const GroupList = () => {
                     Move All Member
                   </Typography>
                 </Stack>
+
+                <Stack
+                  alignItems="center"
+                  direction="row"
+                  sx={{
+                    gap: "0.5rem",
+                    zIndex: 2103,
+                  }}
+                  onClick={() => {
+                    addId(ids.modalDeleteGroup(row.id));
+                    handleCloseAction(row.id);
+                  }}>
+                  <IconButton color="error" sx={{ p: 0, m: 0 }} disableRipple>
+                    <Icon icon="ion:trash-outline" />
+                    <Modal
+                      open={activeIds.includes(ids.modalDeleteGroup(row.id))}
+                      onClose={() => removeId(ids.modalDeleteGroup(row.id))}>
+                      <ConfirmBox
+                        isLoading={isLoading}
+                        variant={"error"}
+                        textSubmit={"Delete"}
+                        textTitle={`Confirm delete group ${row.name}`}
+                        textContent={`You're about to delete group '${row.name}'. Are you sure?`}
+                        onClick={async () => {
+                          await deleteGroup(row.id);
+                        }}
+                        onClose={() =>
+                          handleCancel(ids.modalDeleteGroup(row.id))
+                        }
+                      />
+                    </Modal>
+                  </IconButton>
+                  <Typography color="error">Delete Group</Typography>
+                </Stack>
               </Stack>
             </Popover>
           </IconButton>
@@ -437,7 +477,7 @@ const GroupList = () => {
             <Button
               sx={{
                 height: 40,
-                width: { xs: "100%", lg: 195 },
+                minWidth: { xs: "100%", lg: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -453,6 +493,7 @@ const GroupList = () => {
                 height: 40,
                 textWrap: "nowrap",
                 width: "100%",
+                minWidth: { xs: "100%", lg: "max-content" },
                 maxWidth: { xs: "100%", lg: 190 },
               }}
               disabled={isLoading}
@@ -460,7 +501,7 @@ const GroupList = () => {
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
               onClick={() => addId(ids.newGroupModal)}>
-              Add Permission
+              Add Group Permission
               <Modal
                 open={activeIds.includes(ids.newGroupModal)}
                 onClose={() => removeId(ids.newGroupModal)}>

@@ -403,7 +403,8 @@ const ChefPendingList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: "max-content",
+                minWidth: { xs: "100%", lg: "max-content" },
+                textWrap: "nowrap",
               }}
               disabled={isLoading || chefLoading}
               disableRipple

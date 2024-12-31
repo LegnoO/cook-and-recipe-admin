@@ -55,7 +55,7 @@ export const IconWrapper = styled("span")(({ theme }) => ({
     color: theme.palette.text.primary,
     display: "flex",
     alignItems: "center",
-    marginRight: "1.0625rem",
+    marginRight: "0.75rem",
     marginLeft: "0.375rem",
   },
 
@@ -86,7 +86,7 @@ export const Label = styled("span")(({ theme }) => ({
 }));
 
 const NavLink = (props: Props) => {
-  const toggleDrawerId="toggle-drawer"
+  const toggleDrawerId = "toggle-drawer";
   const { item, navParent, setRootGroupActive } = props;
   const { removeId, activeIds } = useSettings();
   const { pathname } = useLocation();
