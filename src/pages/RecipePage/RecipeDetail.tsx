@@ -70,7 +70,6 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
     return Object.values(ingredient).join(" ");
   }
 
-  console.log("🚀 ~ RecipeDetail ~ recipeData:", recipeData);
   useEffect(() => {
     if (recipeData) {
       setRecipe(recipeData);
@@ -85,11 +84,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
     <Box
       sx={{
         overflow: "hidden",
-        width: {
-          xs: "90%",
-          sm: "420px",
-          md: "500px",
-        },
+        maxWidth: "700px",
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
@@ -133,21 +128,22 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
             }}>
             <Stack
               sx={{
-                height: "15rem",
                 position: "relative",
               }}
               direction="row"
               justifyContent="center">
-              {/* <Image src={recipe.imageUrls[currentImageIndex]} alt="" /> */}
               <Image
                 sx={{
+                  aspectRatio: "16/9",
+                  objectFit: "cover",
                   borderRadius: (theme) => `${theme.shape.borderRadius}px`,
                   width: "100%",
                 }}
                 src={
+                  recipe.imageUrls[currentImageIndex] ||
                   "https://pivoo.themepreview.xyz/home-three/wp-content/uploads/sites/4/2024/04/raspberry-2023404_1920.jpg"
                 }
-                alt=""
+                alt={recipe.name}
               />
               <Stack
                 direction="row"
@@ -162,7 +158,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   borderRadius: 4,
                 }}
                 spacing={0.5}>
-                <Typography>{currentImageIndex}</Typography>
+                <Typography>{currentImageIndex + 1}</Typography>
                 <Typography>/</Typography>
                 <Typography>{recipe.imageUrls.length}</Typography>
               </Stack>
@@ -217,6 +213,11 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
               }}
               direction={"row"}
               alignItems="center">
+              <ChipStatus
+                variant="active"
+                sx={{ textTransform: "capitalize", borderRadius: "1rem" }}
+                label={recipe.category.name}
+              />
               <Chip
                 label={
                   <Stack direction="row" spacing={0.5} alignItems={"center"}>
@@ -225,6 +226,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   </Stack>
                 }
               />
+
               <Chip
                 label={
                   <Stack direction="row" spacing={0.5} alignItems={"center"}>
@@ -233,6 +235,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   </Stack>
                 }
               />
+
               <Chip
                 label={
                   <Stack direction="row" spacing={0.5} alignItems={"center"}>
@@ -241,18 +244,14 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   </Stack>
                 }
               />
-            </Stack>
-            <Stack
-              sx={{ paddingInline: "1.5rem", paddingBlock: "0.5rem" }}
-              direction="row"
-              spacing={1}
-              alignItems={"center"}>
-              <Typography>Status:</Typography>
+
               <ChipStatus
+                sx={{ textTransform: "capitalize" }}
                 variant={statusMap[recipe.verifyStatus]}
                 label={recipe.verifyStatus}
               />
             </Stack>
+
             <Stack
               direction="column"
               spacing={2}
@@ -293,9 +292,6 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                     Created on {formatDateTime(recipe.createdDate)}
                   </Typography>
                 </Stack>
-                <Typography variant="subtitle2">
-                  {recipe.description}
-                </Typography>
               </Stack>
             </Stack>
 
@@ -303,7 +299,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
               <Stack
                 direction="column"
                 spacing={2}
-                sx={{ paddingInline: "1.5rem" }}>
+                sx={{ paddingInline: "1.5rem", marginBottom: "1rem" }}>
                 <Stack direction="column" spacing={1}>
                   <Typography fontWeight={500} component="h4" variant="h5">
                     Approval by
@@ -344,7 +340,9 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
               </Stack>
             )}
 
-            <Stack direction="column" sx={{ paddingInline: "1.5rem" }}>
+            <Stack
+              direction="column"
+              sx={{ marginBottom: "1rem", paddingInline: "1.5rem" }}>
               <Stack sx={{ gap: 1 }} direction="column">
                 <Typography fontWeight={500} sx={{ mb: 0.25 }} variant="h5">
                   Ingredients
@@ -363,7 +361,6 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
             <Stack
               direction="column"
               sx={{
-                marginTop: 2,
                 paddingInline: "1.5rem",
                 paddingBottom: "1.5rem",
               }}>

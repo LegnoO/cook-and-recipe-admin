@@ -64,7 +64,7 @@ const ListChefPending = () => {
     chefStatus: null,
     fullName: "",
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
 
   const [filter, setFilter] = useState<Filter<FilterChef>>(defaultFilter);
@@ -312,7 +312,7 @@ const ListChefPending = () => {
                 { label: "Rejected", value: "rejected" },
                 { label: "Banned", value: "banned" },
               ]}
-              defaultOption={"Select Status"}
+              defaultOption="Select Status"
               fullWidth
               isLoading={isLoading}
             />

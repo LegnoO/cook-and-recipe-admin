@@ -213,10 +213,6 @@ const LoginPage = () => {
                     />
                   )}
                 />
-
-                {/* <Typography component={LinkStyled} to="/login">
-                  Forgot Password?
-                </Typography> */}
               </Box>
               {!isLoading ? (
                 <Box>

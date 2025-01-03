@@ -22,6 +22,7 @@ import {
   ChipStatus,
   ConfirmBox,
   Tooltip,
+  Image,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
@@ -61,7 +62,7 @@ const RecipeList = () => {
     verifyStatus: null,
     status: null,
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
 
   const { activeIds, addId, removeId } = useSettings();
@@ -156,7 +157,7 @@ const RecipeList = () => {
   }, [recipeData]);
 
   const HEAD_COLUMNS = [
-    { title: "Recipe Name", sortName: "name" },
+    { title: "Name", sortName: "name" },
     { title: "Difficulty", sortName: "difficulty" },
     { title: "Approve Date", sortName: "approvedDate" },
     { title: "Approve By", sortName: "approvedBy" },
@@ -167,7 +168,29 @@ const RecipeList = () => {
 
   const BODY_CELLS: BodyCell<Recipe>[] = [
     {
-      render: (row: Recipe) => row.name,
+      render: (row: Recipe) => (
+        <Stack direction="row" spacing={1.25} alignItems={"center"}>
+          <Image
+            sx={{
+              width: "40px",
+              height: "40px",
+              borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+            }}
+            src={
+              row.imageUrls[0] ||
+              "https://pivoo.themepreview.xyz/home-three/wp-content/uploads/sites/4/2024/04/raspberry-2023404_1920.jpg"
+            }
+            alt="Avatar user"
+          />
+
+          <Typography
+            sx={{ whiteSpace: "nowrap" }}
+            fontWeight="500"
+            color="text.primary">
+            {row.name}
+          </Typography>
+        </Stack>
+      ),
     },
     {
       render: (row: Recipe) => row.difficulty,
@@ -181,16 +204,17 @@ const RecipeList = () => {
     {
       render: (row: Recipe) => (
         <ChipStatus
-          label={row.status ? "Public" : "Private"}
-          variant={row.status ? "active" : "disabled"}
+          sx={{ textTransform: "capitalize" }}
+          label={row.verifyStatus}
+          variant={row.verifyStatus === "rejected" ? "error" : "success"}
         />
       ),
     },
     {
       render: (row: Recipe) => (
         <ChipStatus
-          label={row.verifyStatus}
-          variant={row.verifyStatus === "rejected" ? "error" : "success"}
+          label={row.status ? "Public" : "Private"}
+          variant={row.status ? "active" : "disabled"}
         />
       ),
     },
@@ -334,7 +358,7 @@ const RecipeList = () => {
                 { value: "true", label: "Public" },
                 { value: "false", label: "Private" },
               ]}
-              defaultOption={"Select Status"}
+              defaultOption="Select Status"
               fullWidth
               isLoading={isLoading}
             />

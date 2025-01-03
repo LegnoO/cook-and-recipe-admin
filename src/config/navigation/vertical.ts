@@ -12,7 +12,7 @@ export const verticalNavItems: IVerticalNavItemsType = [
 
   {
     title: "Employees",
-    icon: "lucide:user-round",
+    icon: "stash:user-group",
     path: "/employees",
     action: "read",
     page: "user",
@@ -39,13 +39,13 @@ export const verticalNavItems: IVerticalNavItemsType = [
     page: "user",
     children: [
       {
-        title: "Published Recipes",
+        title: "Verified",
         path: "/recipes",
         action: "read",
         page: "user",
       },
       {
-        title: "Pending Review",
+        title: "Pending",
         path: "/recipes/pending",
         action: "read",
         page: "user",
@@ -76,7 +76,5 @@ export const verticalNavItems: IVerticalNavItemsType = [
     title: "Settings",
     icon: "uil:setting",
     path: "/profile",
-    action: "read",
-    page: "user",
   },
 ];

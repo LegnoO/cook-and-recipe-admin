@@ -63,7 +63,7 @@ const ChefPendingList = () => {
     level: null,
     fullName: "",
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
 
   const [filter, setFilter] =

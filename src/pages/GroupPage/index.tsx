@@ -75,7 +75,7 @@ const GroupList = () => {
     name: "",
     status: null,
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
 
   const ids = useMemo(
@@ -461,7 +461,12 @@ const GroupList = () => {
               />
             </Stack>
             <Select
-              sx={{ height: 40, maxWidth: { xs: "100%", lg: 150 } }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: 40,
+                  width: { xs: "100%", lg: 135 },
+                },
+              }}
               value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "status")
@@ -470,7 +475,7 @@ const GroupList = () => {
                 { value: "true", label: "Active" },
                 { value: "false", label: "Disable" },
               ]}
-              defaultOption={"Select Status"}
+              defaultOption="Select Status"
               fullWidth
               isLoading={isLoading}
             />

@@ -7,6 +7,7 @@ type Category = {
   disabledDate: Date | null;
   createdBy: ChefUserInfo;
   status: boolean;
+  imageUrl: string;
 };
 
 type CategorySubmit = {

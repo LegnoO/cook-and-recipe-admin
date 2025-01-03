@@ -2,10 +2,18 @@
 import { useEffect } from "react";
 
 // ** Mui Imports
-import { Grid, Typography, Button, Stack, Avatar, Box } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Button,
+  Stack,
+  Avatar,
+  Box,
+  FormLabel,
+} from "@mui/material";
 
 // ** Components
-import { BouncingDotsLoader, Form, TextField } from "@/components/ui";
+import { BouncingDotsLoader, ChipStatus, Form } from "@/components/ui";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -26,6 +34,14 @@ type Props = {
 };
 
 const ChefDetail = ({ chefId, closeMenu }: Props) => {
+  const statusColorMap = {
+    active: { variant: "active" },
+    pending: { variant: "warning" },
+    disabled: { variant: "disabled" },
+    rejected: { variant: "error" },
+    banned: { variant: "banned" },
+  };
+
   const { data: chefData } = useQuery({
     queryKey: ["chef-detail", chefId],
     queryFn: () => getChefDetail(chefId),
@@ -44,6 +60,7 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
             backgroundColor: (theme) => theme.palette.background.paper,
             height: "auto",
             padding: "1.5rem",
+            maxWidth: "30rem",
           }}
           direction={"column"}>
           <Typography
@@ -81,59 +98,92 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
               </Stack>
               <Grid container rowSpacing={3} columnSpacing={3}>
                 <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Level"
-                    value={chefData?.level}
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      readOnly: true,
-                    }}
-                  />
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Level
+                    </FormLabel>
+                    <Typography sx={{ fontSize: "15px" }} variant="subtitle1">
+                      {chefData.level}
+                    </Typography>
+                  </Stack>
                 </Grid>
                 <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Status"
-                    value={chefData?.status}
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      readOnly: true,
-                    }}
-                  />
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Status
+                    </FormLabel>
+                    <ChipStatus
+                      variant={
+                        statusColorMap[chefData.status]?.variant as ColorVariant
+                      }
+                      label={chefData?.status}
+                      sx={{ textTransform: "capitalize" }}
+                    />
+                  </Stack>
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Started Date"
-                    value={formatDateTime(chefData?.startedDate!)}
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      readOnly: true,
-                    }}
-                  />
+                <Grid item xs={12}>
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Started Date
+                    </FormLabel>
+                    <Typography sx={{ fontSize: "15px" }} variant="subtitle1">
+                      {formatDateTime(chefData?.startedDate!)}
+                    </Typography>
+                  </Stack>
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Approval By"
-                    value={chefData?.approvalBy.fullName}
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      readOnly: true,
-                    }}
-                  />
+                <Grid item xs={12}>
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Started Date
+                    </FormLabel>
+                    <Typography sx={{ fontSize: "15px" }} variant="subtitle1">
+                      {chefData.approvalBy.fullName}
+                    </Typography>
+                  </Stack>
                 </Grid>
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    label="Approval Date"
-                    value={formatDateTime(chefData?.approvalDate!)}
-                    variant="outlined"
-                    fullWidth
-                    inputProps={{
-                      readOnly: true,
-                    }}
-                  />
+                <Grid item xs={12}>
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Approval Date
+                    </FormLabel>
+                    <Typography sx={{ fontSize: "15px" }} variant="subtitle1">
+                      {formatDateTime(chefData?.approvalDate!)}
+                    </Typography>
+                  </Stack>
+                </Grid>
+                <Grid item xs={12}>
+                  <Stack direction="column" sx={{ gap: 1 }}>
+                    <FormLabel
+                      sx={{
+                        fontSize: "13px",
+                        color: "rgba(225, 222, 245, 0.9)",
+                      }}>
+                      Description
+                    </FormLabel>
+                    <Typography sx={{ fontSize: "15px" }} variant="subtitle1">
+                      {chefData.description}
+                    </Typography>
+                  </Stack>
                 </Grid>
                 {/* <Grid item md={6} xs={12}>
                   <ChipStatus

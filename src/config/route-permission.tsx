@@ -6,7 +6,7 @@ import { homeRoute, loginRoute } from "./url";
 import TestPage from "@/pages/TestPage";
 
 // ** Pages
-const HomePage = lazy(() => import("@/pages/HomePage"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeePage = lazy(() => import("@/pages/EmployeePage"));
@@ -22,7 +22,7 @@ const CategoryPage = lazy(() => import("@/pages/CategoryPage"));
 export const protectedRoute: Route[] = [
   {
     path: homeRoute,
-    component: <HomePage />,
+    component: <Dashboard />,
     permission: {
       page: "user",
       action: "read",

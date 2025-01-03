@@ -68,7 +68,7 @@ const EmployeePage = () => {
     gender: null,
     fullName: "",
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
   const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
 
@@ -296,7 +296,7 @@ const EmployeePage = () => {
                 { value: "true", label: "Active" },
                 { value: "false", label: "Banned" },
               ]}
-              defaultOption={"Select Status"}
+              defaultOption="Select Status"
               fullWidth
               isLoading={isLoading}
             />

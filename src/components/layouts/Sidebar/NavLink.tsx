@@ -55,7 +55,7 @@ export const IconWrapper = styled("span")(({ theme }) => ({
     color: theme.palette.text.primary,
     display: "flex",
     alignItems: "center",
-    marginRight: "1.075rem",
+    marginRight: "0.875rem",
     marginLeft: "0.175rem",
   },
 
@@ -65,16 +65,22 @@ export const IconWrapper = styled("span")(({ theme }) => ({
 }));
 
 export const StyledLink = styled(Link)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  minWidth: "30px",
-  paddingBlock: "0.5rem",
-  paddingInline: "0.75rem",
-  cursor: "pointer",
-  textDecoration: "none",
-  borderRadius: theme.shape.borderRadius,
-  border: 0,
-  outline: 0,
+  "&": {
+    display: "flex",
+    alignItems: "center",
+    minWidth: "30px",
+    paddingBlock: "0.5rem",
+    paddingInline: "0.75rem",
+    cursor: "pointer",
+    textDecoration: "none",
+    borderRadius: theme.shape.borderRadius,
+    border: 0,
+    outline: 0,
+  },
+
+  "&.nav-link-child .icon-wrapper": {
+    marginLeft: "0.5rem",
+  },
 }));
 
 export const Label = styled("span")(({ theme }) => ({

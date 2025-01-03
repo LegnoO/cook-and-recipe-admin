@@ -9,7 +9,14 @@ import {
 } from "react";
 
 // ** Mui Imports
-import { Stack, Typography, Button, Divider, IconButton } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Button,
+  Divider,
+  IconButton,
+  Avatar,
+} from "@mui/material";
 
 // ** Components
 import {
@@ -61,7 +68,7 @@ const CategoryList = () => {
     name: "",
     status: null,
     sortBy: "",
-    sortOrder: "",
+    sortOrder: "asc",
   };
 
   const ids = useMemo(
@@ -172,7 +179,7 @@ const CategoryList = () => {
   }, [categoryData]);
 
   const HEAD_COLUMNS = [
-    { title: "Categories", sortName: "name" },
+    { title: "Name", sortName: "name" },
     { title: "Created Date", sortName: "createdDate" },
     { title: "Updated Date", sortName: "updatedDate" },
     { title: "Created By", sortName: "" },
@@ -182,7 +189,24 @@ const CategoryList = () => {
 
   const BODY_CELLS: BodyCell<Category>[] = [
     {
-      render: (row: Category) => row.name,
+      render: (row: Category) => (
+        <Stack direction="row" spacing={1.25} alignItems={"center"}>
+          <Avatar
+            src={
+              row.imageUrl ||
+              "https://pivoo.themepreview.xyz/home-three/wp-content/uploads/sites/4/2024/04/raspberry-2023404_1920.jpg"
+            }
+            alt="Avatar user"
+          />
+
+          <Typography
+            sx={{ whiteSpace: "nowrap" }}
+            fontWeight="500"
+            color="text.primary">
+            {row.name}
+          </Typography>
+        </Stack>
+      ),
     },
     {
       render: (row: Category) => formatDateTime(row.createdDate),
@@ -292,7 +316,12 @@ const CategoryList = () => {
               />
             </Stack>
             <Select
-              sx={{ height: 40, maxWidth: { xs: "100%", lg: 150 } }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: 40,
+                  width: { xs: "100%", lg: 135 },
+                },
+              }}
               value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "status")
@@ -301,7 +330,7 @@ const CategoryList = () => {
                 { value: "true", label: "Active" },
                 { value: "false", label: "Disable" },
               ]}
-              defaultOption={"Select Status"}
+              defaultOption="Select Status"
               fullWidth
               isLoading={isLoading}
             />

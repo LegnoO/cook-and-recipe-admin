@@ -69,3 +69,7 @@ export const categoryEndpoints = {
   deleteCategory: (categoryId: string) =>
     `/category/admin/find/${categoryId}/delete`,
 };
+
+export const statisticsEndpoints = {
+  userTotalStatistics: `/statistic/admin/total/user`,
+};

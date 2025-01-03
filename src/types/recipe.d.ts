@@ -15,7 +15,7 @@ type Recipe = {
   timeToCook: number;
   difficulty: Difficulty;
   serves: number;
-  imageUrls: [];
+  imageUrls: string[];
   status: boolean;
   verifyStatus: string;
   createdDate: Date;
@@ -59,7 +59,7 @@ interface RecipeDetail {
   verifyStatus: "pending" | "approved" | "rejected";
   createdDate: Date;
   approvalDate: Date | null;
-  categories: string[];
+  category: { id: string; name: string; description: string; email: string };
   createdBy: {
     level: ChefLevel;
     startedDate: Date;
