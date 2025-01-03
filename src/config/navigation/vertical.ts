@@ -5,7 +5,7 @@ export const verticalNavItems: IVerticalNavItemsType = [
   {
     title: "Dashboard",
     icon: "iconoir:mail-open",
-    path: "/home",
+    path: "/test",
     action: "read",
     page: "user",
   },

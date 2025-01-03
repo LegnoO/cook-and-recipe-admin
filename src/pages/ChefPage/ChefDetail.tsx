@@ -21,7 +21,7 @@ import { queryOptions } from "@/config/query-options";
 // ** Services
 import { getChefDetail } from "@/services/chefService";
 
-// ** Library ImportsImports
+// ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { formatDateTime } from "@/utils/helpers";

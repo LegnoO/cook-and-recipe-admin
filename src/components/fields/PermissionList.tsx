@@ -22,7 +22,7 @@ import {
 import { Icon, TextField } from "@/components/ui";
 import SearchInput from "./SearchInput";
 
-// ** Library ImportsImports
+// ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 
 // ** Config

@@ -25,10 +25,10 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput, GroupSelect } from "@/components/fields";
 
-// ** Library ImportsImports
+// ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // ** Config
@@ -42,7 +42,11 @@ import EmployeeAdd from "./EmployeeAdd";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatAddress, handleToastMessages } from "@/utils/helpers";
+import {
+  formatAddress,
+  getTruthyObject,
+  handleToastMessages,
+} from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
@@ -52,23 +56,23 @@ import {
 } from "@/services/employeeService";
 
 const EmployeePage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setLoading] = useState(true);
-  const location = useLocation();
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<EmployeeDetail[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: Filter<FilterEmployees> = {
-    index: 1,
-    size: Number(pageSizeOptions[0]),
-    total: null,
-    groupId: location.state?.groupId || null,
-    status: null,
-    gender: null,
-    fullName: "",
-    sortBy: "",
-    sortOrder: "asc",
+    index: Number(searchParams.get("index")) || 1,
+    size: Number(searchParams.get("size")) || Number(pageSizeOptions[0]),
+    total: Number(searchParams.get("total")),
+    groupId: searchParams.get("groupId"),
+    status: searchParams.get("status"),
+    gender: searchParams.get("gender") as Gender,
+    fullName: searchParams.get("fullName") || "",
+    sortBy: searchParams.get("sortBy") || "",
+    sortOrder: (searchParams.get("sortOrder") as SortOrder) || "asc",
   };
   const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
 
@@ -87,10 +91,10 @@ const EmployeePage = () => {
       "list-employee",
       filter.index,
       filter.size,
-      filter.fullName,
       filter.groupId,
       filter.status,
       filter.gender,
+      filter.fullName,
       filter.sortBy,
       filter.sortOrder,
     ],
@@ -110,54 +114,54 @@ const EmployeePage = () => {
 
   const BODY_CELLS: BodyCell<EmployeeDetail>[] = [
     {
-      render: (row: EmployeeDetail) => (
+      render: ({ avatar, fullName, email }) => (
         <Stack direction="row" spacing={1.25} alignItems={"center"}>
-          <Avatar src={row.avatar} alt="Avatar user" />
+          <Avatar src={avatar} alt="Avatar user" />
           <Stack direction="column">
             <Typography fontWeight="500" color="text.primary">
-              {row.fullName}
+              {fullName}
             </Typography>
-            <Typography color="text.secondary">{row.email}</Typography>
+            <Typography color="text.secondary">{email}</Typography>
           </Stack>
         </Stack>
       ),
     },
     {
-      render: (row: EmployeeDetail) => row.phone,
+      render: ({ phone }) => phone,
     },
     {
-      render: (row: EmployeeDetail) => (
-        <Tooltip title={<Typography>{formatAddress(row.address)}</Typography>}>
-          <Typography>{formatAddress(row.address, 26)}</Typography>
+      render: ({ address }) => (
+        <Tooltip title={<Typography>{formatAddress(address)}</Typography>}>
+          <Typography>{formatAddress(address, 26)}</Typography>
         </Tooltip>
       ),
     },
     {
-      render: (row: EmployeeDetail) => row.group.name,
+      render: ({ group }) => group.name,
     },
     {
-      render: (row: EmployeeDetail) => (
+      render: ({ id, status }) => (
         <Switch
           color="success"
-          onChange={() => handleChangeStatus(row.id)}
-          disabled={activeIds.includes(ids.loadingSwitch(row.id))}
-          checked={row.status || false}
+          onChange={() => handleChangeStatus(id)}
+          disabled={activeIds.includes(ids.loadingSwitch(id))}
+          checked={status || false}
         />
       ),
     },
     {
-      render: (row: EmployeeDetail) => (
+      render: ({ id }) => (
         <IconButton
           disableRipple
-          onClick={() => addId(ids.modalUpdateEmployee(row.id))}>
+          onClick={() => addId(ids.modalUpdateEmployee(id))}>
           <Icon icon="heroicons:pencil-solid" />
           <Modal
-            open={activeIds.includes(ids.modalUpdateEmployee(row.id))}
-            onClose={() => removeId(ids.modalUpdateEmployee(row.id))}>
+            open={activeIds.includes(ids.modalUpdateEmployee(id))}
+            onClose={() => removeId(ids.modalUpdateEmployee(id))}>
             <EmployeeUpdate
-              employeeId={row.id}
+              employeeId={id}
               refetch={refetch}
-              closeMenu={() => handleCancel(ids.modalUpdateEmployee(row.id))}
+              closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
               setController={setController}
             />
           </Modal>
@@ -194,21 +198,6 @@ const EmployeePage = () => {
     updateFilter({ index: value });
   }
 
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterEmployees>,
-  ) {
-    updateFilter({
-      index: 1,
-      [field]: event.target.value,
-    });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
   const searchDebounced = useDebouncedCallback(() => {
     if (searchInputRef.current) {
       setFilter((prev) => ({
@@ -224,18 +213,13 @@ const EmployeePage = () => {
 
   function handleResetFilter() {
     refetch();
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
-
+    if (searchInputRef.current) searchInputRef.current.value = "";
     setFilter({ ...defaultFilter, ...employeeData?.paginate });
   }
 
   function handleCancel(modalId: string) {
-    if (controller) {
-      controller.abort();
-      setController(null);
-    }
+    controller?.abort();
+    setController(null);
     removeId(modalId);
   }
 
@@ -247,6 +231,12 @@ const EmployeePage = () => {
 
     setLoading(queryLoading);
   }, [employeeData]);
+
+  useEffect(() => {
+    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const params = new URLSearchParams(truthyFilter as Record<string, string>);
+    setSearchParams(params);
+  }, [filter]);
 
   return (
     <Fragment>
@@ -274,14 +264,14 @@ const EmployeePage = () => {
               defaultOption={"Select Group"}
               fullWidth
               isLoading={isLoading}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "groupId")
+              onChange={(event) =>
+                updateFilter({ index: 1, groupId: event.target.value })
               }
             />
             <Select
               value={filter.gender || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "gender")
+              onChange={(event) =>
+                updateFilter({ index: 1, gender: event.target.value as Gender })
               }
               menuItems={["Male", "Female", "Other"]}
               defaultOption={"Select Gender"}
@@ -290,8 +280,8 @@ const EmployeePage = () => {
             />
             <Select
               value={filter.status || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "status")
+              onChange={(event) =>
+                updateFilter({ index: 1, status: event.target.value })
               }
               menuItems={[
                 { value: "true", label: "Active" },
@@ -339,7 +329,9 @@ const EmployeePage = () => {
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
+                onChange={(event) =>
+                  updateFilter({ index: 1, size: Number(event.target.value) })
+                }
                 value={filter.size}
                 menuItems={pageSizeOptions}
               />

@@ -22,7 +22,7 @@ import {
   AccordionDetails,
 } from "@/components/ui";
 
-// ** Library ImportsImports
+// ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { useQuery } from "@tanstack/react-query";
 

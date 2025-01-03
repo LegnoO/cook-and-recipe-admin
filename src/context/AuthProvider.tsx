@@ -8,8 +8,8 @@ import {
   ReactNode,
 } from "react";
 
-// ** Library ImportsImports
-import { useNavigate, useLocation } from "react-router-dom";
+// ** Library Imports
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // ** Services
@@ -21,7 +21,7 @@ import {
 } from "@/services/authService";
 
 // ** Config
-import { loginRoute } from "@/config/url";
+import { homeRoute, loginRoute } from "@/config/url";
 
 // ** Utils
 import { handleToastMessages } from "@/utils/helpers";
@@ -48,6 +48,7 @@ type Props = {
 export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 const AuthProvider = ({ children }: Props) => {
+  const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
@@ -72,20 +73,25 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     const accessTokenSession = localStorage.getItem("access-token");
     if (!user) {
-      const redirectToLogin =
-        pathname !== loginRoute
-          ? `${loginRoute}?returnUrl=${pathname}`
+      if (pathname !== loginRoute) {
+        const returnUrl = searchParams ? searchParams.toString() : null;
+        const redirectToLogin = returnUrl
+          ? `${loginRoute}?returnUrl=${pathname}?${returnUrl}`
           : loginRoute;
 
-      navigate(redirectToLogin);
+        navigate(redirectToLogin);
+      }
     }
 
     async function initializeAuth() {
       try {
         if (accessTokenSession) {
           await fetchUserData();
-          const searchParams = new URLSearchParams(window.location.search);
-          navigate(searchParams.get("returnUrl") || "/");
+          const returnUrlHref = decodeURIComponent(
+            window.location.search,
+          ).split("returnUrl=")[1];
+
+          navigate(returnUrlHref || homeRoute);
         } else {
           await refreshUserData();
         }

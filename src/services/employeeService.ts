@@ -21,8 +21,9 @@ export async function updateProfileEmployee(formData: FormData) {
 }
 
 export async function queryEmployees(filter: FilterEmployees) {
+  const { total, ...rest } = filter;
   try {
-    const params = createSearchParams(filter);
+    const params = createSearchParams(rest);
     const response = await AxiosInstance.get<ListEmployees>(
       employeeEndpoints.queryEmployees(params.toString()),
     );

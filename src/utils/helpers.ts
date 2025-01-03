@@ -114,7 +114,6 @@ export function adjustRgbColor(
 export function isUrlPatternMatched(inputUrl: string, all_url: string[]) {
   const baseUrls = all_url.map((url) => url.split("/:")[0]);
   const inputBaseUrl = inputUrl.split("/").slice(0, 2).join("/");
-  console.log("🚀", { inputUrl, all_url, baseUrls, inputBaseUrl });
 
   return baseUrls.some((baseUrl) => baseUrl === inputBaseUrl);
 }
@@ -245,4 +244,17 @@ export function extractPaths(routes: Route[]) {
   traverse(routes);
 
   return paths;
+}
+
+export function getTruthyObject(obj: Record<string, unknown>) {
+  const result: Record<string, unknown> = {};
+
+  Object.keys(obj).forEach((key) => {
+    const value = obj[key];
+    if (value) {
+      result[key] = value;
+    }
+  });
+
+  return result;
 }
