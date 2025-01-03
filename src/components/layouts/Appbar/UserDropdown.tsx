@@ -1,7 +1,7 @@
 // ** React
 import { useState, MouseEvent } from "react";
 
-// ** Library
+// ** Library Imports
 import { useNavigate } from "react-router-dom";
 
 // ** Mui Imports

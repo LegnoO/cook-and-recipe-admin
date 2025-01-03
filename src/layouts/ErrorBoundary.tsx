@@ -1,4 +1,4 @@
-// ** Library
+// ** Library Imports
 import { useRouteError } from "react-router-dom";
 
 const ErrorBoundary = () => {

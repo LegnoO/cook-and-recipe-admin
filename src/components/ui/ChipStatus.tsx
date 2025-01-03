@@ -36,6 +36,7 @@ const ChipStatus = forwardRef(
           paddingBlock: "0.125rem",
           fontWeight: 600,
           textAlign: "center",
+          textTransform: "capitalize",
           borderRadius: `${theme.shape.borderRadius - 2}px`,
           backgroundColor: hexToRGBA(statusColorMap[variant]!, 0.25),
           outline: (theme) =>

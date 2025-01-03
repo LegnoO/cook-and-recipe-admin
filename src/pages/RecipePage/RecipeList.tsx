@@ -27,7 +27,7 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -80,7 +80,7 @@ const RecipeList = () => {
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<Filter<FilterRecipe>>(defaultFilter);
 
-  const { data: recipeData } = useQuery({
+  const { data: recipeData, refetch } = useQuery({
     queryKey: [
       "list-recipe",
       filter.index,
@@ -135,6 +135,7 @@ const RecipeList = () => {
   };
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -214,7 +215,7 @@ const RecipeList = () => {
       render: (row: Recipe) => (
         <ChipStatus
           label={row.status ? "Public" : "Private"}
-          variant={row.status ? "active" : "disabled"}
+          variant={row.status ? "success" : "disabled"}
         />
       ),
     },
@@ -256,8 +257,8 @@ const RecipeList = () => {
                 onClose={() => removeId(ids.modalRevoke(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"warning"}
-                  textSubmit={"Yes, revoke !"}
+                  variant="success"
+                  textSubmit={"Confirm"}
                   textTitle={`Confirm revoke recipe ${row.name}`}
                   textContent={`You're about to revoke recipe '${row.name}'. Are you sure?`}
                   onClick={async () => {
@@ -283,8 +284,8 @@ const RecipeList = () => {
                 onClose={() => removeId(ids.modalPrivate(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"warning"}
-                  textSubmit={"Yes, private !"}
+                  variant={"error"}
+                  textSubmit="Confirm"
                   textTitle={`Confirm private recipe ${row.name}`}
                   textContent={`You're about to private recipe '${row.name}'. Are you sure?`}
                   onClick={async () => {
@@ -366,37 +367,39 @@ const RecipeList = () => {
         </Stack>
         <Divider />
         <Stack
-          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
-          direction={{
-            xs: "column",
-            sm: "row",
-          }}
-          alignItems={"center"}
-          justifyContent="space-between">
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}>
           <SearchInput
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Recipe"
             onChange={handleSearchRecipe}
             fullWidth
-            sx={{ height: 40, maxWidth: { xs: "100%", sm: 170 } }}
+            sx={{ height: 40, width: { xs: "100%", md: 170 } }}
           />
 
           <Stack
-            sx={{ width: { xs: "100%", sm: "fit-content" } }}
-            spacing={2}
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
-            alignItems={"center"}>
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
+            }}>
             <Stack
-              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
-              direction="row"
-              alignItems="center">
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
               <Typography>Show</Typography>
               <Select
-                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
                 onChange={handleChangeRowPageSelector}
@@ -408,7 +411,7 @@ const RecipeList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -417,7 +420,7 @@ const RecipeList = () => {
               variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
           </Stack>
         </Stack>

@@ -29,7 +29,7 @@ import { SearchInput } from "@/components/fields";
 // ** Services
 import { queryChef, disableChef, activeChef } from "@/services/chefService";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
@@ -125,6 +125,7 @@ const ListChefPending = () => {
   }
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -263,7 +264,7 @@ const ListChefPending = () => {
                 onClose={() => removeId(ids.modalConfirm(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={row.status === "banned" ? "warning" : "error"}
+                  variant={row.status === "banned" ? "success" : "error"}
                   textSubmit={`Yes, ${row.status === "banned" ? "Unban" : "Ban"} !`}
                   textTitle={`Confirm ${row.status === "banned" ? "Unban" : "Ban"} ${row.userInfo.fullName}`}
                   textContent={`You're about to ${row.status === "banned" ? "Unban" : "Ban"} user '${row.userInfo.fullName}'. Are you sure?`}
@@ -335,40 +336,39 @@ const ListChefPending = () => {
         </Stack>
         <Divider />
         <Stack
-          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
-          direction={{
-            xs: "column",
-            sm: "row",
-          }}
-          alignItems={"center"}
-          justifyContent="space-between">
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}>
           <SearchInput
             ref={searchInputRef}
             fullWidth
             disabled={isLoading}
             placeholder="Search User"
             onChange={handleSearchChef}
-            sx={{
-              height: 40,
-              width: { xs: "100%", sm: 170 },
-            }}
+            sx={{ height: 40, width: { xs: "100%", md: 180 } }}
           />
 
           <Stack
-            sx={{ width: { xs: "100%", sm: "fit-content" } }}
-            spacing={2}
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
-            alignItems={"center"}>
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
+            }}>
             <Stack
-              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
-              direction="row"
-              alignItems="center">
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
               <Typography>Show</Typography>
               <Select
-                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
                 onChange={handleChangeRowPageSelector}
@@ -380,7 +380,7 @@ const ListChefPending = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -389,7 +389,7 @@ const ListChefPending = () => {
               variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
           </Stack>
         </Stack>

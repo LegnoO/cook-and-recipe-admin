@@ -1,7 +1,7 @@
 // ** React
 import { Suspense } from "react";
 
-// ** Library
+// ** Library Imports
 import { Outlet } from "react-router-dom";
 
 // ** Mui Imports

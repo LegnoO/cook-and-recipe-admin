@@ -2,7 +2,7 @@
 // import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-// ** Library
+// ** Library Imports
 import { RouterProvider } from "react-router-dom";
 
 // ** Router

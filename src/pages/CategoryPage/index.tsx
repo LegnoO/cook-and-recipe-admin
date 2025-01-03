@@ -31,7 +31,7 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
@@ -157,6 +157,7 @@ const CategoryList = () => {
   };
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -278,36 +279,38 @@ const CategoryList = () => {
           boxShadow: "none",
         }}>
         <Stack
-          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
-          direction={{
-            xs: "column",
-            lg: "row",
-          }}
-          alignItems={"center"}
-          justifyContent="space-between">
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}>
           <SearchInput
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Category"
             onChange={handleSearchGroup}
             fullWidth
-            sx={{ height: 40, maxWidth: { xs: "100%", lg: 190 } }}
+            sx={{ height: 40, width: { xs: "100%", md: 180 } }}
           />
           <Stack
-            sx={{ width: { xs: "100%", lg: "fit-content" } }}
-            spacing={2}
-            direction={{
-              xs: "column",
-              lg: "row",
-            }}
-            alignItems={"center"}>
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
+            }}>
             <Stack
-              sx={{ width: { xs: "100%", lg: "fit-content" }, gap: 1.5 }}
-              direction="row"
-              alignItems="center">
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
               <Typography>Show</Typography>
               <Select
-                sx={{ height: 40, width: { xs: "100%", lg: 65 } }}
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
                 onChange={handleChangeRowPageSelector}
@@ -317,9 +320,9 @@ const CategoryList = () => {
             </Stack>
             <Select
               sx={{
-                "& .MuiInputBase-root": {
-                  height: 40,
-                  width: { xs: "100%", lg: 135 },
+                "&": { height: 40, width: { xs: "100%", md: "fit-content" } },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 105 },
                 },
               }}
               value={filter.status || ""}
@@ -337,7 +340,7 @@ const CategoryList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -346,15 +349,13 @@ const CategoryList = () => {
               variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
             <Button
               sx={{
                 height: 40,
                 textWrap: "nowrap",
-                width: "100%",
-                minWidth: { xs: "100%", lg: "max-content" },
-                maxWidth: { xs: "100%", lg: 190 },
+                width: { xs: "100%", md: "max-content" },
               }}
               disabled={isLoading}
               disableRipple

@@ -26,7 +26,7 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
@@ -132,6 +132,7 @@ const RecipePendingList = () => {
   };
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -268,14 +269,14 @@ const RecipePendingList = () => {
                   addId(ids.modalConfirmReject(row.id));
                 }}
                 disableRipple>
-                <Icon icon={"mdi:close"} />
+                <Icon icon="mdi:close" />
                 <Modal
                   open={activeIds.includes(ids.modalConfirmReject(row.id))}
                   onClose={() => removeId(ids.modalConfirmReject(row.id))}>
                   <ConfirmBox
                     isLoading={isLoading}
-                    variant={"warning"}
-                    textSubmit={"Yes, reject !"}
+                    variant="error"
+                    textSubmit="Confirm"
                     textTitle={`Confirm reject recipe ${row.name}`}
                     textContent={`You're about to reject recipe '${row.name}'. Are you sure?`}
                     onClick={async () => {
@@ -300,14 +301,14 @@ const RecipePendingList = () => {
                   addId(ids.modalConfirmApprove(row.id));
                 }}
                 disableRipple>
-                <Icon icon={"mdi:tick"} />
+                <Icon icon="mdi:tick" />
                 <Modal
                   open={activeIds.includes(ids.modalConfirmApprove(row.id))}
                   onClose={() => removeId(ids.modalConfirmApprove(row.id))}>
                   <ConfirmBox
                     isLoading={isLoading}
-                    variant={"info"}
-                    textSubmit={"Yes, approve !"}
+                    variant="success"
+                    textSubmit="Confirm"
                     textTitle={`Confirm approve ${row.name}`}
                     textContent={`You're about to approve recipe '${row.name}'. Are you sure?`}
                     onClick={async () => {
@@ -336,60 +337,53 @@ const RecipePendingList = () => {
           boxShadow: "none",
         }}>
         <Stack
-          sx={{ p: 3, flexWrap: "wrap" }}
-          direction={{
-            md: "column",
-            lg: "row",
-          }}
-          justifyContent="space-between"
-          alignItems={{
-            md: "start",
-            lg: "center",
-          }}
-          spacing={{
-            xs: 2,
-            md: 2,
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
           }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{
-              xs: 1.5,
-              md: 1.5,
-            }}>
-            <Typography>Show</Typography>
-            <Select
-              sx={{ height: 40, width: 65 }}
-              fullWidth
-              disabled={isLoading}
-              onChange={handleChangeRowPageSelector}
-              value={filter.size}
-              menuItems={pageSizeOptions}
-            />
-          </Stack>
+          <SearchInput
+            ref={searchInputRef}
+            disabled={isLoading}
+            placeholder="Search Recipe"
+            onChange={handleSearchRecipe}
+            fullWidth
+            sx={{ height: 40, width: { xs: "100%", md: 170 } }}
+          />
 
           <Stack
-            direction={{
-              sm: "column",
-              md: "row",
-            }}
-            alignItems={{
-              sm: "stretch",
-              md: "center",
-            }}
-            spacing={{
-              xs: 2,
-              md: 2,
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
             }}>
-            <SearchInput
-              ref={searchInputRef}
-              disabled={isLoading}
-              placeholder="Search Recipe"
-              onChange={handleSearchRecipe}
-              fullWidth
-              sx={{ height: 40, maxWidth: { xs: "100%", lg: 200 } }}
-            />
+            <Stack
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
+                fullWidth
+                disabled={isLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
             <Select
+              sx={{
+                "&": { height: 40, width: { xs: "100%", md: "fit-content" } },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 120 },
+                },
+              }}
               value={filter.difficulty || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 handleFilterChange(event, "difficulty")
@@ -408,7 +402,7 @@ const RecipePendingList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -417,7 +411,7 @@ const RecipePendingList = () => {
               variant="outlined"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
           </Stack>
         </Stack>

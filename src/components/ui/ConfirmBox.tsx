@@ -1,5 +1,5 @@
 // ** React Imports
-import { } from "react";
+import {} from "react";
 
 // ** Mui Imports
 import { Typography, Stack, Button } from "@mui/material";
@@ -21,7 +21,7 @@ type Props = {
 
 const ConfirmBox = ({
   onClose,
-  onClick, 
+  onClick,
   isLoading,
   textCancel = "Cancel",
   textSubmit = "Yes",
@@ -42,7 +42,9 @@ const ConfirmBox = ({
       direction="column"
       alignItems="center"
       sx={{
-        minWidth: 340,
+        width: "100%",
+        minWidth: { xs: "100%", sm: 400 },
+        maxWidth: 448,
         padding: "1.5rem",
         borderRadius: (theme) => `${theme.shape.borderRadius + 10}px`,
         backgroundColor: (theme) => theme.palette.background.paper,
@@ -78,7 +80,7 @@ const ConfirmBox = ({
       <Stack sx={{ width: "100%" }} direction="row" spacing={1}>
         <Button
           onClick={onClose}
-          sx={{ borderRadius: "1.5rem", width: "50%", fontWeight: 500 }}
+          sx={{ width: "50%", fontWeight: 500 }}
           variant="contained"
           color="secondary">
           {textCancel}
@@ -86,7 +88,7 @@ const ConfirmBox = ({
         <Button
           disabled={isLoading}
           onClick={onClick}
-          sx={{ borderRadius: "1.5rem", width: "50%", fontWeight: 500 }}
+          sx={{ width: "50%", fontWeight: 500 }}
           variant="contained"
           color={variant}>
           {textSubmit}

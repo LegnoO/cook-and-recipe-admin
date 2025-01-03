@@ -18,7 +18,7 @@ import {
 import { UploadImage, RenderFieldsControlled } from "@/components";
 import { Container, Modal, Image, Form } from "@/components/ui";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useForm, Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -320,9 +320,17 @@ export default function ProfilePage() {
               </Typography>
             </Stack>
           </Stack>
-          <Box sx={{ paddingInline: "1.5rem", pb: "1.5rem" }}>
+          <Box
+            sx={{
+              overflow: "hidden",
+              pb: "1.5rem",
+            }}>
             <Form noValidate onSubmit={form.handleSubmit(onSubmit)}>
-              <Grid container rowSpacing={3} columnSpacing={3}>
+              <Grid
+                sx={{ paddingInline: "1.5rem" }}
+                container
+                rowSpacing={3}
+                columnSpacing={3}>
                 {profileFields.map((field, index) => (
                   <Fragment key={index}>
                     <RenderFieldsControlled<ProfileFormValues>
@@ -335,7 +343,7 @@ export default function ProfilePage() {
                 ))}
               </Grid>
               <Stack
-                sx={{ mt: 6 }}
+                sx={{ mt: 6, paddingInline: "1.5rem" }}
                 direction="row"
                 spacing={2}
                 justifyContent="end"

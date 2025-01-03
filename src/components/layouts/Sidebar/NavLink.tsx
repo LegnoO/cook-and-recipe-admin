@@ -16,8 +16,11 @@ import Icon from "@/components/ui/Icon";
 // ** Utils
 import { hexToRGBA } from "@/utils/helpers";
 
-// ** Library
+// ** Library Imports
 import clsx from "clsx";
+
+// ** Config
+import { homeRoute } from "@/config/url";
 
 // ** Types
 import { INavGroup, INavLink } from "./types";
@@ -123,7 +126,7 @@ const NavLink = (props: Props) => {
           "nav-link-child": navParent,
           active: isActive,
         })}
-        to={item.path ?? "/"}
+        to={item.path ?? homeRoute}
         onClick={handleSetRootGroup}>
         <IconWrapper
           className={clsx("icon-wrapper", {

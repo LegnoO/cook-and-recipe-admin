@@ -22,7 +22,7 @@ import {
   AccordionDetails,
 } from "@/components/ui";
 
-// ** Library Imports
+// ** Library ImportsImports
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { useQuery } from "@tanstack/react-query";
 
@@ -348,7 +348,10 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   Ingredients
                 </Typography>
                 {recipe.ingredients.map((ingredient, index) => (
-                  <Stack key={index} direction="row" alignItems={"center"}>
+                  <Stack
+                    key={`ingredient ${index}`}
+                    direction="row"
+                    alignItems={"center"}>
                     <Icon fontSize="1.15rem" icon="radix-icons:dot-filled" />
                     <Typography lineHeight={1} variant="subtitle1">
                       {formatIngredient(ingredient)}
@@ -369,7 +372,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   Instructions
                 </Typography>
                 {recipe.instructionSections.map((section, index) => (
-                  <Accordion key={index}>
+                  <Accordion key={`section ${index}`}>
                     <AccordionSummary
                       expandIcon={<Icon icon="ic:twotone-expand-more" />}>
                       {section.title}
@@ -378,7 +381,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                       <Stack direction="column" sx={{ gap: 2 }}>
                         {section.instructions.map((instruction) => (
                           <Stack
-                            key={index}
+                            key={`section ${index} instruction`}
                             sx={{ gap: 1, paddingInline: "0.5rem" }}
                             direction="row"
                             alignItems={"center"}>

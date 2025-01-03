@@ -1,4 +1,4 @@
-// ** Library
+// ** Library Imports
 import { Outlet, useLocation, useParams, useNavigate } from "react-router-dom";
 
 // ** Hooks
@@ -68,7 +68,7 @@ const RouteGuard = () => {
     ...publicPathnames,
   ].some((pattern) => matchPatternWithParams(pattern));
 
-  if (isLoading && pathname !== "/login") return <LoadingScreen />;
+  if (isLoading) return <LoadingScreen />;
 
   if (!user && publicPathnames.includes(pathname)) return <Outlet />;
 

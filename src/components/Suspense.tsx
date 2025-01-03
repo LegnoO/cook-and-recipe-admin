@@ -1,7 +1,7 @@
 // ** React
 import { ReactNode, Suspense as ReactSuspense } from "react";
 
-// ** Library
+// ** Library Imports
 import { Outlet } from "react-router-dom";
 
 const Suspense = ({ fallback }: { fallback: ReactNode }) => {

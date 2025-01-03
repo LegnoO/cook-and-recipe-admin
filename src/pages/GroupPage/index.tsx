@@ -17,6 +17,7 @@ import {
   Divider,
   IconButton,
   Popover,
+  useTheme,
 } from "@mui/material";
 
 // ** Components
@@ -35,7 +36,7 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
@@ -93,6 +94,8 @@ const GroupList = () => {
   const [groups, setGroups] = useState<Group[]>();
   const [controller, setController] = useState<AbortController | null>(null);
   const [filter, setFilter] = useState<FilterGroup>(defaultFilter);
+
+  console.log("theme: ", useTheme());
 
   const {
     isLoading,
@@ -176,6 +179,7 @@ const GroupList = () => {
   };
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -423,36 +427,38 @@ const GroupList = () => {
           boxShadow: "none",
         }}>
         <Stack
-          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
-          direction={{
-            xs: "column",
-            lg: "row",
-          }}
-          alignItems={"center"}
-          justifyContent="space-between">
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}>
           <SearchInput
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Group"
             onChange={handleSearchGroup}
             fullWidth
-            sx={{ height: 40, maxWidth: { xs: "100%", lg: 170 } }}
+            sx={{ height: 40, width: { xs: "100%", md: 170 } }}
           />
           <Stack
-            sx={{ width: { xs: "100%", lg: "fit-content" } }}
-            spacing={2}
-            direction={{
-              xs: "column",
-              lg: "row",
-            }}
-            alignItems={"center"}>
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
+            }}>
             <Stack
-              sx={{ width: { xs: "100%", lg: "fit-content" }, gap: 1.5 }}
-              direction="row"
-              alignItems="center">
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
               <Typography>Show</Typography>
               <Select
-                sx={{ height: 40, width: { xs: "100%", lg: 65 } }}
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
                 onChange={handleChangeRowPageSelector}
@@ -462,9 +468,11 @@ const GroupList = () => {
             </Stack>
             <Select
               sx={{
-                "& .MuiInputBase-root": {
-                  height: 40,
-                  width: { xs: "100%", lg: 135 },
+                "&": {
+                  width: { height: 40, xs: "100%", md: "fit-content" },
+                },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 105 },
                 },
               }}
               value={filter.status || ""}
@@ -482,7 +490,7 @@ const GroupList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -491,15 +499,13 @@ const GroupList = () => {
               variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
             <Button
               sx={{
                 height: 40,
                 textWrap: "nowrap",
-                width: "100%",
-                minWidth: { xs: "100%", lg: "max-content" },
-                maxWidth: { xs: "100%", lg: 190 },
+                width: { xs: "100%", md: "max-content" },
               }}
               disabled={isLoading}
               disableRipple

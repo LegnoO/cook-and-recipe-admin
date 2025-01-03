@@ -29,7 +29,7 @@ import { SearchInput } from "@/components/fields";
 // ** Services
 import { queryChefPending, toggleChefRequest } from "@/services/chefService";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
@@ -125,6 +125,7 @@ const ChefPendingList = () => {
   }
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -263,7 +264,7 @@ const ChefPendingList = () => {
                 <ConfirmBox
                   isLoading={isLoading}
                   variant={"warning"}
-                  textSubmit={"Yes, reject !"}
+                  textSubmit={"Confirm"}
                   textTitle={`Confirm reject ${row.userInfo.fullName}`}
                   textContent={`You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`}
                   onClick={async () => {
@@ -295,7 +296,7 @@ const ChefPendingList = () => {
                 <ConfirmBox
                   isLoading={isLoading}
                   variant={"info"}
-                  textSubmit={"Yes, approve !"}
+                  textSubmit={"Confirm"}
                   textTitle={`Confirm approve ${row.userInfo.fullName}`}
                   textContent={`You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`}
                   onClick={async () => {
@@ -321,69 +322,51 @@ const ChefPendingList = () => {
           boxShadow: "none",
         }}>
         <Stack
-          sx={{ p: 3, flexWrap: "wrap" }}
-          direction={{
-            xs: "column",
-            md: "row",
-          }}
-          justifyContent="space-between"
-          alignItems={{
-            xs: "start",
-            md: "center",
-          }}
-          spacing={{
-            xs: 2,
-            md: 2,
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
           }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={{
-              xs: 1.5,
-              md: 1.5,
-            }}>
-            <Typography>Show</Typography>
-            <Select
-              sx={{ height: 40, width: 65 }}
-              fullWidth
-              disabled={chefLoading}
-              onChange={handleChangeRowPageSelector}
-              value={filter.size}
-              menuItems={pageSizeOptions}
-            />
-          </Stack>
+          <SearchInput
+            ref={searchInputRef}
+            disabled={chefLoading}
+            placeholder="Search Chef"
+            onChange={handleSearchChef}
+            fullWidth
+            sx={{ height: 40, width: { xs: "100%", md: 180 } }}
+          />
 
           <Stack
-            direction={{
-              xs: "column",
-              md: "row",
-            }}
-            alignItems={{
-              xs: "stretch",
-              md: "center",
-            }}
-            spacing={{
-              xs: 2,
-              md: 2,
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              flexWrap: "wrap",
             }}>
-            <SearchInput
-              ref={searchInputRef}
-              disabled={chefLoading}
-              placeholder="Search Chef"
-              onChange={handleSearchChef}
-              fullWidth
+            <Stack
               sx={{
-                height: 40,
-                width: { xs: "100%", sm: 170 },
-              }}
-            />
-
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
+              <Typography>Show</Typography>
+              <Select
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
+                fullWidth
+                disabled={chefLoading}
+                onChange={handleChangeRowPageSelector}
+                value={filter.size}
+                menuItems={pageSizeOptions}
+              />
+            </Stack>
             <Select
               sx={{
-                height: 40,
-                maxWidth: {
-                  xs: "100%",
-                  sm: 130,
+                "&": { height: 40, width: { xs: "100%", md: "fit-content" } },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 105 },
                 },
               }}
               value={filter.level || ""}
@@ -403,7 +386,7 @@ const ChefPendingList = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading || chefLoading}
@@ -412,7 +395,7 @@ const ChefPendingList = () => {
               variant="outlined"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
           </Stack>
         </Stack>

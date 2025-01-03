@@ -25,7 +25,7 @@ import {
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput, GroupSelect } from "@/components/fields";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { useLocation } from "react-router-dom";
@@ -223,6 +223,7 @@ const EmployeePage = () => {
   };
 
   function handleResetFilter() {
+    refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -304,40 +305,38 @@ const EmployeePage = () => {
         </Stack>
         <Divider />
         <Stack
-          sx={{ flexWrap: "wrap", gap: 2, p: 3 }}
-          direction={{
-            xs: "column",
-            sm: "row",
-          }}
-          alignItems="center"
-          justifyContent="space-between">
+          sx={{
+            gap: 2,
+            p: 3,
+            alignItems: { xs: "stretch", md: "center" },
+            flexDirection: { xs: "column", md: "row" },
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}>
           <SearchInput
             fullWidth
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search User"
             onChange={handleSearchEmployee}
-            sx={{
-              height: 40,
-              width: { xs: "100%", sm: 170 },
-            }}
+            sx={{ height: 40, width: { xs: "100%", md: 170 } }}
           />
 
           <Stack
-            sx={{ width: { xs: "100%", sm: "fit-content" } }}
-            spacing={2}
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
-            alignItems={"center"}>
+            sx={{
+              gap: 2,
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+            }}>
             <Stack
-              sx={{ width: { xs: "100%", sm: "fit-content" }, gap: 1.5 }}
-              direction="row"
-              alignItems="center">
+              sx={{
+                gap: 1.5,
+                alignItems: "center",
+                flexDirection: "row",
+              }}>
               <Typography>Show</Typography>
               <Select
-                sx={{ height: 40, width: { xs: "100%", sm: 65 } }}
+                sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
                 onChange={handleChangeRowPageSelector}
@@ -349,7 +348,7 @@ const EmployeePage = () => {
             <Button
               sx={{
                 height: 40,
-                minWidth: { xs: "100%", lg: "max-content" },
+                width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
               disabled={isLoading}
@@ -358,10 +357,14 @@ const EmployeePage = () => {
               variant="tonal"
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
-              Reset Filter
+              Refresh
             </Button>
             <Button
-              sx={{ height: 40, width: { xs: "100%", sm: 205 } }}
+              sx={{
+                height: 40,
+                textWrap: "nowrap",
+                width: { xs: "100%", md: "max-content" },
+              }}
               disabled={isLoading}
               disableRipple
               variant="contained"

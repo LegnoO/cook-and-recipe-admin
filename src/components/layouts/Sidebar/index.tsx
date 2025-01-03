@@ -4,7 +4,7 @@ import { useState, memo } from "react";
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
 
-// ** Library Imports
+// ** Library ImportsImports
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // ** Components's Sidebar
@@ -61,6 +61,24 @@ const Sidebar = ({ navItems }: Props) => {
                 setChildGroupActive={setChildGroupActive}
               />
             </NavList>
+            {/* <Box
+            sx={{
+              marginTop: "1.5rem",
+              paddingBlock: "1rem",
+            }}>
+            <Typography
+              sx={{ fontSize: "15px" }}
+              variant="caption"
+              color="text.secondary">
+              © {new Date().getFullYear()}, Made with ❤️ by{" "}
+            </Typography>
+            <Typography
+              sx={{ fontSize: "15px" }}
+              variant="caption"
+              color="primary">
+              Legno
+            </Typography>
+          </Box> */}
           </Nav>
         </PerfectScrollbar>
       </Drawer>

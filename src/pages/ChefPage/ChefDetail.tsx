@@ -21,7 +21,7 @@ import { queryOptions } from "@/config/query-options";
 // ** Services
 import { getChefDetail } from "@/services/chefService";
 
-// ** Library Imports
+// ** Library ImportsImports
 import { useQuery } from "@tanstack/react-query";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { formatDateTime } from "@/utils/helpers";
@@ -185,14 +185,6 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
                     </Typography>
                   </Stack>
                 </Grid>
-                {/* <Grid item md={6} xs={12}>
-                  <ChipStatus
-                    label={chefData?.status}
-                    variant={
-                      statusColorMap[chefData?.status]?.variant as ColorVariant
-                    }
-                  />
-                </Grid> */}
               </Grid>
             </Box>
           ) : (

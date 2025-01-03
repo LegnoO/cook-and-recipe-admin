@@ -15,7 +15,7 @@ import { Icon, TextField } from "@/components/ui";
 import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
 
-// ** Library
+// ** Library Imports
 // import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

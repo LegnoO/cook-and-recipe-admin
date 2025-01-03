@@ -1,7 +1,7 @@
 // ** Mui Imports
 import { styled, Theme } from "@mui/material/styles";
 
-// ** Library
+// ** Library Imports
 import { Outlet } from "react-router-dom";
 
 // ** Components
@@ -10,7 +10,6 @@ import AppBar from "@/components/layouts/Appbar";
 
 // ** Nav Items
 import { verticalNavItems } from "@/config/navigation/vertical";
-import { Box, Typography } from "@mui/material";
 
 // ** Styled Components
 const LayoutWrapper = styled("div")(({ theme }: { theme: Theme }) => ({
@@ -48,24 +47,6 @@ const DefaultLayout = () => {
         <AppBar />
         <LayoutContent className="layout-content">
           <Outlet />
-          <Box
-            sx={{
-              marginTop: "1.5rem",
-              paddingBlock: "1rem",
-            }}>
-            <Typography
-              sx={{ fontSize: "15px" }}
-              variant="caption"
-              color="text.secondary">
-              © {new Date().getFullYear()}, Made with ❤️ by{" "}
-            </Typography>
-            <Typography
-              sx={{ fontSize: "15px" }}
-              variant="caption"
-              color="primary">
-              Legno
-            </Typography>
-          </Box>
         </LayoutContent>
       </LayoutInner>
     </LayoutWrapper>

@@ -1,4 +1,4 @@
-// ** Library
+// ** Library Imports
 import { useNavigate } from "react-router-dom";
 
 // ** Mui Components
@@ -6,6 +6,9 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Box, { BoxProps } from "@mui/material/Box";
+
+// ** Config
+import { homeRoute } from "@/config/url";
 
 // ** Styled Components
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -18,19 +21,19 @@ const NotFoundScreen = () => {
   const navigate = useNavigate();
 
   function handleBackRouter() {
-    navigate("/");
+    navigate(homeRoute);
   }
 
   return (
     <Box className="content-center">
       <Box
         sx={{
-          p: 5,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
-          transform: "translateY(25%)",
+          justifyContent: "center",
+          height: "100dvh",
         }}>
         <BoxWrapper>
           <Typography variant="h2" sx={{ mb: 1.5 }}>
