@@ -36,9 +36,9 @@ type EmployeeDetail = UserDetail & {
 };
 
 type FilterEmployees = {
-  total: number | null;
-  fullName: string;
-  groupId: string | null;
-  status: string | null;
-  gender: Gender | null;
+  total?: number;
+  fullName?: string;
+  groupId?: string;
+  status?: string;
+  gender?: Gender;
 };

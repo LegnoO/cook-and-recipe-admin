@@ -11,16 +11,18 @@ type Address = {
 type SortOrder = "" | "asc" | "desc";
 
 type Sort = {
-  sortBy: string;
+  sortBy?: string;
   sortOrder: SortOrder;
 };
 
 type Filter<T> = T & Paginate & Sort;
 
+type DefaultFilter = Omit<Paginate | "total"> & Sort;
+
 type Paginate = {
-  index: number;
-  size: number;
-  total: number | null;
+  index?: number;
+  size?: number;
+  total?: number;
 };
 
 type JSONString<T> = string;

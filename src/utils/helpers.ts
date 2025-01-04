@@ -258,3 +258,19 @@ export function getTruthyObject(obj: Record<string, unknown>) {
 
   return result;
 }
+
+export function stringifyObjectValues(
+  obj: Record<string, unknown>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key, String(value)]),
+  );
+}
+
+export function shallowCompareObject(
+  obj1: Record<string, any>,
+  obj2: Record<string, any>,
+) {
+  console.log({ obj1, obj2 });
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}

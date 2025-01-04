@@ -7,7 +7,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // ** Mui Imports
 import {
@@ -17,7 +17,6 @@ import {
   Divider,
   IconButton,
   Popover,
-  useTheme,
 } from "@mui/material";
 
 // ** Components
@@ -53,7 +52,13 @@ import MoveMember from "./MoveMember";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+import {
+  formatDateTime,
+  getTruthyObject,
+  handleToastMessages,
+  shallowCompareObject,
+  stringifyObjectValues,
+} from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
@@ -64,20 +69,19 @@ import {
 } from "@/services/groupServices";
 
 const GroupList = () => {
+  const pageSizeOptions = ["10", "15", "20"];
+  const defaultFilter: DefaultFilter = {
+    index: 1,
+    size: Number(pageSizeOptions[0]),
+    sortOrder: "asc",
+  };
+  const [searchParams, setSearchParams] = useSearchParams(
+    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+  );
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { activeIds, addId, removeId } = useSettings();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const pageSizeOptions = ["10", "15", "20"];
-  const defaultFilter: FilterGroup = {
-    index: 1,
-    size: Number(pageSizeOptions[0]),
-    total: null,
-    name: "",
-    status: null,
-    sortBy: "",
-    sortOrder: "asc",
-  };
 
   const ids = useMemo(
     () => ({
@@ -93,25 +97,24 @@ const GroupList = () => {
 
   const [groups, setGroups] = useState<Group[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<FilterGroup>(defaultFilter);
-
-  console.log("theme: ", useTheme());
+  const [filter, setFilter] = useState<FilterGroup>({
+    index: Number(searchParams.get("index")) || defaultFilter.index,
+    size: Number(searchParams.get("size")) || defaultFilter.size,
+    name: searchParams.get("name") || undefined,
+    status: searchParams.get("status") || undefined,
+    sortBy: searchParams.get("sortBy") || undefined,
+    sortOrder:
+      (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
+    total: Number(searchParams.get("total")),
+  });
 
   const {
     isLoading,
     data: groupData,
     refetch,
   } = useQuery({
-    queryKey: [
-      "list-group",
-      filter.index,
-      filter.size,
-      filter.name,
-      filter.status,
-      filter.sortBy,
-      filter.sortOrder,
-    ],
-    queryFn: () => queryGroups(filter),
+    queryKey: ["list-group", searchParams.toString()],
+    queryFn: () => queryGroups(searchParams.toString()),
 
     ...queryOptions,
   });
@@ -150,40 +153,33 @@ const GroupList = () => {
     updateFilter({ index: value });
   }
 
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterGroup>,
-  ) {
-    updateFilter({
-      index: 1,
-      [field]: event.target.value,
-    });
-  }
+  const handleSearchGroup = useDebouncedCallback(() => {
+    const name = searchInputRef.current?.value.trim() || "";
 
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
-  const searchDebounced = useDebouncedCallback(() => {
-    if (searchInputRef.current) {
-      setFilter((prev) => ({
-        ...prev,
-        name: searchInputRef.current!.value,
-      }));
-    }
+    setFilter((prev) => ({
+      ...prev,
+      name,
+    }));
   }, 300);
-
-  const handleSearchGroup = () => {
-    searchDebounced();
-  };
 
   function handleResetFilter() {
     refetch();
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
-    setFilter({ ...defaultFilter, ...groupData?.paginate });
+
+    setFilter((prev) => {
+      delete prev.total;
+      if (
+        shallowCompareObject(
+          getTruthyObject(prev),
+          getTruthyObject(defaultFilter),
+        )
+      ) {
+        refetch();
+      }
+      return defaultFilter;
+    });
   }
 
   function handleViewGroupId(groupId: string) {
@@ -204,6 +200,16 @@ const GroupList = () => {
       setFilter((prev) => ({ ...prev, ...groupData.paginate }));
     }
   }, [groupData]);
+
+  useEffect(() => {
+    setSearchParams((params) => params);
+  }, []);
+
+  useEffect(() => {
+    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const params = new URLSearchParams(truthyFilter as Record<string, string>);
+    setSearchParams(params);
+  }, [filter]);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "name" },
@@ -416,7 +422,7 @@ const GroupList = () => {
       ),
     },
   ];
-
+  console.log({ filter });
   return (
     <Fragment>
       <Paper
@@ -461,7 +467,9 @@ const GroupList = () => {
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
+                onChange={(event) =>
+                  updateFilter({ index: 1, size: Number(event.target.value) })
+                }
                 value={filter.size}
                 menuItems={pageSizeOptions}
               />
@@ -472,12 +480,15 @@ const GroupList = () => {
                   width: { height: 40, xs: "100%", md: "fit-content" },
                 },
                 "& .MuiSelect-select": {
-                  width: { xs: "100%", md: 105 },
+                  width: { xs: "100%", md: 110 },
                 },
               }}
-              value={filter.status || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "status")
+              value={filter.status?.toString() || ""}
+              onChange={(event) =>
+                updateFilter({
+                  index: 1,
+                  status: event.target.value,
+                })
               }
               menuItems={[
                 { value: "true", label: "Active" },

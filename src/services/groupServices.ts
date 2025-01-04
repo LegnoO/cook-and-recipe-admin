@@ -1,18 +1,14 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
-import { createSearchParams } from "@/utils/helpers";
 
 // ** Config
 import { groupEndpoints } from "@/config/endpoints";
 
-export async function queryGroups(filter: any) {
-  const { total, ...restFilter } = filter;
-
-  const params = createSearchParams(restFilter);
+export async function queryGroups(params: string) {
   try {
     const response = await AxiosInstance.get(
-      groupEndpoints.queryGroups(params.toString()),
+      groupEndpoints.queryGroups(params),
     );
 
     return response.data;

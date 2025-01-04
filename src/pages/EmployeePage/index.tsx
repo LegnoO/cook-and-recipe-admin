@@ -46,6 +46,8 @@ import {
   formatAddress,
   getTruthyObject,
   handleToastMessages,
+  shallowCompareObject,
+  stringifyObjectValues,
 } from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
@@ -56,25 +58,34 @@ import {
 } from "@/services/employeeService";
 
 const EmployeePage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const pageSizeOptions = ["10", "15", "20"];
+  const defaultFilter: DefaultFilter = {
+    index: 1,
+    size: Number(pageSizeOptions[0]),
+    sortOrder: "asc",
+  };
+
+  const [searchParams, setSearchParams] = useSearchParams(
+    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+  );
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setLoading] = useState(true);
   const { activeIds, addId, removeId } = useSettings();
   const [employees, setEmployees] = useState<EmployeeDetail[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const pageSizeOptions = ["10", "15", "20"];
-  const defaultFilter: Filter<FilterEmployees> = {
-    index: Number(searchParams.get("index")) || 1,
-    size: Number(searchParams.get("size")) || Number(pageSizeOptions[0]),
-    total: Number(searchParams.get("total")),
-    groupId: searchParams.get("groupId"),
-    status: searchParams.get("status"),
+
+  const [filter, setFilter] = useState<Filter<FilterEmployees>>({
+    index: Number(searchParams.get("index")) || defaultFilter.index,
+    size: Number(searchParams.get("size")) || defaultFilter.size,
+    groupId: searchParams.get("groupId") || undefined,
+    status: searchParams.get("status") || undefined,
     gender: searchParams.get("gender") as Gender,
-    fullName: searchParams.get("fullName") || "",
-    sortBy: searchParams.get("sortBy") || "",
-    sortOrder: (searchParams.get("sortOrder") as SortOrder) || "asc",
-  };
-  const [filter, setFilter] = useState<Filter<FilterEmployees>>(defaultFilter);
+    fullName: searchParams.get("fullName") || undefined,
+    sortBy: searchParams.get("sortBy") || undefined,
+    sortOrder:
+      (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
+    total: Number(searchParams.get("total")),
+  });
 
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
@@ -87,19 +98,8 @@ const EmployeePage = () => {
     data: employeeData,
     refetch,
   } = useQuery({
-    queryKey: [
-      "list-employee",
-      filter.index,
-      filter.size,
-      filter.groupId,
-      filter.status,
-      filter.gender,
-      filter.fullName,
-      filter.sortBy,
-      filter.sortOrder,
-    ],
-    queryFn: () => queryEmployees(filter),
-
+    queryKey: ["list-employee", searchParams.toString()],
+    queryFn: () => queryEmployees(searchParams.toString()),
     ...queryOptions,
   });
 
@@ -198,23 +198,30 @@ const EmployeePage = () => {
     updateFilter({ index: value });
   }
 
-  const searchDebounced = useDebouncedCallback(() => {
-    if (searchInputRef.current) {
-      setFilter((prev) => ({
-        ...prev,
-        fullName: searchInputRef.current!.value,
-      }));
-    }
+  const handleSearchEmployee = useDebouncedCallback(() => {
+    const fullName = searchInputRef.current?.value.trim() || "";
+
+    setFilter((prev) => ({
+      ...prev,
+      fullName,
+    }));
   }, 300);
 
-  const handleSearchEmployee = () => {
-    searchDebounced();
-  };
-
   function handleResetFilter() {
-    refetch();
     if (searchInputRef.current) searchInputRef.current.value = "";
-    setFilter({ ...defaultFilter, ...employeeData?.paginate });
+
+    setFilter((prev) => {
+      delete prev.total;
+      if (
+        shallowCompareObject(
+          getTruthyObject(prev),
+          getTruthyObject(defaultFilter),
+        )
+      ) {
+        refetch();
+      }
+      return defaultFilter;
+    });
   }
 
   function handleCancel(modalId: string) {
@@ -231,6 +238,10 @@ const EmployeePage = () => {
 
     setLoading(queryLoading);
   }, [employeeData]);
+
+  useEffect(() => {
+    setSearchParams((params) => params);
+  }, []);
 
   useEffect(() => {
     const { total, ...truthyFilter } = getTruthyObject(filter);
@@ -261,7 +272,7 @@ const EmployeePage = () => {
             <GroupSelect
               value={filter.groupId || ""}
               name="groupId-filter"
-              defaultOption={"Select Group"}
+              defaultOption="Select Group"
               fullWidth
               isLoading={isLoading}
               onChange={(event) =>
@@ -305,6 +316,7 @@ const EmployeePage = () => {
           }}>
           <SearchInput
             fullWidth
+            defaultValue={filter.fullName}
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search User"

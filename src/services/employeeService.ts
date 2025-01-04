@@ -1,7 +1,6 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
-import { createSearchParams } from "@/utils/helpers";
 
 // ** Config
 import { employeeEndpoints } from "@/config/endpoints";
@@ -20,12 +19,10 @@ export async function updateProfileEmployee(formData: FormData) {
   return response.data;
 }
 
-export async function queryEmployees(filter: FilterEmployees) {
-  const { total, ...rest } = filter;
+export async function queryEmployees(params: string) {
   try {
-    const params = createSearchParams(rest);
     const response = await AxiosInstance.get<ListEmployees>(
-      employeeEndpoints.queryEmployees(params.toString()),
+      employeeEndpoints.queryEmployees(params),
     );
 
     return response.data;

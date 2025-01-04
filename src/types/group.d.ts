@@ -18,7 +18,7 @@ interface Group {
 }
 
 type FilterGroup = {
-  name: string;
-  status: boolean | null;
+  name?: string;
+  status?: string;
 } & Sort &
   Paginate;
