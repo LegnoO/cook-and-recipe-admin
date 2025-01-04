@@ -324,7 +324,7 @@ const ListChefPending = () => {
               ]}
               defaultOption="Select Status"
               fullWidth
-              isLoading={isLoading}
+              isLoading={queryLoading && !chefs}
             />
             <Select
               value={filter.level || ""}
@@ -359,7 +359,7 @@ const ListChefPending = () => {
           <SearchInput
             ref={searchInputRef}
             fullWidth
-            disabled={isLoading}
+            disabled={queryLoading && !chefs}
             placeholder="Search User"
             onChange={handleSearchChef}
             sx={{ height: 40, width: { xs: "100%", md: 180 } }}
@@ -382,7 +382,7 @@ const ListChefPending = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={isLoading}
+                disabled={queryLoading && !chefs}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -397,7 +397,7 @@ const ListChefPending = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading}
+              disabled={queryLoading && !chefs}
               disableRipple
               color="error"
               variant="tonal"
@@ -427,7 +427,7 @@ const ListChefPending = () => {
       </TableContainer>
       <Pagination
         dataLength={chefs?.length}
-        isLoading={isLoading}
+        isLoading={queryLoading && !chefs}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
         onChange={(_event, value) => {

@@ -354,7 +354,7 @@ const RecipePendingList = () => {
           <SearchInput
             defaultValue={filter.name}
             ref={searchInputRef}
-            disabled={isLoading}
+            disabled={queryLoading && !recipes}
             placeholder="Search Recipe"
             onChange={handleSearchRecipe}
             fullWidth
@@ -378,7 +378,7 @@ const RecipePendingList = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={isLoading}
+                disabled={queryLoading && !recipes}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -409,7 +409,7 @@ const RecipePendingList = () => {
               ]}
               defaultOption={"Select Difficulty"}
               fullWidth
-              isLoading={isLoading}
+              isLoading={queryLoading && !recipes}
             />
             <Button
               sx={{
@@ -417,7 +417,7 @@ const RecipePendingList = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading}
+              disabled={queryLoading && !recipes}
               disableRipple
               color="error"
               variant="outlined"
@@ -432,13 +432,13 @@ const RecipePendingList = () => {
       <TableContainer>
         <Table>
           <TableHead
-            isLoading={isLoading}
+            isLoading={queryLoading && !recipes}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody
-            isLoading={isLoading}
+            isLoading={queryLoading && !recipes}
             data={recipes}
             filter={filter}
             bodyCells={BODY_CELLS}
@@ -447,7 +447,7 @@ const RecipePendingList = () => {
       </TableContainer>
       <Pagination
         dataLength={recipes?.length}
-        isLoading={isLoading}
+        isLoading={queryLoading && !recipes}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
         onChange={(_event: ChangeEvent<unknown>, value: number) => {

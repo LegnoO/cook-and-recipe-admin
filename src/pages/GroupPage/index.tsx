@@ -395,8 +395,8 @@ const GroupList = () => {
                       onClose={() => removeId(ids.modalDeleteGroup(row.id))}>
                       <ConfirmBox
                         isLoading={isLoading}
-                        variant={"error"}
-                        textSubmit={"Delete"}
+                        variant="error"
+                        textSubmit="Delete"
                         textTitle={`Confirm delete group ${row.name}`}
                         textContent={`You're about to delete group '${row.name}'. Are you sure?`}
                         onClick={async () => {
@@ -417,7 +417,7 @@ const GroupList = () => {
       ),
     },
   ];
-  console.log({ filter });
+
   return (
     <Fragment>
       <Paper
@@ -438,7 +438,7 @@ const GroupList = () => {
           }}>
           <SearchInput
             ref={searchInputRef}
-            disabled={isLoading}
+            disabled={isLoading && !groups}
             placeholder="Search Group"
             onChange={handleSearchGroup}
             fullWidth
@@ -491,7 +491,7 @@ const GroupList = () => {
               ]}
               defaultOption="Select Status"
               fullWidth
-              isLoading={isLoading}
+              isLoading={isLoading && !groups}
             />
             <Button
               sx={{
@@ -499,7 +499,7 @@ const GroupList = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading}
+              disabled={isLoading && !groups}
               disableRipple
               color="error"
               variant="tonal"
@@ -513,7 +513,7 @@ const GroupList = () => {
                 textWrap: "nowrap",
                 width: { xs: "100%", md: "max-content" },
               }}
-              disabled={isLoading}
+              disabled={isLoading && !groups}
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
@@ -536,13 +536,13 @@ const GroupList = () => {
       <TableContainer>
         <Table>
           <TableHead
-            isLoading={isLoading}
+            isLoading={isLoading && !groups}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody
-            isLoading={isLoading}
+            isLoading={isLoading && !groups}
             data={groups}
             filter={filter}
             bodyCells={BODY_CELLS}
@@ -551,7 +551,7 @@ const GroupList = () => {
       </TableContainer>
       <Pagination
         dataLength={groups?.length}
-        isLoading={isLoading}
+        isLoading={isLoading && !groups}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
         onChange={(_event: ChangeEvent<unknown>, value: number) => {

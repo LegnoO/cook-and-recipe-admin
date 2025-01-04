@@ -293,7 +293,7 @@ const CategoryList = () => {
           <SearchInput
             defaultValue={filter.name}
             ref={searchInputRef}
-            disabled={isLoading}
+            disabled={isLoading && !category}
             placeholder="Search Category"
             onChange={handleSearchGroup}
             fullWidth
@@ -316,7 +316,7 @@ const CategoryList = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={isLoading}
+                disabled={isLoading && !category}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -344,7 +344,7 @@ const CategoryList = () => {
               ]}
               defaultOption="Select Status"
               fullWidth
-              isLoading={isLoading}
+              isLoading={isLoading && !category}
             />
             <Button
               sx={{
@@ -352,7 +352,7 @@ const CategoryList = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading}
+              disabled={isLoading && !category}
               disableRipple
               color="error"
               variant="tonal"
@@ -366,7 +366,7 @@ const CategoryList = () => {
                 textWrap: "nowrap",
                 width: { xs: "100%", md: "max-content" },
               }}
-              disabled={isLoading}
+              disabled={isLoading && !category}
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
@@ -389,13 +389,13 @@ const CategoryList = () => {
       <TableContainer>
         <Table>
           <TableHead
-            isLoading={isLoading}
+            isLoading={isLoading && !category}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody
-            isLoading={isLoading}
+            isLoading={isLoading && !category}
             data={category}
             filter={filter}
             bodyCells={BODY_CELLS}
@@ -404,7 +404,7 @@ const CategoryList = () => {
       </TableContainer>
       <Pagination
         dataLength={category?.length}
-        isLoading={isLoading}
+        isLoading={isLoading && !category}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
         onChange={(_event: ChangeEvent<unknown>, value: number) => {

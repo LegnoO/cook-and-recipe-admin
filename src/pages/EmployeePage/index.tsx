@@ -269,7 +269,7 @@ const EmployeePage = () => {
               name="groupId-filter"
               defaultOption="Select Group"
               fullWidth
-              isLoading={isLoading}
+              isLoading={queryLoading && !employees}
               onChange={(event) =>
                 updateFilter({ index: 1, groupId: event.target.value })
               }
@@ -282,7 +282,7 @@ const EmployeePage = () => {
               menuItems={["Male", "Female", "Other"]}
               defaultOption={"Select Gender"}
               fullWidth
-              isLoading={isLoading}
+              isLoading={queryLoading && !employees}
             />
             <Select
               value={filter.status || ""}
@@ -295,7 +295,7 @@ const EmployeePage = () => {
               ]}
               defaultOption="Select Status"
               fullWidth
-              isLoading={isLoading}
+              isLoading={queryLoading && !employees}
             />
           </Stack>
         </Stack>
@@ -313,7 +313,7 @@ const EmployeePage = () => {
             fullWidth
             defaultValue={filter.fullName}
             ref={searchInputRef}
-            disabled={isLoading}
+            disabled={queryLoading && !employees}
             placeholder="Search User"
             onChange={handleSearchEmployee}
             sx={{ height: 40, width: { xs: "100%", md: 170 } }}
@@ -335,7 +335,7 @@ const EmployeePage = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={isLoading}
+                disabled={queryLoading && !employees}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -350,7 +350,7 @@ const EmployeePage = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading}
+              disabled={queryLoading && !employees}
               disableRipple
               color="error"
               variant="tonal"
@@ -364,7 +364,7 @@ const EmployeePage = () => {
                 textWrap: "nowrap",
                 width: { xs: "100%", md: "max-content" },
               }}
-              disabled={isLoading}
+              disabled={queryLoading && !employees}
               disableRipple
               variant="contained"
               startIcon={<Icon icon="ic:sharp-plus" />}
@@ -387,13 +387,13 @@ const EmployeePage = () => {
       <TableContainer>
         <Table>
           <TableHead<FilterEmployees>
-            isLoading={isLoading}
+            isLoading={queryLoading && !employees}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody<EmployeeDetail, FilterEmployees>
-            isLoading={isLoading}
+            isLoading={queryLoading && !employees}
             data={employees}
             filter={filter}
             bodyCells={BODY_CELLS}

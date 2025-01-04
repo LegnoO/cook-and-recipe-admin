@@ -57,6 +57,14 @@ const AuthProvider = ({ children }: Props) => {
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 
+  function redirectToHref() {
+    const returnUrlHref = decodeURIComponent(window.location.search).split(
+      "returnUrl=",
+    )[1];
+
+    navigate(returnUrlHref || homeRoute);
+  }
+
   async function fetchUserData() {
     const userInfo = await getUserInfo();
     const userPermission = await getUserPermission();
@@ -77,7 +85,7 @@ const AuthProvider = ({ children }: Props) => {
         const returnUrl = searchParams ? searchParams.toString() : null;
         const redirectToLogin = returnUrl
           ? `${loginRoute}?returnUrl=${pathname}?${returnUrl}`
-          : loginRoute;
+          : `${loginRoute}?returnUrl=${pathname}`;
 
         navigate(redirectToLogin);
       }
@@ -87,11 +95,7 @@ const AuthProvider = ({ children }: Props) => {
       try {
         if (accessTokenSession) {
           await fetchUserData();
-          const returnUrlHref = decodeURIComponent(
-            window.location.search,
-          ).split("returnUrl=")[1];
-
-          navigate(returnUrlHref || homeRoute);
+          redirectToHref();
         } else {
           await refreshUserData();
         }
@@ -112,8 +116,7 @@ const AuthProvider = ({ children }: Props) => {
       setLoading(true);
       await signIn(data);
       await fetchUserData();
-      const searchParams = new URLSearchParams(window.location.search);
-      navigate(searchParams.get("returnUrl") || "/");
+      redirectToHref();
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       const showErrorMessages = handleToastMessages((error) =>
@@ -129,11 +132,10 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   async function handleLogout() {
-    const isLoginPage = "/login";
     try {
-      if (pathname !== isLoginPage) {
+      if (pathname !== loginRoute) {
         await signOut();
-        navigate(isLoginPage);
+        navigate(loginRoute);
         localStorage.removeItem("access-token");
         setUser(null);
       }

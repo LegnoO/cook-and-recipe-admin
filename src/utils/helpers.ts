@@ -164,18 +164,6 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function createSearchParams(filter: Object) {
-  const params = new URLSearchParams();
-
-  Object.entries(filter).forEach(([key, value]) => {
-    if (value) {
-      params.append(key, String(value));
-    }
-  });
-
-  return params;
-}
-
 export function createFormData(data: Object) {
   const formData = new FormData();
 

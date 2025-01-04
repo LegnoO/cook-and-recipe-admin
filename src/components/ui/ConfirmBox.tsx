@@ -77,7 +77,7 @@ const ConfirmBox = ({
         color="text.primary">
         {textContent}
       </Typography>
-      <Stack sx={{ width: "100%" }} direction="row" spacing={1}>
+      <Stack sx={{ width: "100%" }} direction="row" spacing={4}>
         <Button
           onClick={onClose}
           sx={{ width: "50%", fontWeight: 500 }}

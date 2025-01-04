@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect, ChangeEvent, Fragment, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 
 // ** Mui Imports
 import {
@@ -68,7 +68,7 @@ const ChefPendingList = () => {
   const [searchParams, setSearchParams] = useSearchParams(
     new URLSearchParams(stringifyObjectValues(defaultFilter)),
   );
-  console.log("entries: ", searchParams);
+
   const [isLoading, setLoading] = useState(false);
 
   const [filter, setFilter] = useState<Filter<FilterChefPending>>({
@@ -263,14 +263,14 @@ const ChefPendingList = () => {
                 addId(ids.modalConfirmReject(row.id));
               }}
               disableRipple>
-              <Icon icon={"mdi:close"} />
+              <Icon icon="mdi:close" />
               <Modal
                 open={activeIds.includes(ids.modalConfirmReject(row.id))}
                 onClose={() => removeId(ids.modalConfirmReject(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"warning"}
-                  textSubmit={"Confirm"}
+                  variant="warning"
+                  textSubmit="Confirm"
                   textTitle={`Confirm reject ${row.userInfo.fullName}`}
                   textContent={`You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`}
                   onClick={async () => {
@@ -295,14 +295,14 @@ const ChefPendingList = () => {
                 addId(ids.modalConfirmApprove(row.id));
               }}
               disableRipple>
-              <Icon icon={"mdi:tick"} />
+              <Icon icon="mdi:tick" />
               <Modal
                 open={activeIds.includes(ids.modalConfirmApprove(row.id))}
                 onClose={() => removeId(ids.modalConfirmApprove(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"info"}
-                  textSubmit={"Confirm"}
+                  variant="info"
+                  textSubmit="Confirm"
                   textTitle={`Confirm approve ${row.userInfo.fullName}`}
                   textContent={`You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`}
                   onClick={async () => {
@@ -338,7 +338,7 @@ const ChefPendingList = () => {
           }}>
           <SearchInput
             ref={searchInputRef}
-            disabled={queryLoading}
+            disabled={queryLoading && !chefs}
             placeholder="Search Chef"
             onChange={handleSearchChef}
             fullWidth
@@ -362,7 +362,7 @@ const ChefPendingList = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={queryLoading}
+                disabled={queryLoading && !chefs}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -392,7 +392,7 @@ const ChefPendingList = () => {
               ]}
               defaultOption={"Select Level"}
               fullWidth
-              isLoading={queryLoading}
+              isLoading={queryLoading && !chefs}
             />
             <Button
               sx={{
@@ -400,7 +400,7 @@ const ChefPendingList = () => {
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={isLoading || queryLoading}
+              disabled={queryLoading && !chefs}
               disableRipple
               color="error"
               variant="outlined"
@@ -415,13 +415,13 @@ const ChefPendingList = () => {
       <TableContainer>
         <Table>
           <TableHead<FilterChefPending>
-            isLoading={queryLoading}
+            isLoading={queryLoading && !chefs}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody<Chef, FilterChefPending>
-            isLoading={queryLoading}
+            isLoading={queryLoading && !chefs}
             data={chefs}
             filter={filter}
             bodyCells={BODY_CELLS}
