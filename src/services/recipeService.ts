@@ -1,29 +1,18 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
-import { createSearchParams } from "@/utils/helpers";
 
 // ** Config
 import { recipeEndpoints } from "@/config/endpoints";
 
-export async function queryRecipe(filter: any) {
-  const { total, ...restFilter } = filter;
-
-  const params = createSearchParams(restFilter);
-
-  const response = await AxiosInstance.get(
-    recipeEndpoints.queryRecipe(params.toString()),
-  );
+export async function queryRecipe(params: string) {
+  const response = await AxiosInstance.get(recipeEndpoints.queryRecipe(params));
 
   return response.data;
 }
 
-export async function queryRecipePending(filter: any) {
-  const { total, ...restFilter } = filter;
-
-  const params = createSearchParams(restFilter);
-
+export async function queryRecipePending(params: string) {
   const response = await AxiosInstance.get(
-    recipeEndpoints.queryRecipePending(params.toString()),
+    recipeEndpoints.queryRecipePending(params),
   );
 
   return response.data;

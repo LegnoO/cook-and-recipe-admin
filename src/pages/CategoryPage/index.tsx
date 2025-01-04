@@ -48,7 +48,13 @@ import CategoryAdd from "./CategoryAdd";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+import {
+  formatDateTime,
+  getTruthyObject,
+  handleToastMessages,
+  shallowCompareObject,
+  stringifyObjectValues,
+} from "@/utils/helpers";
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
@@ -56,20 +62,21 @@ import {
   queryCategory,
   toggleStatusCategory,
 } from "@/services/categoryService";
+import { useSearchParams } from "react-router-dom";
 
 const CategoryList = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { activeIds, addId, removeId } = useSettings();
   const pageSizeOptions = ["10", "15", "20"];
-  const defaultFilter: Filter<FilterCategory> = {
+  const defaultFilter: DefaultFilter = {
     index: 1,
     size: Number(pageSizeOptions[0]),
-    total: null,
-    name: "",
-    status: null,
-    sortBy: "",
     sortOrder: "asc",
   };
+
+  const [searchParams, setSearchParams] = useSearchParams(
+    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+  );
 
   const ids = useMemo(
     () => ({
@@ -82,23 +89,24 @@ const CategoryList = () => {
 
   const [category, setCategory] = useState<Category[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<Filter<FilterCategory>>(defaultFilter);
+  const [filter, setFilter] = useState<Filter<FilterCategory>>({
+    index: Number(searchParams.get("index")) || defaultFilter.index,
+    size: Number(searchParams.get("size")) || defaultFilter.size,
+    status: searchParams.get("status") || undefined,
+    name: searchParams.get("name") || undefined,
+    sortBy: searchParams.get("sortBy") || undefined,
+    sortOrder:
+      (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
+    total: Number(searchParams.get("total")),
+  });
 
   const {
     isLoading,
     data: categoryData,
     refetch,
   } = useQuery({
-    queryKey: [
-      "list-category",
-      filter.index,
-      filter.size,
-      filter.name,
-      filter.status,
-      filter.sortBy,
-      filter.sortOrder,
-    ],
-    queryFn: () => queryCategory(filter),
+    queryKey: ["list-category", searchParams.toString()],
+    queryFn: () => queryCategory(searchParams.toString()),
     ...queryOptions,
   });
 
@@ -124,44 +132,30 @@ const CategoryList = () => {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
+  const handleSearchGroup = useDebouncedCallback(() => {
+    const name = searchInputRef.current?.value.trim() || "";
 
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterCategory>,
-  ) {
-    updateFilter({
-      index: 1,
-      [field]: event.target.value,
-    });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
-  const searchDebounced = useDebouncedCallback(() => {
-    if (searchInputRef.current) {
-      setFilter((prev) => ({
-        ...prev,
-        name: searchInputRef.current!.value,
-      }));
-    }
+    setFilter((prev) => ({
+      ...prev,
+      name,
+    }));
   }, 300);
 
-  const handleSearchGroup = () => {
-    searchDebounced();
-  };
-
   function handleResetFilter() {
-    refetch();
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
-    setFilter({ ...defaultFilter, ...categoryData?.paginate });
+    if (searchInputRef.current) searchInputRef.current.value = "";
+
+    setFilter((prev) => {
+      delete prev.total;
+      if (
+        shallowCompareObject(
+          getTruthyObject(prev),
+          getTruthyObject(defaultFilter),
+        )
+      ) {
+        refetch();
+      }
+      return defaultFilter;
+    });
   }
 
   function handleCancel(modalId: string) {
@@ -178,6 +172,15 @@ const CategoryList = () => {
       setFilter((prev) => ({ ...prev, ...categoryData.paginate }));
     }
   }, [categoryData]);
+
+  useEffect(() => {
+    if (searchParams.size === 0) {
+      setSearchParams((params) => params);
+    }
+    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const params = new URLSearchParams(truthyFilter as Record<string, string>);
+    setSearchParams(params);
+  }, [filter]);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "name" },
@@ -288,6 +291,7 @@ const CategoryList = () => {
             flexWrap: "wrap",
           }}>
           <SearchInput
+            defaultValue={filter.name}
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Category"
@@ -313,7 +317,9 @@ const CategoryList = () => {
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
+                onChange={(event) =>
+                  updateFilter({ index: 1, size: Number(event.target.value) })
+                }
                 value={filter.size}
                 menuItems={pageSizeOptions}
               />
@@ -326,8 +332,11 @@ const CategoryList = () => {
                 },
               }}
               value={filter.status || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "status")
+              onChange={(event) =>
+                updateFilter({
+                  index: 1,
+                  status: event.target.value,
+                })
               }
               menuItems={[
                 { value: "true", label: "Active" },
@@ -398,7 +407,9 @@ const CategoryList = () => {
         isLoading={isLoading}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
-        handlePaginateChange={handleChangePage}
+        onChange={(_event: ChangeEvent<unknown>, value: number) => {
+          updateFilter({ index: value });
+        }}
       />
     </Fragment>
   );

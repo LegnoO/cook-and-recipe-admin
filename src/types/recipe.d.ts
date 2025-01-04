@@ -1,10 +1,12 @@
 type Difficulty = "Easy" | "Normal" | "Hard" | "Professional" | "Expert";
 
+type VerifyStatus = "verified" | "rejected" | "revoke";
+
 type FilterRecipe = {
-  name: string;
-  difficulty: Difficulty | null;
-  status: null | boolean;
-  verifyStatus: null | "verified" | "rejected" | "revoke";
+  name?: string;
+  difficulty?: Difficulty;
+  status?: string;
+  verifyStatus?: VerifyStatus;
 };
 
 type FilterRecipePending = Omit<FilterRecipe, "status" | "verifyStatus">;

@@ -17,7 +17,7 @@ type Sort = {
 
 type Filter<T> = T & Paginate & Sort;
 
-type DefaultFilter = Omit<Paginate | "total"> & Sort;
+type DefaultFilter = Omit<Paginate, "total"> & Sort;
 
 type Paginate = {
   index?: number;

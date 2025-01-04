@@ -1,18 +1,14 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
-import { createSearchParams } from "@/utils/helpers";
 
 // ** Config
 import { categoryEndpoints } from "@/config/endpoints";
 
-export async function queryCategory(filter: any) {
-  const { total, ...restFilter } = filter;
-
-  const params = createSearchParams(restFilter);
+export async function queryCategory(params: string) {
   try {
     const response = await AxiosInstance.get(
-      categoryEndpoints.queryCategory(params.toString()),
+      categoryEndpoints.queryCategory(params),
     );
 
     return response.data;

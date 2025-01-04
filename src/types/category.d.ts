@@ -29,6 +29,6 @@ type ListCategory = {
 };
 
 type FilterCategory = {
-  name: string;
-  status: null | boolean;
+  name?: string;
+  status?: string;
 };

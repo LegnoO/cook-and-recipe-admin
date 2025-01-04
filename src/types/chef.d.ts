@@ -3,10 +3,10 @@ type ChefLevel = "Beginner" | "Home cook" | "Professional" | "Master chef";
 type ChefStatus = "active" | "disabled" | "pending" | "rejected" | "banned";
 
 type FilterChef = {
-  fullName: string;
-  email: string | null;
-  level: ChefLevel | null;
-  chefStatus: ChefStatus | null;
+  fullName?: string;
+  email?: string;
+  level?: ChefLevel;
+  chefStatus?: ChefStatus;
 };
 
 type FilterChefPending = Omit<FilterChef, "chefStatus">;

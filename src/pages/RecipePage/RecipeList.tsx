@@ -41,7 +41,12 @@ import RecipeDetail from "./RecipeDetail";
 import useSettings from "@/hooks/useSettings";
 
 // ** Utils
-import { formatDateTime } from "@/utils/helpers";
+import {
+  formatDateTime,
+  getTruthyObject,
+  shallowCompareObject,
+  stringifyObjectValues,
+} from "@/utils/helpers";
 
 // ** Services
 import {
@@ -49,21 +54,20 @@ import {
   revokeApprovalRecipe,
   privateRecipe,
 } from "@/services/recipeService";
+import { useSearchParams } from "react-router-dom";
 
 const RecipeList = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pageSizeOptions = ["10", "15", "20"];
-  const defaultFilter: Filter<FilterRecipe> = {
+  const defaultFilter: DefaultFilter = {
     index: 1,
     size: Number(pageSizeOptions[0]),
-    total: null,
-    name: "",
-    difficulty: null,
-    verifyStatus: null,
-    status: null,
-    sortBy: "",
     sortOrder: "asc",
   };
+
+  const [searchParams, setSearchParams] = useSearchParams(
+    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+  );
 
   const { activeIds, addId, removeId } = useSettings();
   const ids = useMemo(
@@ -78,68 +82,60 @@ const RecipeList = () => {
 
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<Filter<FilterRecipe>>(defaultFilter);
+  const [filter, setFilter] = useState<Filter<FilterRecipe>>({
+    index: Number(searchParams.get("index")) || defaultFilter.index,
+    size: Number(searchParams.get("size")) || defaultFilter.size,
+    difficulty: (searchParams.get("difficulty") as Difficulty) || undefined,
+    status: searchParams.get("status") || undefined,
+    verifyStatus:
+      (searchParams.get("verifyStatus") as VerifyStatus) || undefined,
+    name: searchParams.get("fullName") || undefined,
+    sortBy: searchParams.get("sortBy") || undefined,
+    sortOrder:
+      (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
+    total: Number(searchParams.get("total")),
+  });
 
-  const { data: recipeData, refetch } = useQuery({
-    queryKey: [
-      "list-recipe",
-      filter.index,
-      filter.size,
-      filter.name,
-      filter.difficulty,
-      filter.verifyStatus,
-      filter.status,
-      filter.sortBy,
-      filter.sortOrder,
-    ],
-    queryFn: () => queryRecipe(filter),
+  const {
+    data: recipeData,
+    refetch,
+    isLoading: queryLoading,
+  } = useQuery({
+    queryKey: ["list-recipe", searchParams.toString()],
+    queryFn: () => queryRecipe(searchParams.toString()),
     ...queryOptions,
   });
 
-  const [isLoading, _setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   function updateFilter(updates: Partial<Filter<FilterRecipe>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
+  const handleSearchRecipe = useDebouncedCallback(() => {
+    const name = searchInputRef.current?.value.trim() || "";
 
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterRecipe>,
-  ) {
-    updateFilter({
-      index: 1,
-      [field]: event.target.value,
-    });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
-  const searchDebounced = useDebouncedCallback(() => {
-    if (searchInputRef.current) {
-      setFilter((prev) => ({
-        ...prev,
-        name: searchInputRef.current!.value,
-      }));
-    }
+    setFilter((prev) => ({
+      ...prev,
+      name,
+    }));
   }, 300);
 
-  const handleSearchRecipe = () => {
-    searchDebounced();
-  };
-
   function handleResetFilter() {
-    refetch();
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
-    setFilter({ ...defaultFilter, ...recipeData?.paginate });
+    if (searchInputRef.current) searchInputRef.current.value = "";
+
+    setFilter((prev) => {
+      delete prev.total;
+      if (
+        shallowCompareObject(
+          getTruthyObject(prev),
+          getTruthyObject(defaultFilter),
+        )
+      ) {
+        refetch();
+      }
+      return defaultFilter;
+    });
   }
 
   function handleCancel(modalId: string) {
@@ -155,7 +151,18 @@ const RecipeList = () => {
       setRecipes(recipeData.data);
       setFilter((prev) => ({ ...prev, ...recipeData.paginate }));
     }
+
+    setLoading(queryLoading);
   }, [recipeData]);
+
+  useEffect(() => {
+    if (searchParams.size === 0) {
+      setSearchParams((params) => params);
+    }
+    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const params = new URLSearchParams(truthyFilter as Record<string, string>);
+    setSearchParams(params);
+  }, [filter]);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "name" },
@@ -324,7 +331,10 @@ const RecipeList = () => {
             <Select
               value={filter.difficulty || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "difficulty")
+                updateFilter({
+                  index: 1,
+                  difficulty: event.target.value as Difficulty,
+                })
               }
               menuItems={[
                 { value: "Easy", label: "Easy" },
@@ -340,7 +350,10 @@ const RecipeList = () => {
             <Select
               value={filter.verifyStatus || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "verifyStatus")
+                updateFilter({
+                  index: 1,
+                  verifyStatus: event.target.value as VerifyStatus,
+                })
               }
               menuItems={[
                 { value: "verified", label: "Verified" },
@@ -353,13 +366,16 @@ const RecipeList = () => {
             <Select
               value={filter.status || ""}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "status")
+                updateFilter({
+                  index: 1,
+                  status: event.target.value,
+                })
               }
               menuItems={[
                 { value: "true", label: "Public" },
                 { value: "false", label: "Private" },
               ]}
-              defaultOption="Select Status"
+              defaultOption="Select Share Status"
               fullWidth
               isLoading={isLoading}
             />
@@ -376,6 +392,7 @@ const RecipeList = () => {
             flexWrap: "wrap",
           }}>
           <SearchInput
+            defaultValue={filter.name}
             ref={searchInputRef}
             disabled={isLoading}
             placeholder="Search Recipe"
@@ -402,7 +419,9 @@ const RecipeList = () => {
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
+                onChange={(event) =>
+                  updateFilter({ index: 1, size: Number(event.target.value) })
+                }
                 value={filter.size}
                 menuItems={pageSizeOptions}
               />
@@ -447,7 +466,9 @@ const RecipeList = () => {
         isLoading={isLoading}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
-        handlePaginateChange={handleChangePage}
+        onChange={(_event: ChangeEvent<unknown>, value: number) => {
+          updateFilter({ index: value });
+        }}
       />
     </Fragment>
   );

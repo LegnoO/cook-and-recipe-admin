@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, useEffect, ChangeEvent, Fragment, useRef } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 
 // ** Mui Imports
 import {
@@ -41,50 +41,55 @@ import useSettings from "@/hooks/useSettings";
 import ChefDetail from "./ChefDetail";
 
 // ** Utils
-import { formatDateTime, handleToastMessages } from "@/utils/helpers";
+import {
+  formatDateTime,
+  getTruthyObject,
+  handleToastMessages,
+  shallowCompareObject,
+  stringifyObjectValues,
+} from "@/utils/helpers";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
 import { handleAxiosError } from "@/utils/errorHandler";
+import { useSearchParams } from "react-router-dom";
 
 // ** Types
 
 const ListChefPending = () => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
   const pageSizeOptions = ["10", "15", "20"];
-
-  const [isLoading, setLoading] = useState(false);
-  const defaultFilter: Filter<FilterChef> = {
+  const defaultFilter: DefaultFilter = {
     index: 1,
     size: Number(pageSizeOptions[0]),
-    total: null,
-    email: null,
-    level: null,
-    chefStatus: null,
-    fullName: "",
-    sortBy: "",
     sortOrder: "asc",
   };
+  const [searchParams, setSearchParams] = useSearchParams(
+    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+  );
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [filter, setFilter] = useState<Filter<FilterChef>>(defaultFilter);
+  const [isLoading, setLoading] = useState(false);
+
+  const [filter, setFilter] = useState<Filter<FilterChef>>({
+    index: Number(searchParams.get("index")) || defaultFilter.index,
+    size: Number(searchParams.get("size")) || defaultFilter.size,
+    level: (searchParams.get("level") as ChefLevel) || undefined,
+    chefStatus: (searchParams.get("chefStatus") as ChefStatus) || undefined,
+    email: searchParams.get("email") || undefined,
+    fullName: searchParams.get("fullName") || undefined,
+    sortBy: searchParams.get("sortBy") || undefined,
+    sortOrder:
+      (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
+    total: Number(searchParams.get("total")),
+  });
+
   const {
-    isLoading: chefLoading,
+    isLoading: queryLoading,
     data: chefData,
     refetch,
   } = useQuery({
-    queryKey: [
-      "list-chef-pending",
-      filter.index,
-      filter.size,
-      filter.email,
-      filter.level,
-      filter.fullName,
-      filter.sortBy,
-      filter.sortOrder,
-      filter.chefStatus,
-    ],
-    queryFn: () => queryChef(filter),
+    queryKey: ["list-chef-pending", searchParams.toString()],
+    queryFn: () => queryChef(searchParams.toString()),
     ...queryOptions,
   });
   const ids = {
@@ -108,42 +113,31 @@ const ListChefPending = () => {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
-
-  function handleFilterChange(
-    event: ChangeEvent<HTMLInputElement>,
-    field: keyof Filter<FilterChef>,
-  ) {
-    updateFilter({ index: 1, [field]: event.target.value });
-  }
-
-  function handleChangeRowPageSelector(event: ChangeEvent<HTMLInputElement>) {
-    const newSize = event.target.value;
-    updateFilter({ index: 1, size: Number(newSize) });
-  }
-
   function handleResetFilter() {
-    refetch();
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-    }
-    setFilter({ ...defaultFilter, ...chefData?.paginate });
+    if (searchInputRef.current) searchInputRef.current.value = "";
+
+    setFilter((prev) => {
+      delete prev.total;
+      if (
+        shallowCompareObject(
+          getTruthyObject(prev),
+          getTruthyObject(defaultFilter),
+        )
+      ) {
+        refetch();
+      }
+      return defaultFilter;
+    });
   }
 
-  const searchDebounced = useDebouncedCallback(() => {
-    if (searchInputRef.current) {
-      setFilter((prev) => ({
-        ...prev,
-        fullName: searchInputRef.current!.value,
-      }));
-    }
-  }, 300);
+  const handleSearchChef = useDebouncedCallback(() => {
+    const fullName = searchInputRef.current?.value.trim() || "";
 
-  const handleSearchChef = () => {
-    searchDebounced();
-  };
+    setFilter((prev) => ({
+      ...prev,
+      fullName,
+    }));
+  }, 300);
 
   function handleCancel(modalId: string) {
     if (controller) {
@@ -176,7 +170,19 @@ const ListChefPending = () => {
       setChefs(chefData.data);
       setFilter((prev) => ({ ...prev, ...chefData.paginate }));
     }
+
+    setLoading(queryLoading);
   }, [chefData]);
+
+  useEffect(() => {
+    if (searchParams.size === 0) {
+      setSearchParams((params) => params);
+    }
+
+    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const params = new URLSearchParams(truthyFilter as Record<string, string>);
+    setSearchParams(params);
+  }, [filter]);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "fullName" },
@@ -303,8 +309,11 @@ const ListChefPending = () => {
             alignItems="center">
             <Select
               value={filter.chefStatus || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "chefStatus")
+              onChange={(event) =>
+                updateFilter({
+                  index: 1,
+                  chefStatus: event.target.value as ChefStatus,
+                })
               }
               menuItems={[
                 { label: "Active", value: "active" },
@@ -319,8 +328,11 @@ const ListChefPending = () => {
             />
             <Select
               value={filter.level || ""}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                handleFilterChange(event, "level")
+              onChange={(event) =>
+                updateFilter({
+                  index: 1,
+                  level: event.target.value as ChefLevel,
+                })
               }
               menuItems={[
                 { value: "Beginner", label: "Beginner" },
@@ -330,7 +342,7 @@ const ListChefPending = () => {
               ]}
               defaultOption={"Select Level"}
               fullWidth
-              isLoading={chefLoading}
+              isLoading={queryLoading}
             />
           </Stack>
         </Stack>
@@ -371,7 +383,9 @@ const ListChefPending = () => {
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
                 disabled={isLoading}
-                onChange={handleChangeRowPageSelector}
+                onChange={(event) =>
+                  updateFilter({ index: 1, size: Number(event.target.value) })
+                }
                 value={filter.size}
                 menuItems={pageSizeOptions}
               />
@@ -398,13 +412,13 @@ const ListChefPending = () => {
       <TableContainer>
         <Table>
           <TableHead<FilterChef>
-            isLoading={chefLoading}
+            isLoading={queryLoading}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
           <TableBody<Chef, FilterChef>
-            isLoading={chefLoading}
+            isLoading={queryLoading}
             data={chefs}
             filter={filter}
             bodyCells={BODY_CELLS}
@@ -416,7 +430,9 @@ const ListChefPending = () => {
         isLoading={isLoading}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
-        handlePaginateChange={handleChangePage}
+        onChange={(_event, value) => {
+          updateFilter({ index: value });
+        }}
       />
     </Fragment>
   );

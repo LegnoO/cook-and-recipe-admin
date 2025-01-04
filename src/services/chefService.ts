@@ -1,18 +1,14 @@
 // ** Utils
 import AxiosInstance from "@/utils/axios";
 import { handleAxiosError } from "@/utils/errorHandler";
-import { createSearchParams } from "@/utils/helpers";
 
 // ** Config
 import { chefEndpoints } from "@/config/endpoints";
 
-export async function queryChef(filter: FilterChef) {
+export async function queryChef(params: string) {
   try {
-    const { ...restFilter } = filter;
-
-    const params = createSearchParams(restFilter);
     const response = await AxiosInstance.get<ListChef>(
-      chefEndpoints.queryChef(params.toString()),
+      chefEndpoints.queryChef(params),
     );
 
     return response.data;
@@ -21,13 +17,10 @@ export async function queryChef(filter: FilterChef) {
   }
 }
 
-export async function queryChefPending(filter: FilterChefPending) {
+export async function queryChefPending(params: string) {
   try {
-    const { ...restFilter } = filter;
-
-    const params = createSearchParams(restFilter);
     const response = await AxiosInstance.get<ListChef>(
-      chefEndpoints.queryChefPending(params.toString()),
+      chefEndpoints.queryChefPending(params),
     );
 
     return response.data;

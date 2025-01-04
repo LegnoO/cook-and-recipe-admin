@@ -15,11 +15,11 @@ type Props = {
   paginateCount: number;
   isLoading?: boolean;
   dataLength?: number;
-  handlePaginateChange: (event: ChangeEvent<unknown>, value: number) => void;
+  onChange: (event: ChangeEvent<unknown>, value: number) => void;
 };
 
 const Pagination = ({
-  handlePaginateChange,
+  onChange,
   paginatePage,
   paginateCount,
   isLoading,
@@ -50,7 +50,7 @@ const Pagination = ({
           disabled={isLoading}
           count={paginateCount}
           page={paginatePage || 0}
-          onChange={handlePaginateChange}
+          onChange={onChange}
           showFirstButton
           showLastButton
         />

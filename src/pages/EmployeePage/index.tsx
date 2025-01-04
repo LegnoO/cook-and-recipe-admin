@@ -194,10 +194,6 @@ const EmployeePage = () => {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  function handleChangePage(_event: ChangeEvent<unknown>, value: number) {
-    updateFilter({ index: value });
-  }
-
   const handleSearchEmployee = useDebouncedCallback(() => {
     const fullName = searchInputRef.current?.value.trim() || "";
 
@@ -240,10 +236,9 @@ const EmployeePage = () => {
   }, [employeeData]);
 
   useEffect(() => {
-    setSearchParams((params) => params);
-  }, []);
-
-  useEffect(() => {
+    if (searchParams.size === 0) {
+      setSearchParams((params) => params);
+    }
     const { total, ...truthyFilter } = getTruthyObject(filter);
     const params = new URLSearchParams(truthyFilter as Record<string, string>);
     setSearchParams(params);
@@ -410,7 +405,9 @@ const EmployeePage = () => {
         isLoading={isLoading}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
-        handlePaginateChange={handleChangePage}
+        onChange={(_event: ChangeEvent<unknown>, value: number) => {
+          updateFilter({ index: value });
+        }}
       />
     </Fragment>
   );

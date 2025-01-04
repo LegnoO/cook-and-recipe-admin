@@ -59,7 +59,7 @@ export const verticalNavItems: IVerticalNavItemsType = [
     page: "user",
     children: [
       {
-        title: "Approve",
+        title: "Approved",
         path: "/chefs",
         action: "read",
         page: "user",
