@@ -17,8 +17,9 @@ import { Repeat } from "@/components";
 type Props<T, V> = {
   bodyCells: BodyCell<T>[];
   isLoading: boolean;
-  filter: Filter<V>;
+  filter?: Filter<V>;
   data?: T[];
+  size?: number;
 };
 
 const TableBody = <T, V>({
@@ -26,6 +27,7 @@ const TableBody = <T, V>({
   bodyCells,
   filter,
   isLoading,
+  size,
 }: Props<T, V>) => {
   const renderDataRows = (data: T[]) => {
     return data?.map((row, index) => (
@@ -45,7 +47,7 @@ const TableBody = <T, V>({
 
   const renderLoadingRows = () => {
     return (
-      <Repeat times={filter.size}>
+      <Repeat times={filter?.size || size || 1}>
         <TableRow>
           <Repeat times={bodyCells.length}>
             <TableCell sx={{ height: 68.5 }}>

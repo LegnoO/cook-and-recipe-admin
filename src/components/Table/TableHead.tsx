@@ -11,8 +11,8 @@ import { TableRow, TableHead as TableHeadMui, Icon } from "@/components/ui";
 type HeadColumns = { sortName: string; title: string | null };
 
 type Props<T> = {
-  filter: Filter<T>;
-  setFilter: Dispatch<SetStateAction<Filter<T>>>;
+  filter?: Filter<T>;
+  setFilter?: Dispatch<SetStateAction<Filter<T>>>;
   headColumns: HeadColumns[];
   isLoading?: boolean;
 };
@@ -26,8 +26,8 @@ const TableHead = <T,>({
   function handleSortOrder(sortName: string) {
     const sortOrderCycle = { "": "desc", desc: "asc", asc: "" } as const;
 
-    if (filter.sortBy === sortName) {
-      const nextSortOrder = sortOrderCycle[filter.sortOrder];
+    if (filter?.sortBy === sortName) {
+      const nextSortOrder = sortOrderCycle[filter?.sortOrder];
 
       return nextSortOrder;
     }
@@ -36,7 +36,7 @@ const TableHead = <T,>({
   }
 
   function handleSortColumn(sortName?: string) {
-    if (!sortName) return;
+    if (!sortName || !setFilter || filter) return;
 
     setFilter((prev) => ({
       ...prev,
@@ -65,7 +65,7 @@ const TableHead = <T,>({
     <TableHeadMui>
       <TableRow>
         {headColumns.map(({ sortName, title }, index) => (
-          <TableCell key={index}>
+          <TableCell sx={{}} key={index}>
             <Stack
               sx={{
                 cursor: !isLoading && sortName !== "" ? "pointer" : "auto",
@@ -78,18 +78,22 @@ const TableHead = <T,>({
               }}>
               <Typography
                 variant="body2"
-                sx={{ color: (theme) => theme.palette.text.primary }}>
+                sx={{
+                  color: (theme) => theme.palette.text.primary,
+                }}>
                 {title}
               </Typography>
 
-              <Icon
-                fontSize="1rem"
-                icon={getSortIcon(
-                  filter.sortOrder as SortOrder,
-                  sortName,
-                  filter.sortBy,
-                )}
-              />
+              {filter && setFilter && (
+                <Icon
+                  fontSize="1rem"
+                  icon={getSortIcon(
+                    filter.sortOrder as SortOrder,
+                    sortName,
+                    filter.sortBy,
+                  )}
+                />
+              )}
             </Stack>
           </TableCell>
         ))}

@@ -20,7 +20,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Table,
+  TableContainer,
 } from "@/components/ui";
+import { TableHead, TableBody } from "@/components";
 
 // ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -43,7 +46,7 @@ type Props = {
 
 const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
   const title = "Recipe Detail";
-  const { data: recipeData } = useQuery({
+  const { data: recipeData, isLoading } = useQuery({
     queryKey: ["recipe-detail", recipeId],
     queryFn: () => getDetailRecipe(recipeId),
     ...queryOptions,
@@ -66,10 +69,6 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
     }
   }
 
-  function formatIngredient(ingredient: Ingredient) {
-    return Object.values(ingredient).join(" ");
-  }
-
   useEffect(() => {
     if (recipeData) {
       setRecipe(recipeData);
@@ -80,6 +79,23 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
     return <ModalLoading title={title} closeMenu={closeMenu} />;
   }
 
+  const HEAD_COLUMNS = [
+    { title: "Name", sortName: "" },
+    { title: "Quantity", sortName: "" },
+    { title: "Measurement", sortName: "" },
+  ];
+
+  const BODY_CELLS: BodyCell<Ingredient>[] = [
+    {
+      render: ({ name }) => name,
+    },
+    {
+      render: ({ quantity }) => quantity,
+    },
+    {
+      render: ({ measurement }) => measurement,
+    },
+  ];
   return (
     <Box
       sx={{
@@ -347,17 +363,28 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                 <Typography fontWeight={500} sx={{ mb: 0.25 }} variant="h5">
                   Ingredients
                 </Typography>
-                {recipe.ingredients.map((ingredient, index) => (
-                  <Stack
-                    key={`ingredient ${index}`}
-                    direction="row"
-                    alignItems={"center"}>
-                    <Icon fontSize="1.15rem" icon="radix-icons:dot-filled" />
-                    <Typography lineHeight={1} variant="subtitle1">
-                      {formatIngredient(ingredient)}
-                    </Typography>
-                  </Stack>
-                ))}
+                <TableContainer
+                  sx={{
+                    "&": {
+                      borderTopRightRadius: (theme) =>
+                        `${theme.shape.borderRadius}px`,
+                      borderTopLeftRadius: (theme) =>
+                        `${theme.shape.borderRadius}px`,
+                    },
+                    "& .MuiTableHead-root .MuiTableCell-root": {
+                      paddingBlock: "1rem !important",
+                    },
+                  }}>
+                  <Table>
+                    <TableHead headColumns={HEAD_COLUMNS} />
+                    <TableBody
+                      isLoading={isLoading}
+                      size={recipe.ingredients.length}
+                      data={recipe.ingredients}
+                      bodyCells={BODY_CELLS}
+                    />
+                  </Table>
+                </TableContainer>
               </Stack>
             </Stack>
 
@@ -372,7 +399,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                   Instructions
                 </Typography>
                 {recipe.instructionSections.map((section, index) => (
-                  <Accordion key={`section ${index}`}>
+                  <Accordion key={`${section.title} ${index}`}>
                     <AccordionSummary
                       expandIcon={<Icon icon="ic:twotone-expand-more" />}>
                       {section.title}
@@ -381,7 +408,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                       <Stack direction="column" sx={{ gap: 2 }}>
                         {section.instructions.map((instruction) => (
                           <Stack
-                            key={`section ${index} instruction`}
+                            key={`${section.title} ${index} ${instruction.step}`}
                             sx={{ gap: 1, paddingInline: "0.5rem" }}
                             direction="row"
                             alignItems={"center"}>
