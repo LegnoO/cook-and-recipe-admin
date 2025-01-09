@@ -38,7 +38,7 @@ import { SearchInput } from "@/components/fields";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -59,16 +59,18 @@ import { queryNotify } from "@/services/notifyService";
 import dayjs, { Dayjs } from "dayjs";
 
 const NotifyList = () => {
+  const { state } = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pageSizeOptions = ["10", "15", "20"];
-  const defaultFilter: DefaultFilter = {
+  const defaultFilter: DefaultFilter & { receiverId: string } = {
     index: 1,
     size: Number(pageSizeOptions[0]),
     sortOrder: "asc",
+    receiverId: state ? state.receiverId : undefined,
   };
 
   const [searchParams, setSearchParams] = useSearchParams(
-    new URLSearchParams(stringifyObjectValues(defaultFilter)),
+    new URLSearchParams(stringifyObjectValues(getTruthyObject(defaultFilter))),
   );
 
   // const { activeIds, addId, removeId } = useSettings();

@@ -59,6 +59,7 @@ export const recipeEndpoints = {
 
 export const userEndpoints = {
   queryUsers: (params: string) => `/users/admin/find?${params}`,
+  getUserDetail: (userId: string) => `/users/admin/find/${userId}`,
   toggleStatusUser: (userId: string) =>
     `/users/admin/find/${userId}/toggle-status`,
 };

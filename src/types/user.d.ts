@@ -34,7 +34,9 @@ type Client = {
   address?: Address;
   phone?: string;
   avatar: string;
+  createdBy: string;
   status: boolean;
+  gender: Gender;
 };
 
 type ClientResponse = {

@@ -28,7 +28,7 @@ import { SearchInput } from "@/components/fields";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // ** Config
@@ -49,8 +49,10 @@ import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import { queryUsers, toggleStatusUser } from "@/services/userService";
+import UserDetail from "./UserDetail";
 
 const UserPage = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
 
   const pageSizeOptions = ["10", "15", "20"];
@@ -84,7 +86,7 @@ const UserPage = () => {
 
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
-    modalUpdateEmployee: (id: string) => `modal-update-employee-${id}`,
+    modalDetail: (id: string) => `modal-update-user-${id}`,
     newEmployeeModal: "new-employee-modal",
   };
 
@@ -154,15 +156,41 @@ const UserPage = () => {
     },
     {
       render: ({ id }) => (
-        <IconButton
-          disableRipple
-          // onClick={() => addId(ids.modalUpdateEmployee(id))}
-        >
-          <Icon icon="hugeicons:view" />
-        </IconButton>
+        <Stack sx={{ flexDirection: "row" }}>
+          <Tooltip title="View details">
+            <IconButton
+              disableRipple
+              onClick={() => addId(ids.modalDetail(id))}>
+              <Icon icon="hugeicons:view" />
+              <Modal
+                open={activeIds.includes(ids.modalDetail(id))}
+                onClose={() => removeId(ids.modalDetail(id))}>
+                <UserDetail
+                  userId={id}
+                  closeMenu={() => handleCancel(ids.modalDetail(id))}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="View notifications">
+            <IconButton
+              disableRipple
+              onClick={() => handleViewNotification(id)}>
+              <Icon icon="mdi:bell-outline" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
       ),
     },
   ];
+
+  function handleViewNotification(userId: string) {
+    navigate("/notification", { state: { receiverId: userId } });
+  }
+
+  function handleCancel(modalId: string) {
+    removeId(modalId);
+  }
 
   async function handleChangeStatus(userId: string) {
     try {

@@ -17,6 +17,14 @@ export async function queryUsers(params: string) {
   }
 }
 
+export async function getUserDetail(userId: string) {
+  const response = await AxiosInstance.get<Client>(
+    userEndpoints.getUserDetail(userId),
+  );
+
+  return response.data;
+}
+
 export async function toggleStatusUser(userId: string) {
   try {
     const response = await AxiosInstance.patch(
