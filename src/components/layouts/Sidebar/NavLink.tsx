@@ -80,7 +80,9 @@ export const StyledLink = styled(Link)(({ theme }) => ({
     border: 0,
     outline: 0,
   },
-
+  "&.pointer-none": {
+    pointerEvents: "none",
+  },
   "&.nav-link-child .icon-wrapper": {
     marginLeft: "0.5rem",
   },
@@ -123,6 +125,7 @@ const NavLink = (props: Props) => {
     <MenuNavLink className="menu-nav-link">
       <StyledLink
         className={clsx("nav-link", {
+          "pointer-none": isActive,
           "nav-link-child": navParent,
           active: isActive,
         })}

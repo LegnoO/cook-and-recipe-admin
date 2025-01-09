@@ -2,7 +2,6 @@ type User = {
   id: string;
   fullName: string;
   email: string;
-
   avatar: string;
   group: { name: string; id: string };
 } & Permission;
@@ -25,4 +24,28 @@ type UserProfile = {
     approvalDate?: Date;
     disabledDate?: Date;
   };
+};
+
+type Client = {
+  id: string;
+  fullName: string;
+  email: string;
+  dateOfBirth?: Date;
+  address?: Address;
+  phone?: string;
+  avatar: string;
+  status: boolean;
+};
+
+type ClientResponse = {
+  data: Client[];
+  paginate: ClientFilter;
+};
+
+type ClientFilter = {
+  total?: number;
+  fullName?: string;
+  groupId?: string;
+  status?: string;
+  gender?: Gender;
 };

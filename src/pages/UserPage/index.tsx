@@ -23,7 +23,7 @@ import {
   Switch,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
-import { SearchInput, GroupSelect } from "@/components/fields";
+import { SearchInput } from "@/components/fields";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -33,10 +33,6 @@ import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-
-// ** Component's
-import EmployeeUpdate from "./EmployeeUpdate";
-import EmployeeAdd from "./EmployeeAdd";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -52,12 +48,9 @@ import {
 import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
-import {
-  queryEmployees,
-  toggleStatusEmployee,
-} from "@/services/employeeService";
+import { queryUsers, toggleStatusUser } from "@/services/userService";
 
-const EmployeePage = () => {
+const UserPage = () => {
   const { state } = useLocation();
 
   const pageSizeOptions = ["10", "15", "20"];
@@ -74,10 +67,9 @@ const EmployeePage = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setLoading] = useState(true);
   const { activeIds, addId, removeId } = useSettings();
-  const [employees, setEmployees] = useState<EmployeeDetail[]>();
-  const [controller, setController] = useState<AbortController | null>(null);
+  const [users, setUsers] = useState<Client[]>();
 
-  const [filter, setFilter] = useState<Filter<FilterEmployees>>({
+  const [filter, setFilter] = useState<Filter<ClientFilter>>({
     index: Number(searchParams.get("index")) || defaultFilter.index,
     size: Number(searchParams.get("size")) || defaultFilter.size,
     groupId: searchParams.get("groupId") || undefined,
@@ -98,24 +90,24 @@ const EmployeePage = () => {
 
   const {
     isLoading: queryLoading,
-    data: employeeData,
+    data: userData,
     refetch,
   } = useQuery({
-    queryKey: ["list-employee", searchParams.toString() || undefined],
-    queryFn: () => queryEmployees(searchParams.toString()),
+    queryKey: ["list-user", searchParams.toString()],
+    queryFn: () => queryUsers(searchParams.toString()),
     ...queryOptions,
   });
 
   const HEAD_COLUMNS = [
-    { title: "Name", sortName: "fullName" },
+    { title: "Full name", sortName: "fullName" },
+    { title: "Email", sortName: "email" },
     { title: "Phone number", sortName: "phone" },
     { title: "Location", sortName: "address.number" },
-    { title: "Group", sortName: "group" },
     { title: "Status", sortName: "status" },
     { title: "", sortName: "" },
   ];
 
-  const BODY_CELLS: BodyCell<EmployeeDetail>[] = [
+  const BODY_CELLS: BodyCell<Client>[] = [
     {
       render: ({ avatar, fullName, email }) => (
         <Stack direction="row" spacing={1.25} alignItems={"center"}>
@@ -130,18 +122,26 @@ const EmployeePage = () => {
       ),
     },
     {
+      render: ({ email }) => email,
+    },
+    {
       render: ({ phone }) => phone,
     },
+
     {
       render: ({ address }) => (
-        <Tooltip title={<Typography>{formatAddress(address)}</Typography>}>
-          <Typography>{formatAddress(address, 26)}</Typography>
-        </Tooltip>
+        <Fragment>
+          {address ? (
+            <Tooltip title={<Typography>{formatAddress(address)}</Typography>}>
+              <Typography>{formatAddress(address, 26)}</Typography>
+            </Tooltip>
+          ) : (
+            <Fragment />
+          )}
+        </Fragment>
       ),
     },
-    {
-      render: ({ group }) => group.name,
-    },
+
     {
       render: ({ id, status }) => (
         <Switch
@@ -156,48 +156,37 @@ const EmployeePage = () => {
       render: ({ id }) => (
         <IconButton
           disableRipple
-          onClick={() => addId(ids.modalUpdateEmployee(id))}>
-          <Icon icon="heroicons:pencil-solid" />
-          <Modal
-            open={activeIds.includes(ids.modalUpdateEmployee(id))}
-            onClose={() => removeId(ids.modalUpdateEmployee(id))}>
-            <EmployeeUpdate
-              employeeId={id}
-              refetch={refetch}
-              closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
-              setController={setController}
-            />
-          </Modal>
+          // onClick={() => addId(ids.modalUpdateEmployee(id))}
+        >
+          <Icon icon="hugeicons:view" />
         </IconButton>
       ),
     },
   ];
 
-  async function handleChangeStatus(employeeId: string) {
+  async function handleChangeStatus(userId: string) {
     try {
-      addId(`loading-switch-${employeeId}`);
-      await toggleStatusEmployee(employeeId);
-      setEmployees(
+      addId(`loading-switch-${userId}`);
+      await toggleStatusUser(userId);
+      setUsers(
         (prev) =>
-          prev?.map((employee) =>
-            employee.id === employeeId
-              ? { ...employee, status: !employee.status }
-              : employee,
+          prev?.map((user) =>
+            user.id === userId ? { ...user, status: !user.status } : user,
           ) || prev,
       );
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       handleToastMessages(toast.error)(errorMessage);
     } finally {
-      removeId(`loading-switch-${employeeId}`);
+      removeId(`loading-switch-${userId}`);
     }
   }
 
-  function updateFilter(updates: Partial<Filter<FilterEmployees>>) {
+  function updateFilter(updates: Partial<Filter<ClientFilter>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
-  const handleSearchEmployee = useDebouncedCallback(() => {
+  const handleSearchUser = useDebouncedCallback(() => {
     const fullName = searchInputRef.current?.value.trim() || "";
 
     setFilter((prev) => ({
@@ -223,20 +212,14 @@ const EmployeePage = () => {
     });
   }
 
-  function handleCancel(modalId: string) {
-    controller?.abort();
-    setController(null);
-    removeId(modalId);
-  }
-
   useEffect(() => {
-    if (employeeData) {
-      setEmployees(employeeData.data);
-      setFilter((prev) => ({ ...prev, ...employeeData.paginate }));
+    if (userData) {
+      setUsers(userData.data);
+      setFilter((prev) => ({ ...prev, ...userData.paginate }));
     }
 
     setLoading(queryLoading);
-  }, [employeeData]);
+  }, [userData]);
 
   useEffect(() => {
     if (searchParams.size === 0) {
@@ -256,54 +239,6 @@ const EmployeePage = () => {
           borderBottomLeftRadius: 0,
           boxShadow: "none",
         }}>
-        <Stack direction="column" spacing={2} sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Filters
-          </Typography>
-          <Stack
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
-            spacing={3}
-            alignItems="center">
-            <GroupSelect
-              value={!queryLoading && employees ? filter.groupId : undefined}
-              name="groupId-filter"
-              defaultOption="Select Group"
-              fullWidth
-              isLoading={queryLoading && !employees}
-              onChange={(event) =>
-                updateFilter({ index: 1, groupId: event.target.value })
-              }
-            />
-
-            <Select
-              value={filter.gender || ""}
-              onChange={(event) =>
-                updateFilter({ index: 1, gender: event.target.value as Gender })
-              }
-              menuItems={["Male", "Female", "Other"]}
-              defaultOption={"Select Gender"}
-              fullWidth
-              isLoading={queryLoading && !employees}
-            />
-            <Select
-              value={filter.status || ""}
-              onChange={(event) =>
-                updateFilter({ index: 1, status: event.target.value })
-              }
-              menuItems={[
-                { value: "true", label: "Active" },
-                { value: "false", label: "Banned" },
-              ]}
-              defaultOption="Select Status"
-              fullWidth
-              isLoading={queryLoading && !employees}
-            />
-          </Stack>
-        </Stack>
-        <Divider />
         <Stack
           sx={{
             gap: 2,
@@ -317,9 +252,9 @@ const EmployeePage = () => {
             fullWidth
             defaultValue={filter.fullName}
             ref={searchInputRef}
-            disabled={queryLoading && !employees}
+            disabled={queryLoading && !users}
             placeholder="Search User"
-            onChange={handleSearchEmployee}
+            onChange={handleSearchUser}
             sx={{ height: 40, width: { xs: "100%", md: 170 } }}
           />
 
@@ -339,7 +274,7 @@ const EmployeePage = () => {
               <Select
                 sx={{ height: 40, width: { xs: "100%", md: 65 } }}
                 fullWidth
-                disabled={queryLoading && !employees}
+                disabled={queryLoading && !users}
                 onChange={(event) =>
                   updateFilter({ index: 1, size: Number(event.target.value) })
                 }
@@ -348,13 +283,50 @@ const EmployeePage = () => {
               />
             </Stack>
 
+            <Select
+              sx={{
+                "&": { height: 40, width: { xs: "100%", md: "fit-content" } },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 115 },
+                },
+              }}
+              value={filter.gender || ""}
+              onChange={(event) =>
+                updateFilter({ index: 1, gender: event.target.value as Gender })
+              }
+              menuItems={["Male", "Female", "Other"]}
+              defaultOption={"Select Gender"}
+              fullWidth
+              isLoading={queryLoading && !users}
+            />
+
+            <Select
+              sx={{
+                "&": { height: 40, width: { xs: "100%", md: "fit-content" } },
+                "& .MuiSelect-select": {
+                  width: { xs: "100%", md: 110 },
+                },
+              }}
+              value={filter.status || ""}
+              onChange={(event) =>
+                updateFilter({ index: 1, status: event.target.value })
+              }
+              menuItems={[
+                { value: "true", label: "Active" },
+                { value: "false", label: "Banned" },
+              ]}
+              defaultOption="Select Status"
+              fullWidth
+              isLoading={queryLoading && !users}
+            />
+
             <Button
               sx={{
                 height: 40,
                 width: { xs: "100%", md: "max-content" },
                 textWrap: "nowrap",
               }}
-              disabled={queryLoading && !employees}
+              disabled={queryLoading && !users}
               disableRipple
               color="error"
               variant="tonal"
@@ -362,50 +334,28 @@ const EmployeePage = () => {
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Refresh
             </Button>
-            <Button
-              sx={{
-                height: 40,
-                textWrap: "nowrap",
-                width: { xs: "100%", md: "max-content" },
-              }}
-              disabled={queryLoading && !employees}
-              disableRipple
-              variant="contained"
-              startIcon={<Icon icon="ic:sharp-plus" />}
-              onClick={() => addId(ids.newEmployeeModal)}>
-              Add New Employee
-              <Modal
-                open={activeIds.includes(ids.newEmployeeModal)}
-                onClose={() => removeId(ids.newEmployeeModal)}>
-                <EmployeeAdd
-                  refetch={refetch}
-                  closeMenu={() => handleCancel(ids.newEmployeeModal)}
-                  setController={setController}
-                />
-              </Modal>
-            </Button>
           </Stack>
         </Stack>
       </Paper>
       <Divider />
       <TableContainer>
         <Table>
-          <TableHead<FilterEmployees>
-            isLoading={queryLoading && !employees}
+          <TableHead
+            isLoading={queryLoading && !users}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody<EmployeeDetail, FilterEmployees>
-            isLoading={queryLoading && !employees}
-            data={employees}
+          <TableBody
+            isLoading={queryLoading && !users}
+            data={users}
             filter={filter}
             bodyCells={BODY_CELLS}
           />
         </Table>
       </TableContainer>
       <Pagination
-        dataLength={employees?.length}
+        dataLength={users?.length}
         isLoading={isLoading}
         paginateCount={filter.total || 0}
         paginatePage={filter.index || 0}
@@ -416,4 +366,4 @@ const EmployeePage = () => {
     </Fragment>
   );
 };
-export default EmployeePage;
+export default UserPage;

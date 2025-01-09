@@ -2,14 +2,14 @@ type Difficulty = "Easy" | "Normal" | "Hard" | "Professional" | "Expert";
 
 type VerifyStatus = "verified" | "rejected" | "revoke";
 
-type FilterRecipe = {
+type RecipeFilter = {
   name?: string;
   difficulty?: Difficulty;
   status?: string;
   verifyStatus?: VerifyStatus;
 };
 
-type FilterRecipePending = Omit<FilterRecipe, "status" | "verifyStatus">;
+type RecipeFilterPending = Omit<RecipeFilter, "status" | "verifyStatus">;
 
 type Recipe = {
   id: string;
@@ -27,12 +27,12 @@ type Recipe = {
 
 type ListRecipe = {
   data: Recipe[];
-  paginate: Filter<FilterRecipe>;
+  paginate: Filter<RecipeFilter>;
 };
 
 type ListRecipePending = {
   data: Recipe[];
-  paginate: Filter<FilterRecipePending>;
+  paginate: Filter<RecipeFilterPending>;
 };
 
 interface Ingredient {

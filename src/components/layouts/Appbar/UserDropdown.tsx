@@ -1,5 +1,5 @@
 // ** React
-import { useState, MouseEvent } from "react";
+import { useState, Fragment, MouseEvent } from "react";
 
 // ** Library Imports
 import { useNavigate } from "react-router-dom";
@@ -154,23 +154,25 @@ const UserDropdown = () => {
   };
 
   return (
-    <Box sx={{ cursor: "pointer" }} className="user-dropdown">
-      <Badge
-        overlap="circular"
-        badgeContent={<BadgeContentSpan />}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}>
-        <Avatar
-          onClick={handleDropdownOpen}
-          sx={{ width: 38, height: 38 }}
-          src={user?.avatar}
-          alt="Avatar"
-        />
-        <MenuDropdown />
-      </Badge>
-    </Box>
+    <Fragment>
+      <Box sx={{ cursor: "pointer" }} className="user-dropdown">
+        <Badge
+          overlap="circular"
+          badgeContent={<BadgeContentSpan />}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}>
+          <Avatar
+            onClick={handleDropdownOpen}
+            sx={{ width: 38, height: 38 }}
+            src={user?.avatar}
+            alt="Avatar"
+          />
+        </Badge>
+      </Box>
+      <MenuDropdown />
+    </Fragment>
   );
 };
 

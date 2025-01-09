@@ -1,5 +1,5 @@
 // ** Mui Imports
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Badge } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps } from "@mui/material/AppBar";
 import MuiToolbar, { ToolbarProps } from "@mui/material/Toolbar";
@@ -55,7 +55,6 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 }));
 
 const AppBar = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { toggleId } = useSettings();
 
   return (
@@ -84,7 +83,6 @@ const AppBar = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: "0.5rem",
           }}>
           <ModeToggler />
           <UserDropdown />

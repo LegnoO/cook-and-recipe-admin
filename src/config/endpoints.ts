@@ -57,6 +57,12 @@ export const recipeEndpoints = {
   privateRecipe: (recipeId: string) => `/recipe/admin/find/${recipeId}/private`,
 };
 
+export const userEndpoints = {
+  queryUsers: (params: string) => `/users/admin/find?${params}`,
+  toggleStatusUser: (userId: string) =>
+    `/users/admin/find/${userId}/toggle-status`,
+};
+
 export const categoryEndpoints = {
   queryCategory: (params: string) => `/category/admin/find?${params}`,
   getDetailCategory: (categoryId: string) =>
@@ -68,6 +74,10 @@ export const categoryEndpoints = {
     `/category/admin/find/${categoryId}/toggle-status`,
   deleteCategory: (categoryId: string) =>
     `/category/admin/find/${categoryId}/delete`,
+};
+
+export const notifyEndpoints = {
+  queryNotify: (params: string) => `/notification/admin/find?${params}`,
 };
 
 export const statisticsEndpoints = {

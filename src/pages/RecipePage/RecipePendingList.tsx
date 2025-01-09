@@ -81,7 +81,7 @@ const RecipePendingList = () => {
 
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<Filter<FilterRecipePending>>({
+  const [filter, setFilter] = useState<Filter<RecipeFilterPending>>({
     index: Number(searchParams.get("index")) || defaultFilter.index,
     size: Number(searchParams.get("size")) || defaultFilter.size,
     difficulty: (searchParams.get("difficulty") as Difficulty) || undefined,
@@ -104,7 +104,7 @@ const RecipePendingList = () => {
 
   const [isLoading, setLoading] = useState(false);
 
-  function updateFilter(updates: Partial<Filter<FilterRecipePending>>) {
+  function updateFilter(updates: Partial<Filter<RecipeFilterPending>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 

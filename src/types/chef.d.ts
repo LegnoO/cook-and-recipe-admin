@@ -2,14 +2,14 @@ type ChefLevel = "Beginner" | "Home cook" | "Professional" | "Master chef";
 
 type ChefStatus = "active" | "disabled" | "pending" | "rejected" | "banned";
 
-type FilterChef = {
+type ChefFilter = {
   fullName?: string;
   email?: string;
   level?: ChefLevel;
   chefStatus?: ChefStatus;
 };
 
-type FilterChefPending = Omit<FilterChef, "chefStatus">;
+type ChefFilterPending = Omit<ChefFilter, "chefStatus">;
 
 type Chef = {
   id: string;
@@ -41,5 +41,5 @@ interface ChefUserInfo {
 
 type ListChef = {
   data: Chef[];
-  paginate: FilterChef;
+  paginate: ChefFilter;
 };

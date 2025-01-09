@@ -82,7 +82,7 @@ const RecipeList = () => {
 
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [controller, setController] = useState<AbortController | null>(null);
-  const [filter, setFilter] = useState<Filter<FilterRecipe>>({
+  const [filter, setFilter] = useState<Filter<RecipeFilter>>({
     index: Number(searchParams.get("index")) || defaultFilter.index,
     size: Number(searchParams.get("size")) || defaultFilter.size,
     difficulty: (searchParams.get("difficulty") as Difficulty) || undefined,
@@ -108,7 +108,7 @@ const RecipeList = () => {
 
   const [isLoading, setLoading] = useState(false);
 
-  function updateFilter(updates: Partial<Filter<FilterRecipe>>) {
+  function updateFilter(updates: Partial<Filter<RecipeFilter>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 

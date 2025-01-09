@@ -10,6 +10,8 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeePage = lazy(() => import("@/pages/EmployeePage"));
+const UserPage = lazy(() => import("@/pages/UserPage"));
+
 const GroupPage = lazy(() => import("@/pages/GroupPage"));
 const ChefList = lazy(() => import("@/pages/ChefPage/ChefList"));
 const ChefPendingList = lazy(() => import("@/pages/ChefPage/ChefPendingList"));
@@ -17,6 +19,7 @@ const RecipePendingList = lazy(
   () => import("@/pages/RecipePage/RecipePendingList"),
 );
 const RecipeList = lazy(() => import("@/pages/RecipePage/RecipeList"));
+const NotifyPage = lazy(() => import("@/pages/NotifyPage"));
 const CategoryPage = lazy(() => import("@/pages/CategoryPage"));
 
 export const protectedRoute: Route[] = [
@@ -39,6 +42,14 @@ export const protectedRoute: Route[] = [
   {
     path: "/employees",
     component: <EmployeePage />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
+  },
+  {
+    path: "/users",
+    component: <UserPage />,
     permission: {
       page: "user",
       action: "read",
@@ -88,6 +99,14 @@ export const protectedRoute: Route[] = [
         component: <RecipePendingList />,
       },
     ],
+  },
+  {
+    path: "/notification",
+    component: <NotifyPage />,
+    permission: {
+      page: "user",
+      action: "read",
+    },
   },
 
   {

@@ -71,7 +71,7 @@ const ChefPendingList = () => {
 
   const [isLoading, setLoading] = useState(false);
 
-  const [filter, setFilter] = useState<Filter<FilterChefPending>>({
+  const [filter, setFilter] = useState<Filter<ChefFilterPending>>({
     index: Number(searchParams.get("index")) || defaultFilter.index,
     size: Number(searchParams.get("size")) || defaultFilter.size,
     level: (searchParams.get("level") as ChefLevel) || undefined,
@@ -110,7 +110,7 @@ const ChefPendingList = () => {
     banned: { variant: "banned" },
   };
 
-  function updateFilter(updates: Partial<Filter<FilterChefPending>>) {
+  function updateFilter(updates: Partial<Filter<ChefFilterPending>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
 
@@ -414,13 +414,13 @@ const ChefPendingList = () => {
       <Divider />
       <TableContainer>
         <Table>
-          <TableHead<FilterChefPending>
+          <TableHead<ChefFilterPending>
             isLoading={queryLoading && !chefs}
             headColumns={HEAD_COLUMNS}
             filter={filter}
             setFilter={setFilter}
           />
-          <TableBody<Chef, FilterChefPending>
+          <TableBody<Chef, ChefFilterPending>
             isLoading={queryLoading && !chefs}
             data={chefs}
             filter={filter}

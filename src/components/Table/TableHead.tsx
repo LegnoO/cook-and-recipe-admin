@@ -36,7 +36,7 @@ const TableHead = <T,>({
   }
 
   function handleSortColumn(sortName?: string) {
-    if (!sortName || !setFilter || filter) return;
+    if (!sortName || !setFilter || !filter) return;
 
     setFilter((prev) => ({
       ...prev,

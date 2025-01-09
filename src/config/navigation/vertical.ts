@@ -24,11 +24,24 @@ export const verticalNavItems: IVerticalNavItemsType = [
     action: "read",
     page: "user",
   },
-
   {
     title: "Category",
     icon: "tabler:category-2",
     path: "/categories",
+    action: "read",
+    page: "user",
+  },
+  {
+    title: "Notification",
+    icon: "mdi:bell-outline",
+    path: "/notification",
+    action: "read",
+    page: "user",
+  },
+  {
+    title: "Users",
+    icon: "mage:user",
+    path: "/users",
     action: "read",
     page: "user",
   },
