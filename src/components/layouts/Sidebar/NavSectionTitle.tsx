@@ -24,7 +24,7 @@ export const StyledNavSectionTitle = styled("li")({
 export const Label = styled("span")(({ theme }) => ({
   color: theme.palette.text.disabled,
   fontSize: "0.8125rem",
-  textTransform: "uppercase",
+  textTransform: "initial",
   overflow: "hidden",
   whiteSpace: "nowrap",
   lineHeight: 1.38462,
