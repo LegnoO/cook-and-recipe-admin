@@ -103,11 +103,9 @@ const CategoryUpdate = ({
   return (
     <Box
       sx={{
-        overflow: "hidden",
-        width: {
-          xs: "90%",
-          sm: "420px",
-          md: "500px",
+        width: "100%",
+        maxWidth: {
+          sm: "500px",
         },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
@@ -140,7 +138,7 @@ const CategoryUpdate = ({
 
       <Stack
         sx={{
-          paddingTop: "1.5rem",
+          paddingTop: "1rem",
           paddingInline: "1.5rem",
         }}
         direction="column"
@@ -168,22 +166,19 @@ const CategoryUpdate = ({
       <Stack
         direction="row"
         justifyContent="end"
-        spacing={1.5}
-        sx={{ paddingBlock: "1.5rem", paddingInline: "1.5rem" }}>
-        <Button
-          onClick={closeMenu}
-          sx={{ width: { xs: "100%", md: "auto" } }}
-          color="secondary"
-          variant="contained">
+        sx={{
+          justifyContent: "end",
+          width: "100%",
+          gap: "0.75rem",
+          padding: "1.5rem",
+        }}>
+        <Button onClick={closeMenu} color="secondary" variant="contained">
           Cancel
         </Button>
         <Button
           disabled={isLoading}
           onClick={handleSubmit}
           type="submit"
-          sx={{
-            width: { xs: "100%", md: "auto" },
-          }}
           variant="contained">
           Update
         </Button>

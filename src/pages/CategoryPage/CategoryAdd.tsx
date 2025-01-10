@@ -201,28 +201,21 @@ const CategoryAdd = ({ setController, closeMenu, refetch }: Props) => {
           <Stack
             direction="row"
             justifyContent="end"
-            spacing={1.5}
             sx={{
-              width: "100%",
               marginTop: "auto",
               paddingTop: "1.5rem",
-              paddingRight: "0.75rem",
+              justifyContent: "end",
+              width: "100%",
+              gap: "0.75rem",
             }}>
             <Button
               type="button"
               onClick={closeMenu}
-              sx={{ width: { xs: "100%", md: "auto" } }}
               color="secondary"
               variant="contained">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              sx={{
-                width: { xs: "100%", md: "auto" },
-              }}
-              variant="contained">
+            <Button type="submit" disabled={isLoading} variant="contained">
               Submit
             </Button>
           </Stack>

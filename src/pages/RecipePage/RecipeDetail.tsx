@@ -99,8 +99,10 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
   return (
     <Box
       sx={{
-        overflow: "hidden",
-        maxWidth: "700px",
+        width: "100%",
+        maxWidth: {
+          sm: "500px",
+        },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
@@ -112,7 +114,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
           paddingInline: "1.5rem",
         }}>
         <Typography
-          sx={{ textAlign: "center" }}
+          sx={{ textAlign: { xs: "center", sm: "left" } }}
           fontWeight={500}
           component="h2"
           variant="h4">

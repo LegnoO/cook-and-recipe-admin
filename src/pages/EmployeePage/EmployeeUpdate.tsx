@@ -222,7 +222,14 @@ const EmployeeUpdate = ({
     <PerfectScrollbar
       options={{ useBothWheelAxes: true, wheelPropagation: false }}>
       <Form
-        sx={{ position: "relative", maxHeight: "95dvh" }}
+        sx={{
+          width: "100%",
+          maxWidth: {
+            sm: "500px",
+          },
+          position: "relative",
+          maxHeight: "95dvh",
+        }}
         noValidate
         onSubmit={form.handleSubmit(onSubmit)}>
         <Stack

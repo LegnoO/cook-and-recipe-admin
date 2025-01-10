@@ -43,8 +43,9 @@ const ConfirmBox = ({
       alignItems="center"
       sx={{
         width: "100%",
-        minWidth: { xs: "100%", sm: 400 },
-        maxWidth: 448,
+        maxWidth: {
+          sm: "360px",
+        },
         padding: "1.5rem",
         borderRadius: (theme) => `${theme.shape.borderRadius + 10}px`,
         backgroundColor: (theme) => theme.palette.background.paper,
@@ -58,7 +59,7 @@ const ConfirmBox = ({
         <Icon fontSize="1.75rem" icon={iconMap[variant]} />
       </Button>
       <Typography
-        sx={{ mb: 1.5 }}
+        sx={{ width: "100%", mb: 1.5 }}
         fontWeight={600}
         variant="body1"
         color="text.primary">
@@ -69,18 +70,18 @@ const ConfirmBox = ({
         sx={{
           mb: 2.5,
           lineHeight: "1.25rem",
-          textAlign: "center",
-          width: "70%",
         }}
         fontWeight={400}
         variant="subtitle2"
         color="text.primary">
         {textContent}
       </Typography>
-      <Stack sx={{ width: "100%" }} direction="row" spacing={4}>
+      <Stack
+        sx={{ justifyContent: "end", width: "100%", gap: "0.75rem" }}
+        direction="row">
         <Button
           onClick={onClose}
-          sx={{ width: "50%", fontWeight: 500 }}
+          sx={{ fontWeight: 500 }}
           variant="contained"
           color="secondary">
           {textCancel}
@@ -88,7 +89,7 @@ const ConfirmBox = ({
         <Button
           disabled={isLoading}
           onClick={onClick}
-          sx={{ width: "50%", fontWeight: 500 }}
+          sx={{ fontWeight: 500 }}
           variant="contained"
           color={variant}>
           {textSubmit}

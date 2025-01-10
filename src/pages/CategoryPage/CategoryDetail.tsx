@@ -40,11 +40,9 @@ const CategoryDetail = ({ closeMenu, categoryId }: Props) => {
   return (
     <Box
       sx={{
-        overflow: "hidden",
-        width: {
-          xs: "90%",
-          sm: "420px",
-          md: "500px",
+        width: "100%",
+        maxWidth: {
+          sm: "500px",
         },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,

@@ -79,6 +79,7 @@ export const categoryEndpoints = {
 
 export const notifyEndpoints = {
   queryNotify: (params: string) => `/notification/admin/find?${params}`,
+  pushNotifyAll: "/notification/admin/all",
 };
 
 export const statisticsEndpoints = {

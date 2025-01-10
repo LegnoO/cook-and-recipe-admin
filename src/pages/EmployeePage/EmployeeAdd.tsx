@@ -183,6 +183,10 @@ const EmployeeAdd = ({ refetch, closeMenu, setController }: Props) => {
       options={{ useBothWheelAxes: true, wheelPropagation: false }}>
       <Form
         sx={{
+          width: "100%",
+          maxWidth: {
+            sm: "500px",
+          },
           position: "relative",
           maxHeight: "95dvh",
         }}

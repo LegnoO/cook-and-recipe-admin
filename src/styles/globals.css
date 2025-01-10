@@ -30,7 +30,9 @@ li {
 .ps__rail-y {
   width: 0px !important;
 }
-
+.ps__rail-x {
+  display: none !important;
+}
 .ps-scrollbar-x-rail,
 .ps-scrollbar-y-rail {
   /* margin-left: 100px; */

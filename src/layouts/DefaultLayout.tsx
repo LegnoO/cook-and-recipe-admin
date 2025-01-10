@@ -11,6 +11,9 @@ import AppBar from "@/components/layouts/Appbar";
 // ** Nav Items
 import { verticalNavItems } from "@/config/navigation/vertical";
 
+// ** Hooks
+import useSettings from "@/hooks/useSettings";
+
 // ** Styled Components
 const LayoutWrapper = styled("div")(({ theme }: { theme: Theme }) => ({
   position: "relative",
@@ -21,10 +24,6 @@ const LayoutWrapper = styled("div")(({ theme }: { theme: Theme }) => ({
       ? theme.palette.grey[50]
       : theme.palette.background.default,
 
-  paddingInlineStart: "260px",
-  [theme.breakpoints.down("md")]: {
-    paddingInlineStart: 0,
-  },
   transition: "padding 0.3s ease-in-out",
 }));
 
@@ -40,8 +39,18 @@ const LayoutContent = styled("div")({
 });
 
 const DefaultLayout = () => {
+  const { activeIds } = useSettings();
   return (
-    <LayoutWrapper className="layout-wrapper">
+    <LayoutWrapper
+      sx={(theme) => ({
+        paddingInlineStart: activeIds.includes("collapse-drawer")
+          ? "70px"
+          : "260px",
+        [theme.breakpoints.down("md")]: {
+          paddingInlineStart: 0,
+        },
+      })}
+      className="layout-wrapper">
       <LayoutInner className="layout-inner">
         <Sidebar navItems={verticalNavItems} />
         <AppBar />

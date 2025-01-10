@@ -88,7 +88,7 @@ const ListChefPending = () => {
     data: chefData,
     refetch,
   } = useQuery({
-    queryKey: ["list-chef-pending", searchParams.toString()],
+    queryKey: ["list-chef", searchParams.toString()],
     queryFn: () => queryChef(searchParams.toString()),
     ...queryOptions,
   });

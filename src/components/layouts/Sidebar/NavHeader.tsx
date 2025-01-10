@@ -13,6 +13,7 @@ const StyledNavHeader = styled("div")({
     paddingInline: "1.375rem 1rem",
     transition: "padding 0.25s ease-in-out",
     marginBottom: "-0.375rem",
+    overflow: "hidden",
   },
 
   "& a": {

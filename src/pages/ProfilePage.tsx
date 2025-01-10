@@ -262,7 +262,7 @@ export default function ProfilePage() {
           Account Information
         </Typography>
       </Box>
-      <Container>
+      <Container sx={{ marginLeft: 0 }}>
         <StyledPaper>
           <Stack
             sx={{ overFlow: "hidden", padding: "1.5rem" }}

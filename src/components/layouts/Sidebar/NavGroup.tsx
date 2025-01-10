@@ -214,7 +214,7 @@ const NavGroup = (props: Props) => {
             fontSize={isRootParent ? "1.375rem" : "0.75rem"}
           />
         </IconWrapper>
-        <Label className="label">{item.title}</Label>
+        <Label className="nav-group-label label">{item.title}</Label>
         <ExpandIcon className="expand-icon">
           <Icon fontSize="1.25rem" icon="tabler:chevron-right" />
         </ExpandIcon>

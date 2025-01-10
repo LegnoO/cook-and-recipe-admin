@@ -1,5 +1,9 @@
 // ** Mui Imports
+import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
+
+// ** Context
+import useSettings from "@/hooks/useSettings";
 
 // ** Types
 import { INavSectionTitle } from "./types";
@@ -15,10 +19,12 @@ export const StyledNavSectionTitle = styled("li")({
   display: "flex",
   alignItems: "center",
   width: "100%",
-  padding: "0.75rem",
+  paddingTop: "0.5rem",
+  paddingInline: "0.5rem",
+  paddingBottom: "0.25rem",
   overflow: "hidden",
   backgroundColor: "transparent",
-  marginTop: "0.375rem",
+  marginTop: "0.275rem",
 });
 
 export const Label = styled("span")(({ theme }) => ({
@@ -34,9 +40,21 @@ export const Label = styled("span")(({ theme }) => ({
 }));
 
 const NavSectionTitle = ({ item }: Props) => {
+  const { activeIds } = useSettings();
+
   return (
     <StyledNavSectionTitle className="nav-section-title">
-      <Label className="label">{item.sectionTitle}</Label>
+      {activeIds.includes("collapse-drawer") ? (
+        <Box
+          sx={{
+            height: "1px",
+            width: "100%",
+            backgroundColor: (theme) => theme.palette.text.secondary,
+          }}
+        />
+      ) : (
+        <Label className="label">{item.sectionTitle}</Label>
+      )}
     </StyledNavSectionTitle>
   );
 };

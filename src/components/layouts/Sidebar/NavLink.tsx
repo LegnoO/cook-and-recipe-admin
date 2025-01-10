@@ -94,6 +94,7 @@ export const Label = styled("span")(({ theme }) => ({
   textOverflow: "ellipsis",
   overflow: "hidden",
   whiteSpace: "nowrap",
+  transition: `opacity 0.3s ${theme.transitions.easing.easeInOut}, width 0.3s ${theme.transitions.easing.easeInOut}`,
 }));
 
 const NavLink = (props: Props) => {
@@ -141,8 +142,7 @@ const NavLink = (props: Props) => {
             fontSize={navParent ? "0.75rem" : "1.375rem"}
           />
         </IconWrapper>
-
-        <Label className={"label"}>{item.title}</Label>
+        <Label className="nav-link-label nav-label">{item.title}</Label>
       </StyledLink>
     </MenuNavLink>
   );

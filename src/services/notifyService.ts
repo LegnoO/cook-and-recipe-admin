@@ -16,3 +16,22 @@ export async function queryNotify(params: string) {
     handleAxiosError(error);
   }
 }
+
+export async function pushNotifyAll({
+  title,
+  message,
+}: {
+  title: string;
+  message: string;
+}) {
+  try {
+    const response = await AxiosInstance.post(notifyEndpoints.pushNotifyAll, {
+      title,
+      message,
+    });
+
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}

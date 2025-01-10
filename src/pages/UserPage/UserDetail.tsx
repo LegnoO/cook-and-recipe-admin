@@ -6,7 +6,6 @@ import {
   Stack,
   Grid,
   Avatar,
-  Button,
 } from "@mui/material";
 
 // ** Components
@@ -44,12 +43,9 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
   return (
     <Box
       sx={{
-        overflow: "hidden",
-        width: {
-          xs: "312px",
-          sm: "412px",
-          md: "520px",
-          lg: "612px",
+        width: "100%",
+        maxWidth: {
+          sm: "500px",
         },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
@@ -84,8 +80,7 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
         direction="column"
         sx={{
           gap: 1.5,
-          paddingBottom: "2.5rem",
-          paddingTop: "1.5rem",
+          paddingBlock: "1.5rem",
         }}>
         <Box
           sx={{
@@ -104,9 +99,10 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
           />
         </Box>
 
-        <Grid sx={{ paddingInline: "1.5rem" }} container>
+        <Grid container>
           <Grid
             sx={{
+              paddingInline: "1.5rem",
               "& div": {
                 marginBottom: "0.5rem",
               },
@@ -142,6 +138,7 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
 
           <Grid
             sx={{
+              paddingInline: "1.5rem",
               "& div": {
                 marginBottom: "0.5rem",
               },
@@ -166,19 +163,6 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
             </Stack>
           </Grid>
         </Grid>
-      </Stack>
-
-      <Stack
-        direction="row"
-        justifyContent="end"
-        sx={{ paddingInline: "1.5rem", pb: "1.5rem" }}>
-        <Button
-          onClick={closeMenu}
-          sx={{ width: { xs: "100%", md: "auto" } }}
-          color="secondary"
-          variant="contained">
-          Cancel
-        </Button>
       </Stack>
     </Box>
   );

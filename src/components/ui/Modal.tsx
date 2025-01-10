@@ -29,27 +29,31 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
         if (onClick) onClick(event);
       }}
       open={open}
-      onClose={onClose}
       {...rest}>
       <Fade in={open}>
         <Box
+          onClick={onClose}
           className="overlay"
           sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            width: "fit-content",
             outline: "none",
             position: "absolute",
             top: "50%",
             left: "50%",
+            width: "100%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
             borderRadius: (theme) => `${theme.shape.borderRadius}px`,
             overflow: "hidden",
             ...sx,
           }}>
-          {children}
+          <Box
+            className="modal-content"
+            onClick={(event) => event.stopPropagation()}>
+            {children}
+          </Box>
         </Box>
       </Fade>
     </MuiModal>

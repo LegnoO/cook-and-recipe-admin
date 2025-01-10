@@ -21,17 +21,9 @@ type Props = {
 };
 
 // ** Styled Components
-export const StyledSidebar = styled("aside")(() => ({
-  // position: "fixed",
-  // inset: 0,
-  // width: "100%",
-  // height: "100%",
-  // backgroundColor: theme.palette.customColors.backdrop,
-  // zIndex: theme.zIndex.drawer - 1,
-}));
-
 export const Nav = styled("nav")({
-  paddingBlock: "0.25rem",
+  paddingTop: "0.25rem",
+  paddingBottom: "2rem",
   paddingInline: "0.75rem",
 });
 
@@ -46,22 +38,21 @@ const Sidebar = ({ navItems }: Props) => {
   const [childGroupActive, setChildGroupActive] = useState<string[]>([]);
 
   return (
-    <StyledSidebar className="sidebar">
-      <Drawer>
-        <NavHeader />
-        <PerfectScrollbar options={{ wheelPropagation: false }}>
-          <Nav className="nav">
-            <NavList className="nav-list">
-              <NavItems
-                isRootParent={true}
-                navItems={navItems}
-                rootGroupActive={rootGroupActive}
-                setRootGroupActive={setRootGroupActive}
-                childGroupActive={childGroupActive}
-                setChildGroupActive={setChildGroupActive}
-              />
-            </NavList>
-            {/* <Box
+    <Drawer>
+      <NavHeader />
+      <PerfectScrollbar options={{ wheelPropagation: false }}>
+        <Nav className="nav">
+          <NavList className="nav-list">
+            <NavItems
+              isRootParent={true}
+              navItems={navItems}
+              rootGroupActive={rootGroupActive}
+              setRootGroupActive={setRootGroupActive}
+              childGroupActive={childGroupActive}
+              setChildGroupActive={setChildGroupActive}
+            />
+          </NavList>
+          {/* <Box
             sx={{
               marginTop: "1.5rem",
               paddingBlock: "1rem",
@@ -79,10 +70,9 @@ const Sidebar = ({ navItems }: Props) => {
               Legno
             </Typography>
           </Box> */}
-          </Nav>
-        </PerfectScrollbar>
-      </Drawer>
-    </StyledSidebar>
+        </Nav>
+      </PerfectScrollbar>
+    </Drawer>
   );
 };
 

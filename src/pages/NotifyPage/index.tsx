@@ -26,14 +26,14 @@ import {
   Modal,
   Paper,
   Select,
-  ChipStatus,
-  ConfirmBox,
   Tooltip,
   DatePicker,
   TextField,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import BroadcastNotification from "./BroadcastNotification";
+import NotifyDetail from "./NotifyDetail";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -76,7 +76,8 @@ const NotifyList = () => {
   // const { activeIds, addId, removeId } = useSettings();
   const ids = useMemo(
     () => ({
-      modalDetail: (id: string) => `modal-detail-${id}`,
+      modalDetail: (id: string) => `modal-notify-detail-${id}`,
+      modalNotify: "modal-modal-notify",
     }),
     [],
   );
@@ -109,8 +110,8 @@ const NotifyList = () => {
     ...queryOptions,
   });
   console.log({ notifyData });
-  const [isLoading, setLoading] = useState(false);
 
+  const { activeIds, addId, removeId } = useSettings();
   function updateFilter(updates: Partial<Filter<NotifyFilter>>) {
     setFilter((prev) => ({ ...prev, ...updates }));
   }
@@ -123,6 +124,10 @@ const NotifyList = () => {
       title,
     }));
   }, 300);
+
+  function handleCancel(modalId: string) {
+    removeId(modalId);
+  }
 
   function handleResetFilter() {
     if (searchInputRef.current) searchInputRef.current.value = "";
@@ -146,8 +151,6 @@ const NotifyList = () => {
       setNotification(notifyData.data);
       setFilter((prev) => ({ ...prev, ...notifyData.paginate }));
     }
-
-    setLoading(queryLoading);
   }, [notifyData]);
 
   useEffect(() => {
@@ -168,6 +171,7 @@ const NotifyList = () => {
     { title: "Sent To", sortName: "" },
     { title: "Read", sortName: "" },
     { title: "Unread", sortName: "" },
+    { title: "", sortName: "" },
   ];
 
   const BODY_CELLS: BodyCell<Notify>[] = [
@@ -196,32 +200,32 @@ const NotifyList = () => {
       render: ({ unread }) => unread,
     },
 
-    // {
-    //   render: ({ id }) => (
-    //     <Stack direction="row" alignItems="center">
-    //       <Tooltip
-    //         arrow
-    //         title={"Recipe Details"}
-    //         disableHoverListener={activeIds.includes(ids.modalDetail(id))}>
-    //         <IconButton
-    //           onClick={() => {
-    //             addId(ids.modalDetail(id));
-    //           }}
-    //           disableRipple>
-    //           <Icon icon="hugeicons:view" />
-    //           <Modal
-    //             open={activeIds.includes(ids.modalDetail(id))}
-    //             onClose={() => removeId(ids.modalDetail(id))}>
-    //             <NotifyDetail
-    //               closeMenu={() => handleCancel(ids.modalDetail(id))}
-    //               notifyId={id}
-    //             />
-    //           </Modal>
-    //         </IconButton>
-    //       </Tooltip>
-    //     </Stack>
-    //   ),
-    // },
+    {
+      render: ({ id }) => (
+        <Stack direction="row" alignItems="center">
+          <Tooltip
+            arrow
+            title="Notify Details"
+            disableHoverListener={activeIds.includes(ids.modalDetail(id))}>
+            <IconButton
+              onClick={() => {
+                addId(ids.modalDetail(id));
+              }}
+              disableRipple>
+              <Icon icon="hugeicons:view" />
+              <Modal
+                open={activeIds.includes(ids.modalDetail(id))}
+                onClose={() => removeId(ids.modalDetail(id))}>
+                <NotifyDetail
+                  closeMenu={() => handleCancel(ids.modalDetail(id))}
+                  notifyId={id}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      ),
+    },
   ];
 
   return (
@@ -353,6 +357,25 @@ const NotifyList = () => {
               onClick={handleResetFilter}
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Refresh
+            </Button>
+            <Button
+              sx={{
+                height: 40,
+                textWrap: "nowrap",
+                width: { xs: "100%", md: "max-content" },
+              }}
+              disabled={queryLoading && !notification}
+              disableRipple
+              variant="contained"
+              onClick={() => addId(ids.modalNotify)}>
+              <Icon icon="mdi:bell-outline" />
+              <Modal
+                open={activeIds.includes(ids.modalNotify)}
+                onClose={() => removeId(ids.modalNotify)}>
+                <BroadcastNotification
+                  closeMenu={() => handleCancel(ids.modalNotify)}
+                />
+              </Modal>
             </Button>
           </Stack>
         </Stack>
