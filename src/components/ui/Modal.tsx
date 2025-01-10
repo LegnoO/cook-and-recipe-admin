@@ -42,7 +42,6 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
             width: "100%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
-            width: "100%",
             maxWidth: {
               sm: "500px",
             },
