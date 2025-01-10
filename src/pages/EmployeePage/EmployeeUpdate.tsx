@@ -224,9 +224,6 @@ const EmployeeUpdate = ({
       <Form
         sx={{
           width: "100%",
-          maxWidth: {
-            sm: "500px",
-          },
           position: "relative",
           maxHeight: "95dvh",
         }}

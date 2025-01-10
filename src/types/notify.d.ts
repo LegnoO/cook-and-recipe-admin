@@ -18,6 +18,10 @@ type Notify = {
   sentTo: number;
   read: number;
   unread: number;
+  toUsers?: {
+    status: "read" | "unread" | "sent";
+    user: { id: string; avatar: string; fullName: string; email: string };
+  }[];
 };
 
 type DateRange = { fromDate?: string; toDate?: string };

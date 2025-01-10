@@ -65,9 +65,6 @@ const ChefDetail = ({ chefId, closeMenu }: Props) => {
       <Form
         sx={{
           width: "100%",
-          maxWidth: {
-            sm: "500px",
-          },
           maxHeight: "95dvh",
         }}
         noValidate>

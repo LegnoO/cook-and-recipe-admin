@@ -59,9 +59,9 @@ export async function updateCategory(
   return response.data;
 }
 
-export async function getDetailCategory(id: string) {
+export async function getCategoryDetail(id: string) {
   const response = await AxiosInstance.get<any>(
-    categoryEndpoints.getDetailCategory(id),
+    categoryEndpoints.getCategoryDetail(id),
   );
 
   return response.data;

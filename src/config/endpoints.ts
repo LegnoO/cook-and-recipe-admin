@@ -66,7 +66,7 @@ export const userEndpoints = {
 
 export const categoryEndpoints = {
   queryCategory: (params: string) => `/category/admin/find?${params}`,
-  getDetailCategory: (categoryId: string) =>
+  getCategoryDetail: (categoryId: string) =>
     `/category/admin/find/${categoryId}`,
   createCategory: `/category/admin`,
   updateCategory: (categoryId: string) =>
@@ -79,6 +79,7 @@ export const categoryEndpoints = {
 
 export const notifyEndpoints = {
   queryNotify: (params: string) => `/notification/admin/find?${params}`,
+  getNotifyDetail: (notifyId: string) => `/notification/admin/find/${notifyId}`,
   pushNotifyAll: "/notification/admin/all",
 };
 

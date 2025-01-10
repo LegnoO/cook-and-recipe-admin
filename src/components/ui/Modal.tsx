@@ -16,6 +16,7 @@ type Props = {
 const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
   return (
     <MuiModal
+      onClick={onClose}
       aria-modal
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
@@ -24,15 +25,11 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
           timeout: 500,
         },
       }}
-      onClick={(event) => {
-        event.stopPropagation();
-        if (onClick) onClick(event);
-      }}
       open={open}
       {...rest}>
       <Fade in={open}>
         <Box
-          onClick={onClose}
+          onClick={(e) => e.stopPropagation()}
           className="overlay"
           sx={{
             display: "flex",
@@ -45,15 +42,15 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
             width: "100%",
             transform: "translate(-50%, -50%)",
             boxShadow: 24,
+            width: "100%",
+            maxWidth: {
+              sm: "500px",
+            },
             borderRadius: (theme) => `${theme.shape.borderRadius}px`,
             overflow: "hidden",
             ...sx,
           }}>
-          <Box
-            className="modal-content"
-            onClick={(event) => event.stopPropagation()}>
-            {children}
-          </Box>
+          {children}
         </Box>
       </Fade>
     </MuiModal>

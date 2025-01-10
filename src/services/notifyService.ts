@@ -17,6 +17,14 @@ export async function queryNotify(params: string) {
   }
 }
 
+export async function getNotifyDetail(notifyId: string): Promise<Notify> {
+  const response = await AxiosInstance.get(
+    notifyEndpoints.getNotifyDetail(notifyId),
+  );
+
+  return response.data;
+}
+
 export async function pushNotifyAll({
   title,
   message,

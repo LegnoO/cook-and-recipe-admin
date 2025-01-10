@@ -44,9 +44,6 @@ const UserDetail = ({ closeMenu, userId }: Props) => {
     <Box
       sx={{
         width: "100%",
-        maxWidth: {
-          sm: "500px",
-        },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,

@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 
 // ** Utils
 import { formatDateTime } from "@/utils/helpers";
-import { getDetailCategory } from "@/services/categoryService";
+import { getCategoryDetail } from "@/services/categoryService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -29,7 +29,7 @@ const CategoryDetail = ({ closeMenu, categoryId }: Props) => {
   const title = "Category Detail";
   const { isLoading, data: categoryData } = useQuery({
     queryKey: ["category-detail", categoryId],
-    queryFn: () => getDetailCategory(categoryId),
+    queryFn: () => getCategoryDetail(categoryId),
     ...queryOptions,
   });
 
@@ -41,9 +41,6 @@ const CategoryDetail = ({ closeMenu, categoryId }: Props) => {
     <Box
       sx={{
         width: "100%",
-        maxWidth: {
-          sm: "500px",
-        },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,

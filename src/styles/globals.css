@@ -38,6 +38,12 @@ li {
   /* margin-left: 100px; */
 }
 
+.loading-toast-icon {
+  width: fit-content;
+  height: fit-content;
+  min-width: fit-content;
+}
+
 @keyframes rotate {
   0% {
     transform: rotate(0deg);

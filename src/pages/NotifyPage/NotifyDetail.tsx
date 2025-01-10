@@ -1,12 +1,5 @@
 // ** Mui Imports
-import {
-  Box,
-  Typography,
-  IconButton,
-  Stack,
-  Grid,
-  Avatar,
-} from "@mui/material";
+import { Box, Typography, IconButton, Stack, Avatar } from "@mui/material";
 
 // ** Components
 import { ChipStatus, Icon, ModalLoading } from "@/components/ui";
@@ -16,24 +9,25 @@ import { useQuery } from "@tanstack/react-query";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 // ** Utils
-import { formatAddress, formatDateTime } from "@/utils/helpers";
+import { formatDateTime } from "@/utils/helpers";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
 
 // ** Services
-import { getUserDetail } from "@/services/userService";
+import { getNotifyDetail } from "@/services/notifyService";
 
 // ** Types
 type Props = {
   notifyId: string;
   closeMenu: () => void;
 };
+
 const NotifyDetail = ({ closeMenu, notifyId }: Props) => {
   const title = "Notify Detail";
-  const { isLoading, data: userData } = useQuery({
+  const { isLoading, data: notification } = useQuery({
     queryKey: ["notify-detail", notifyId],
-    queryFn: () => getUserDetail(notifyId),
+    queryFn: () => getNotifyDetail(notifyId),
     ...queryOptions,
   });
 
@@ -41,14 +35,18 @@ const NotifyDetail = ({ closeMenu, notifyId }: Props) => {
     return <ModalLoading title={title} closeMenu={closeMenu} />;
   }
 
+  const statusMap = {
+    read: "disabled",
+    unread: "info",
+    sent: "success",
+  };
+
+  console.log("🚀 ~ NotifyDetail ~ notifyData:", notification);
   return (
     <Box
       sx={{
         overflow: "hidden",
         width: "100%",
-        maxWidth: {
-          sm: "500px",
-        },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
@@ -71,8 +69,9 @@ const NotifyDetail = ({ closeMenu, notifyId }: Props) => {
           onClick={closeMenu}
           sx={{
             position: "absolute",
-            right: "0.5rem",
-            top: "20%",
+            padding: 0,
+            right: 0,
+            top: 0,
           }}>
           <Icon fontSize="1.5rem" icon="si:close-line" />
         </IconButton>
@@ -81,92 +80,92 @@ const NotifyDetail = ({ closeMenu, notifyId }: Props) => {
       <Stack
         direction="column"
         sx={{
-          paddingBottom: "2.5rem",
           paddingTop: "1rem",
+          gap: "0.5rem",
         }}>
         <Typography sx={{ fontSize: "1.125rem" }}>
-          notification.title
+          {notification?.title}
         </Typography>
-        <Typography sx={{ fontSize: "1.125rem" }}>
-          notification.createdDate
+        <Typography sx={{ fontSize: "1rem" }}>
+          {formatDateTime(notification!.createdDate)}
         </Typography>
 
-        <Stack sx={{ marginTop: "1rem", gap: "0.75rem" }}>
+        <Stack
+          sx={{ flexDirection: "row", marginTop: "0.75rem", gap: "0.75rem" }}>
           <Avatar
             sx={{ height: "40px", width: "40px", objectFit: "cover" }}
-            src="https://res.cloudinary.com/dzl5ur69n/image/upload/v1729153401/hycm0az7rxrmg07swprs.jpg"
-            alt=""
+            src={notification?.createdBy.avatar}
+            alt={notification?.createdBy.fullName}
           />
           <Stack sx={{ flexDirection: "column" }}>
             <Typography sx={{ fontSize: "0.875rem" }}>
-              notification.fullName
+              {notification?.createdBy.fullName}
             </Typography>
             <Typography sx={{ fontSize: "0.75rem" }}>
-              notification.name
+              {notification?.createdBy.group.name}
             </Typography>
           </Stack>
         </Stack>
 
-        <Stack sx={{ marginTop: "1rem", gap: "0.75rem" }}>
-          <Avatar
-            sx={{ height: "40px", width: "40px", objectFit: "cover" }}
-            src="https://res.cloudinary.com/dzl5ur69n/image/upload/v1729153401/hycm0az7rxrmg07swprs.jpg"
-            alt=""
-          />
-          <Stack sx={{ flexDirection: "column" }}>
-            <Typography
-              sx={{
-                fontWeight: 500,
-                marginBottom: "0.5rem",
-                fontSize: "0.875rem",
-              }}>
-              Message:
-            </Typography>
-            <Typography sx={{ fontSize: "0.75rem" }}>
-              notification.message
-            </Typography>
-          </Stack>
-        </Stack>
-
-        <Box sx={{ marginTop: "1.5rem" }}>
+        <Stack sx={{ marginTop: "1rem", flexDirection: "column" }}>
           <Typography
             sx={{
               fontWeight: 500,
               marginBottom: "0.5rem",
               fontSize: "0.875rem",
             }}>
+            Message:
+          </Typography>
+          <Typography sx={{ fontSize: "0.75rem" }}>
+            {notification?.message}
+          </Typography>
+        </Stack>
+
+        <Box sx={{ marginTop: "1.5rem" }}>
+          <Typography
+            sx={{
+              fontWeight: 500,
+              marginBottom: "1rem",
+              fontSize: "0.875rem",
+            }}>
             Recipients:
           </Typography>
           <PerfectScrollbar options={{ wheelPropagation: false }}>
-            <Stack sx={{ gap: "0.5rem", height: 200 }}>
-              <Stack
-                sx={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}>
-                <Stack sx={{ marginTop: "1rem", gap: "0.75rem" }}>
-                  <Avatar
-                    sx={{ height: "40px", width: "40px", objectFit: "cover" }}
-                    src="https://res.cloudinary.com/dzl5ur69n/image/upload/v1729153401/hycm0az7rxrmg07swprs.jpg"
-                    alt=""
-                  />
-                  <Stack sx={{ flexDirection: "column" }}>
-                    <Typography
-                      sx={{
-                        fontWeight: 500,
-                        marginBottom: "0.5rem",
-                        fontSize: "0.875rem",
-                      }}>
-                      Message:
-                    </Typography>
-                    <Typography sx={{ fontSize: "0.75rem" }}>
-                      notification.message
-                    </Typography>
+            <Stack sx={{ gap: "1rem", height: 200 }}>
+              {notification?.toUsers?.map((userData, index) => (
+                <Stack
+                  key={index}
+                  sx={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}>
+                  <Stack
+                    sx={{
+                      flexDirection: "row",
+                      gap: "0.75rem",
+                    }}>
+                    <Avatar
+                      sx={{ height: "40px", width: "40px", objectFit: "cover" }}
+                      src={userData.user.avatar}
+                      alt={userData.user.fullName}
+                    />
+                    <Stack sx={{ flexDirection: "column" }}>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {userData.user.fullName}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.75rem" }}>
+                        {userData.user.email}
+                      </Typography>
+                    </Stack>
                   </Stack>
+
+                  <ChipStatus
+                    variant={statusMap[userData.status] as ColorVariant}
+                    label={userData.status}
+                  />
                 </Stack>
-                <Typography sx={{ fontSize: "0.75rem" }}>read</Typography>
-              </Stack>
+              ))}
             </Stack>
           </PerfectScrollbar>
         </Box>

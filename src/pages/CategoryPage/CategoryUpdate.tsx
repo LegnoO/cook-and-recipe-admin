@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 // ** Services
-import { getDetailCategory, updateCategory } from "@/services/categoryService";
+import { getCategoryDetail, updateCategory } from "@/services/categoryService";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -44,7 +44,7 @@ const CategoryUpdate = ({
   const title = "Category Update";
   const { data: categoryData } = useQuery({
     queryKey: ["category-detail", categoryId],
-    queryFn: () => getDetailCategory(categoryId),
+    queryFn: () => getCategoryDetail(categoryId),
     ...queryOptions,
   });
 
@@ -104,9 +104,6 @@ const CategoryUpdate = ({
     <Box
       sx={{
         width: "100%",
-        maxWidth: {
-          sm: "500px",
-        },
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,

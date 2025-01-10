@@ -25,6 +25,7 @@ const ChipStatus = forwardRef(
       warning: theme.palette.warning.main,
       error: theme.palette.error.main,
       banned: theme.palette.error.dark,
+      info: theme.palette.info.main,
     };
 
     return (
