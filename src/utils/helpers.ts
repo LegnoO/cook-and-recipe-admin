@@ -6,7 +6,7 @@ export const regex = {
   rgba: /^rgba?\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/,
 };
 
-export function isObjectEmpty(objectName: Object) {
+export function isObjectEmpty(objectName: Record<string, unknown>) {
   return Object.keys(objectName).length === 0;
 }
 
@@ -119,7 +119,7 @@ export function isUrlPatternMatched(inputUrl: string, all_url: string[]) {
 }
 
 export function formatAddress(address: Address, maxLength: number = 100) {
-  let formattedAddress = `${address.number}, ${address.street}, ${address.ward}, ${address.district}, ${address.city}`;
+  const formattedAddress = `${address.number}, ${address.street}, ${address.ward}, ${address.district}, ${address.city}`;
 
   if (formattedAddress.length > maxLength) {
     return formattedAddress.slice(0, maxLength - 3) + "...";
@@ -164,12 +164,25 @@ export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function createFormData(data: Object) {
+export function createFormData(
+  data: Record<
+    string,
+    string | number | boolean | Date | File | Blob | null | undefined
+  >,
+) {
   const formData = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {
-    if (value) {
-      formData.append(key, value);
+    if (value !== null && value !== undefined) {
+      if (
+        typeof value === "string" ||
+        value instanceof File ||
+        value instanceof Blob
+      ) {
+        formData.append(key, value);
+      } else if (typeof value === "number" || typeof value === "boolean") {
+        formData.append(key, value.toString());
+      }
     }
   });
 
@@ -194,8 +207,8 @@ export function formatDateTime(dateInput: Date) {
 }
 
 export function compareArrayLengths(
-  firstArray: Array<any>,
-  secondArray: Array<any>,
+  firstArray: unknown[],
+  secondArray: unknown[],
 ): number {
   if (!Array.isArray(firstArray) || !Array.isArray(secondArray)) {
     return -1;
@@ -256,9 +269,18 @@ export function stringifyObjectValues(
 }
 
 export function shallowCompareObject(
-  obj1: Record<string, any>,
-  obj2: Record<string, any>,
+  obj1: Record<string, unknown>,
+  obj2: Record<string, unknown>,
 ) {
   console.log({ obj1, obj2 });
   return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
+export function generateRandomColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }

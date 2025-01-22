@@ -25,6 +25,8 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
+import RecipeDetail from "./RecipeDetail";
 
 // ** Library Imports
 import { toast } from "react-toastify";
@@ -33,9 +35,6 @@ import { useDebouncedCallback } from "use-debounce";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
-
-// ** Component's
-import RecipeDetail from "./RecipeDetail";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -430,6 +429,7 @@ const RecipePendingList = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={queryLoading} />
         <Table>
           <TableHead
             isLoading={queryLoading && !recipes}

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -534,6 +535,7 @@ const GroupList = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={isLoading} />
         <Table>
           <TableHead
             isLoading={isLoading && !groups}

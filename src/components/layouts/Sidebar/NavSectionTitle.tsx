@@ -48,7 +48,7 @@ const NavSectionTitle = ({ item }: Props) => {
         <Box
           sx={{
             height: "1px",
-            width: "100%",
+            width: "30px",
             backgroundColor: (theme) => theme.palette.text.secondary,
           }}
         />

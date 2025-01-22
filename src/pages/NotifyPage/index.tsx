@@ -34,6 +34,7 @@ import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 import BroadcastNotification from "./BroadcastNotification";
 import NotifyDetail from "./NotifyDetail";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -382,6 +383,7 @@ const NotifyList = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={queryLoading} />
         <Table>
           <TableHead
             isLoading={queryLoading && !notification}

@@ -16,7 +16,9 @@ export const Table = styled(MuiTable)({});
 
 export const TableRow = styled(MuiTableRow)({});
 
-export const TableContainer = styled(MuiTableContainer)({});
+export const TableContainer = styled(MuiTableContainer)({
+  position: "relative",
+});
 
 export const TableHead = styled(MuiTableHead)(({ theme }) => ({
   "&.MuiTableHead-root": {

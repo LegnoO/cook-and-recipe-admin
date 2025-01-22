@@ -30,6 +30,7 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -177,10 +178,11 @@ const CategoryList = () => {
     if (searchParams.size === 0) {
       setSearchParams((params) => params);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { total, ...truthyFilter } = getTruthyObject(filter);
     const params = new URLSearchParams(truthyFilter as Record<string, string>);
     setSearchParams(params);
-  }, [filter]);
+  }, [filter, searchParams.size, setSearchParams]);
 
   const HEAD_COLUMNS = [
     { title: "Name", sortName: "name" },
@@ -387,6 +389,7 @@ const CategoryList = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={isLoading} />
         <Table>
           <TableHead
             isLoading={isLoading && !category}

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -367,6 +368,7 @@ const UserPage = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={queryLoading} />
         <Table>
           <TableHead
             isLoading={queryLoading && !users}

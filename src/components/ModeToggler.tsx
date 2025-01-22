@@ -27,7 +27,7 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   "&": {
     paddingInline: "1rem",
     marginInline: "0.5rem !important",
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: `${theme.shape.borderRadius}px`,
     transition: "all 0.25s ease-in-out",
   },
   "&:not(:first-of-type)": {

@@ -84,5 +84,15 @@ export const notifyEndpoints = {
 };
 
 export const statisticsEndpoints = {
-  userTotalStatistics: `/statistic/admin/total/user`,
+  userTotalStatistics: `/statistic/admin/total/users`,
+  chefTotalStatistics: `/statistic/admin/total/chefs`,
+  recipeTotalStatistics: `/statistic/admin/total/recipes`,
+  categoriesTotalStatistics: `/statistic/admin/total/categories`,
+  categoryChartStatistics: `/statistic/admin/chart/recipe-by-categories`,
+  userChartStatistics: (months: string) =>
+    `/statistic/admin/chart/users?filterByStatus=true&months=${months}`,
+  chefChartStatistics: (months: string) =>
+    `/statistic/admin/chart/chefs?filterByStatus=true&months=${months}`,
+  recipeChartStatistics: (months: string) =>
+    `/statistic/admin/chart/recipes?filterByStatus=true&months=${months}`,
 };

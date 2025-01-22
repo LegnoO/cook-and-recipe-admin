@@ -24,6 +24,7 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput, GroupSelect } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -389,6 +390,7 @@ const EmployeePage = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={queryLoading}/>
         <Table>
           <TableHead<FilterEmployees>
             isLoading={queryLoading && !employees}

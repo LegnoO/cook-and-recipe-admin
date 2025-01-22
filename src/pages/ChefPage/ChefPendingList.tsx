@@ -25,6 +25,7 @@ import {
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
+import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 
 // ** Services
 import { queryChefPending, toggleChefRequest } from "@/services/chefService";
@@ -413,6 +414,7 @@ const ChefPendingList = () => {
       </Paper>
       <Divider />
       <TableContainer>
+        <ProgressBarLoading isLoading={isLoading} />
         <Table>
           <TableHead<ChefFilterPending>
             isLoading={queryLoading && !chefs}
