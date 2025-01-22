@@ -1,8 +1,14 @@
 // ** Mui Imports
 import { styled } from "@mui/material/styles";
-import Logo from "@/components/ui/Logo";
+
+// ** Library Imports
+import { Link } from "react-router-dom";
 
 // ** Components
+import Logo from "@/components/ui/Logo";
+
+// ** Config
+import { homeRoute } from "@/config/url";
 
 // ** Styled Components
 const StyledNavHeader = styled("div")({
@@ -25,9 +31,9 @@ const StyledNavHeader = styled("div")({
 const NavHeader = () => {
   return (
     <StyledNavHeader className="nav-header">
-      {/* <Link to="/layout"> */}
-      <Logo />
-      {/* </Link> */}
+      <Link to={homeRoute}>
+        <Logo />
+      </Link>
     </StyledNavHeader>
   );
 };

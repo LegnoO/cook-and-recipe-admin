@@ -3,7 +3,6 @@ import { lazy } from "react";
 
 // ** Config
 import { homeRoute, loginRoute } from "./url";
-import TestPage from "@/pages/TestPage";
 
 // ** Pages
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -50,14 +49,6 @@ export const protectedRoute: Route[] = [
   {
     path: "/users",
     component: <UserPage />,
-    permission: {
-      page: "user",
-      action: "read",
-    },
-  },
-  {
-    component: <TestPage />,
-    path: "/test",
     permission: {
       page: "user",
       action: "read",

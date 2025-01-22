@@ -47,8 +47,8 @@ export const MenuNavLink = styled("li")(({ theme }) => ({
     boxShadow: `0px 2px 6px ${hexToRGBA(theme.palette.primary.main, 0.48)}`,
     background: `linear-gradient(270deg, ${hexToRGBA(theme.palette.primary.main, 0.7)} 0%, ${theme.palette.primary.main} 100%)`,
 
-    "& .label, & svg": {
-      color: `${theme.palette.common.white} !important`,
+    "& .nav-label, & svg": {
+      color: `${theme.palette.primary.contrastText} !important`,
     },
   },
 }));

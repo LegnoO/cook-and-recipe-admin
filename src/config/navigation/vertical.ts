@@ -1,3 +1,6 @@
+// ** Config
+import { homeRoute } from "../url";
+
 // ** Types
 import { IVerticalNavItemsType } from "@/components/layouts/Sidebar/types";
 
@@ -5,7 +8,7 @@ export const verticalNavItems: IVerticalNavItemsType = [
   {
     title: "Dashboard",
     icon: "iconoir:mail-open",
-    path: "/test",
+    path: homeRoute,
     action: "read",
     page: "user",
   },
