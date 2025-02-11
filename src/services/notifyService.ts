@@ -6,6 +6,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 import { notifyEndpoints } from "@/config/endpoints";
 
 export async function queryNotify(params: string) {
+  console.log("🚀 ~ queryNotify ~ params:", params);
   try {
     const response = await AxiosInstance.get<NotifyResponse>(
       notifyEndpoints.queryNotify(params),
@@ -20,6 +21,27 @@ export async function queryNotify(params: string) {
 export async function getNotifyDetail(notifyId: string): Promise<Notify> {
   const response = await AxiosInstance.get(
     notifyEndpoints.getNotifyDetail(notifyId),
+  );
+
+  return response.data;
+}
+
+export async function pushNotifySpecific({
+  title,
+  message,
+  receiver,
+}: {
+  title: string;
+  message: string;
+  receiver: string;
+}) {
+  const response = await AxiosInstance.post(
+    notifyEndpoints.pushNotifySpecific,
+    {
+      title,
+      message,
+      receiver,
+    },
   );
 
   return response.data;

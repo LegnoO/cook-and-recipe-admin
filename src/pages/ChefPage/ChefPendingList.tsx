@@ -271,9 +271,16 @@ const ChefPendingList = () => {
                 <ConfirmBox
                   isLoading={isLoading}
                   variant="warning"
-                  textSubmit="Confirm"
-                  textTitle={`Confirm reject ${row.userInfo.fullName}`}
-                  textContent={`You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`}
+                  notificationContent={{
+                    title: "test title",
+                    message: "test message",
+                    receiver: row.userInfo.id,
+                  }}
+                  boxContent={{
+                    textSubmit: "Confirm",
+                    textTitle: `Confirm reject ${row.userInfo.fullName}`,
+                    textContent: `You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`,
+                  }}
                   onClick={async () => {
                     await handleApproveOrRejectChef(row.id, false);
                   }}
@@ -303,9 +310,16 @@ const ChefPendingList = () => {
                 <ConfirmBox
                   isLoading={isLoading}
                   variant="info"
-                  textSubmit="Confirm"
-                  textTitle={`Confirm approve ${row.userInfo.fullName}`}
-                  textContent={`You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`}
+                  notificationContent={{
+                    title: "test title",
+                    message: "test message",
+                    receiver: row.userInfo.id,
+                  }}
+                  boxContent={{
+                    textSubmit: "Confirm",
+                    textTitle: `Confirm approve ${row.userInfo.fullName}`,
+                    textContent: `You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`,
+                  }}
                   onClick={async () => {
                     await handleApproveOrRejectChef(row.id, true);
                   }}

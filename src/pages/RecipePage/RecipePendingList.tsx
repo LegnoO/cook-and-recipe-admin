@@ -135,6 +135,7 @@ const RecipePendingList = () => {
 
   async function handleApproveOrRejectRecipe(
     recipeId: string,
+    chefId: string,
     status: boolean,
   ) {
     setLoading(true);
@@ -261,11 +262,11 @@ const RecipePendingList = () => {
               </Modal>
             </IconButton>
             <Tooltip
+              arrow
+              title="Reject Promotion"
               disableHoverListener={activeIds.includes(
                 ids.modalConfirmReject(row.id),
-              )}
-              arrow
-              title="Reject Promotion">
+              )}>
               <IconButton
                 sx={{
                   "& svg": { color: (theme) => theme.palette.error.main },
@@ -285,7 +286,11 @@ const RecipePendingList = () => {
                     textTitle={`Confirm reject recipe ${row.name}`}
                     textContent={`You're about to reject recipe '${row.name}'. Are you sure?`}
                     onClick={async () => {
-                      await handleApproveOrRejectRecipe(row.id, false);
+                      await handleApproveOrRejectRecipe(
+                        row.id,
+                        row.createdBy.id,
+                        false,
+                      );
                     }}
                     onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
                   />
@@ -293,6 +298,11 @@ const RecipePendingList = () => {
               </IconButton>
             </Tooltip>
             <Tooltip
+              open={
+                activeIds.includes(ids.modalConfirmApprove(row.id))
+                  ? false
+                  : undefined
+              }
               disableHoverListener={activeIds.includes(
                 ids.modalConfirmApprove(row.id),
               )}
@@ -317,7 +327,11 @@ const RecipePendingList = () => {
                     textTitle={`Confirm approve ${row.name}`}
                     textContent={`You're about to approve recipe '${row.name}'. Are you sure?`}
                     onClick={async () => {
-                      await handleApproveOrRejectRecipe(row.id, true);
+                      await handleApproveOrRejectRecipe(
+                        row.id,
+                        row.createdBy.id,
+                        true,
+                      );
                     }}
                     onClose={() =>
                       handleCancel(ids.modalConfirmApprove(row.id))

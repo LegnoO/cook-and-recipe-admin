@@ -84,23 +84,29 @@ const NotifyList = () => {
   );
 
   const [notification, setNotification] = useState<Notify[]>();
+  const fromDateParam = searchParams.get("fromDate");
+  const toDateParam = searchParams.get("toDate");
+
   const [filter, setFilter] = useState<Filter<NotifyFilter>>({
     index: Number(searchParams.get("index")) || defaultFilter.index,
     size: Number(searchParams.get("size")) || defaultFilter.size,
     receiverId: searchParams.get("receiverId") || undefined,
     title: searchParams.get("title") || undefined,
-    fromDate: dayjs(searchParams.get("fromDate")).isValid()
-      ? dayjs(searchParams.get("fromDate")).toISOString()
-      : undefined,
-    toDate: dayjs(searchParams.get("toDate")).isValid()
-      ? dayjs(searchParams.get("toDate")).toISOString()
-      : undefined,
+    fromDate:
+      fromDateParam && dayjs(fromDateParam).isValid()
+        ? dayjs(fromDateParam).toISOString()
+        : undefined,
+    toDate:
+      toDateParam && dayjs(toDateParam).isValid()
+        ? dayjs(toDateParam).toISOString()
+        : undefined,
     sortBy: searchParams.get("sortBy") || undefined,
     sortOrder:
       (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
     total: Number(searchParams.get("total")),
   });
-  console.log({ filter });
+  console.log("🚀 ~ NotifyList ~ filter:", filter);
+
   const {
     data: notifyData,
     refetch,
@@ -160,6 +166,7 @@ const NotifyList = () => {
     }
     const { total, ...truthyFilter } = getTruthyObject(filter);
     const params = new URLSearchParams(truthyFilter as Record<string, string>);
+
     setSearchParams(params);
   }, [filter]);
 
@@ -294,12 +301,29 @@ const NotifyList = () => {
                   "& .MuiInputBase-input": { width: "100px" },
                 }}
                 disabled={false}
-                value={filter.fromDate ? dayjs(filter.fromDate) : null}
                 onChange={(date: Dayjs | null) => {
-                  updateFilter({
-                    index: 1,
-                    fromDate: date ? date.toISOString() : undefined,
-                  });
+                  if (date) {
+                    if (filter.toDate) {
+                      const toDate = new Date(filter.toDate);
+                      const fromDate = new Date(date.toISOString());
+                      console.log({
+                        toDate: fromDate.getTime(),
+                        fromDate: toDate.getTime(),
+                        compare: fromDate.getTime() >= toDate.getTime(),
+                      });
+                      if (fromDate.getTime() >= toDate.getTime()) {
+                        updateFilter({
+                          index: 1,
+                          toDate: undefined,
+                        });
+                      }
+                    }
+
+                    updateFilter({
+                      index: 1,
+                      fromDate: date.toISOString(),
+                    });
+                  }
                 }}
                 slots={{
                   textField: TextField,
@@ -307,8 +331,7 @@ const NotifyList = () => {
                 slotProps={{
                   textField: {
                     fullWidth: true,
-                    // helperText: error ? error.message : null,
-                    // error: !!error,
+                    value: filter.fromDate ? dayjs(filter.fromDate) : null,
                   },
                 }}
               />
@@ -325,13 +348,34 @@ const NotifyList = () => {
                   "&": { height: 40 },
                   "& .MuiInputBase-input": { width: "100px" },
                 }}
-                disabled={false}
-                value={filter.fromDate ? dayjs(filter.fromDate) : null}
                 onChange={(date: Dayjs | null) => {
-                  updateFilter({
-                    index: 1,
-                    fromDate: date ? date.toISOString() : undefined,
-                  });
+                  if (date) {
+                    if (!filter.fromDate) {
+                      updateFilter({
+                        index: 1,
+                        fromDate: date.toISOString(),
+                      });
+                      return;
+                    }
+
+                    const fromDate = new Date(filter.fromDate);
+                    const toDate = new Date(date.toISOString());
+                    if (fromDate.getTime() >= toDate.getTime()) {
+                      updateFilter({
+                        index: 1,
+                        fromDate: date.toISOString(),
+                      });
+                      updateFilter({
+                        index: 1,
+                        toDate: undefined,
+                      });
+                    } else {
+                      updateFilter({
+                        index: 1,
+                        toDate: date.toISOString(),
+                      });
+                    }
+                  }
                 }}
                 slots={{
                   textField: TextField,
@@ -339,8 +383,7 @@ const NotifyList = () => {
                 slotProps={{
                   textField: {
                     fullWidth: true,
-                    // helperText: error ? error.message : null,
-                    // error: !!error,
+                    value: filter.toDate ? dayjs(filter.toDate) : null,
                   },
                 }}
               />

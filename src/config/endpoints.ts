@@ -80,6 +80,7 @@ export const categoryEndpoints = {
 export const notifyEndpoints = {
   queryNotify: (params: string) => `/notification/admin/find?${params}`,
   getNotifyDetail: (notifyId: string) => `/notification/admin/find/${notifyId}`,
+  pushNotifySpecific: "/notification/admin/specific",
   pushNotifyAll: "/notification/admin/all",
 };
 

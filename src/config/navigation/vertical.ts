@@ -96,16 +96,15 @@ export const verticalNavItems: IVerticalNavItemsType = [
     page: "user",
   },
   {
+    title: "Profile",
+    icon: "tabler:user-check",
+    path: "/profile",
+  },
+  {
     title: "Notification",
     icon: "mdi:bell-outline",
     path: "/notification",
     action: "read",
     page: "user",
-  },
-
-  {
-    title: "Settings",
-    icon: "uil:setting",
-    path: "/profile",
   },
 ];

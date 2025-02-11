@@ -129,7 +129,6 @@ const NavGroup = (props: Props) => {
     }
 
     if ("children" in navItem && navItem.children) {
-      // check if any child matches the path, return boolean
       return navItem.children.some((child) => containsNavLinkPath(child, path));
     }
 
@@ -140,7 +139,6 @@ const NavGroup = (props: Props) => {
     if (isRootParent) {
       const newRootGroup = [...rootGroupActive];
 
-      // toggle if this root not contains path of nav link
       if (!containsNavLinkPath(group, pathname)) {
         if (!newRootGroup.includes(group.title)) {
           newRootGroup[1] = group.title;
@@ -152,14 +150,11 @@ const NavGroup = (props: Props) => {
 
           setRootGroupActive([...newData]);
         }
-
-        // else contains path of nav link
       } else {
         newRootGroup[0] = newRootGroup[0] === group.title ? "" : group.title;
         setRootGroupActive(newRootGroup);
       }
     } else {
-      // if not root
       const newChildGroup = [...childGroupActive];
 
       if (!newChildGroup.includes(group.title)) {
@@ -178,7 +173,6 @@ const NavGroup = (props: Props) => {
     toggleActiveGroup(item);
   }
 
-  // ** UseEffect
   useEffect(() => {
     if (containsNavLinkPath(item, pathname)) {
       if (isRootParent && !rootGroupActive.includes(item.title)) {
@@ -223,9 +217,8 @@ const NavGroup = (props: Props) => {
         component="ul"
         onClick={(e) => e.stopPropagation()}
         in={
-          rootGroupActive.includes(item.title)
-            ? rootGroupActive.includes(item.title)
-            : childGroupActive.includes(item.title)
+          rootGroupActive.includes(item.title) ||
+          childGroupActive.includes(item.title)
         }>
         <NavItems
           isRootParent={false}

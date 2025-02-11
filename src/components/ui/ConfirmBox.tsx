@@ -1,19 +1,28 @@
-// ** React Imports
-import {} from "react";
-
 // ** Mui Imports
 import { Typography, Stack, Button } from "@mui/material";
 
 // ** Components
-import { Icon } from "@/components/ui";
+import { Icon, TextField } from "@/components/ui";
+
+// ** Services
+import { pushNotifySpecific } from "@/services/notifyService";
 
 // ** Types
 type Props = {
   variant: "success" | "error" | "info" | "warning";
-  textCancel?: string;
-  textSubmit?: string;
-  textContent: string;
-  textTitle: string;
+  notificationContent: {
+    title: string;
+    message: string;
+    receiver: string;
+  };
+
+  boxContent: {
+    textCancel?: string;
+    textSubmit?: string;
+    textContent: string;
+    textTitle: string;
+  };
+
   isLoading?: boolean;
   onClose?: () => void;
   onClick: () => void;
@@ -23,12 +32,19 @@ const ConfirmBox = ({
   onClose,
   onClick,
   isLoading,
-  textCancel = "Cancel",
-  textSubmit = "Yes",
-  textTitle = "Title",
-  textContent = 'You are going to delete the "Demo" project.',
+  boxContent,
+  notificationContent,
   variant = "success",
 }: Props) => {
+  const {
+    textCancel = "Cancel",
+    textSubmit = "Yes",
+    textTitle = "Title",
+    textContent = 'You are going to delete the "Demo" project.',
+  } = boxContent;
+
+  const { title, message, receiver } = notificationContent;
+
   const iconMap = {
     success: "icon-park-outline:success",
     error: "fluent:info-16-regular",
@@ -38,6 +54,7 @@ const ConfirmBox = ({
 
   return (
     <Stack
+      onClick={(event) => event.stopPropagation()}
       spacing={0}
       direction="column"
       alignItems="center"
@@ -59,7 +76,7 @@ const ConfirmBox = ({
         <Icon fontSize="1.75rem" icon={iconMap[variant]} />
       </Button>
       <Typography
-        sx={{ width: "100%", mb: 1.5 }}
+        sx={{ mb: 1 }}
         fontWeight={600}
         variant="body1"
         color="text.primary">
@@ -76,8 +93,22 @@ const ConfirmBox = ({
         color="text.primary">
         {textContent}
       </Typography>
+
+      <TextField
+        label="Enter your reason"
+        multiline
+        rows={2}
+        variant="outlined"
+        fullWidth
+      />
+
       <Stack
-        sx={{ justifyContent: "end", width: "100%", gap: "0.75rem" }}
+        sx={{
+          mt: "1.5rem",
+          justifyContent: "end",
+          width: "100%",
+          gap: "0.75rem",
+        }}
         direction="row">
         <Button
           onClick={onClose}
@@ -88,7 +119,10 @@ const ConfirmBox = ({
         </Button>
         <Button
           disabled={isLoading}
-          onClick={onClick}
+          onClick={async () => {
+            onClick();
+            await pushNotifySpecific({ title, message, receiver });
+          }}
           sx={{ fontWeight: 500 }}
           variant="contained"
           color={variant}>
