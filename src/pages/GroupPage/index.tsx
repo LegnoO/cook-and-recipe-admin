@@ -397,9 +397,11 @@ const GroupList = () => {
                       <ConfirmBox
                         isLoading={isLoading}
                         variant="error"
-                        textSubmit="Delete"
-                        textTitle={`Confirm delete group ${row.name}`}
-                        textContent={`You're about to delete group '${row.name}'. Are you sure?`}
+                        boxContent={{
+                          textSubmit: "Delete",
+                          textTitle: `Confirm delete group ${row.name}`,
+                          textContent: `You're about to delete group '${row.name}'. Are you sure?`,
+                        }}
                         onClick={async () => {
                           await deleteGroup(row.id);
                         }}

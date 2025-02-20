@@ -135,7 +135,6 @@ const RecipePendingList = () => {
 
   async function handleApproveOrRejectRecipe(
     recipeId: string,
-    chefId: string,
     status: boolean,
   ) {
     setLoading(true);
@@ -178,15 +177,20 @@ const RecipePendingList = () => {
     }
 
     setLoading(queryLoading);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeData]);
 
   useEffect(() => {
     if (searchParams.size === 0) {
       setSearchParams((params) => params);
     }
-    const { total, ...truthyFilter } = getTruthyObject(filter);
+    const truthyFilter = getTruthyObject(filter);
+    delete truthyFilter.total;
     const params = new URLSearchParams(truthyFilter as Record<string, string>);
     setSearchParams(params);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const HEAD_COLUMNS = [
@@ -282,15 +286,18 @@ const RecipePendingList = () => {
                   <ConfirmBox
                     isLoading={isLoading}
                     variant="error"
-                    textSubmit="Confirm"
-                    textTitle={`Confirm reject recipe ${row.name}`}
-                    textContent={`You're about to reject recipe '${row.name}'. Are you sure?`}
+                    notificationContent={{
+                      title: `Recipe Rejected: ${row.name}`,
+                      message: `The recipe '${row.name}' has been rejected. Please review it and try again.`,
+                      receiver: row.createdBy.userInfo.id,
+                    }}
+                    boxContent={{
+                      textSubmit: "Reject",
+                      textTitle: `Confirm rejection of recipe ${row.name}`,
+                      textContent: `You're about to reject the recipe '${row.name}'. This action will remove it from the review queue. Are you sure you want to proceed?`,
+                    }}
                     onClick={async () => {
-                      await handleApproveOrRejectRecipe(
-                        row.id,
-                        row.createdBy.id,
-                        false,
-                      );
+                      await handleApproveOrRejectRecipe(row.id, false);
                     }}
                     onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
                   />
@@ -323,15 +330,18 @@ const RecipePendingList = () => {
                   <ConfirmBox
                     isLoading={isLoading}
                     variant="success"
-                    textSubmit="Confirm"
-                    textTitle={`Confirm approve ${row.name}`}
-                    textContent={`You're about to approve recipe '${row.name}'. Are you sure?`}
+                    notificationContent={{
+                      title: `Recipe Approved: ${row.name}`,
+                      message: `The recipe '${row.name}' has been successfully approved`,
+                      receiver: row.createdBy.userInfo.id,
+                    }}
+                    boxContent={{
+                      textSubmit: "Approve",
+                      textTitle: `Confirm approval of recipe ${row.name}`,
+                      textContent: `You're about to approve the recipe '${row.name}'. This action will make it live for users to see. Are you sure you want to proceed?`,
+                    }}
                     onClick={async () => {
-                      await handleApproveOrRejectRecipe(
-                        row.id,
-                        row.createdBy.id,
-                        true,
-                      );
+                      await handleApproveOrRejectRecipe(row.id, true);
                     }}
                     onClose={() =>
                       handleCancel(ids.modalConfirmApprove(row.id))

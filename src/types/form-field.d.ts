@@ -3,7 +3,7 @@ interface ResponsiveSize {
   xs?: number;
 }
 type MenuText = string;
-type MenuObject = { value: any; label: string };
+type MenuObject = { value: any; label: ReactNode };
 type MenuItem = MenuText | MenuObject;
 
 interface FormField {

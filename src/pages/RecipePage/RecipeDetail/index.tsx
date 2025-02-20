@@ -12,18 +12,10 @@ import {
 } from "@mui/material";
 
 // ** Components
-import {
-  ModalLoading,
-  ChipStatus,
-  Icon,
-  Image,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Table,
-  TableContainer,
-} from "@/components/ui";
-import { TableHead, TableBody } from "@/components";
+import { ModalLoading, ChipStatus, Icon, Image } from "@/components/ui";
+import Instructions from "./Instructions";
+import Ingredients from "./Ingredients";
+import Feedback from "./Feedback";
 
 // ** Library Imports
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -45,6 +37,7 @@ type Props = {
 };
 
 const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
+  const [tabs, setTabs] = useState(0);
   const title = "Recipe Detail";
   const { data: recipeData, isLoading } = useQuery({
     queryKey: ["recipe-detail", recipeId],
@@ -59,6 +52,10 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
 
   const [recipe, setRecipe] = useState<RecipeDetail>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  function onTabChange(index: number) {
+    setTabs(index);
+  }
 
   function handleChangeImageIndex(next: boolean) {
     const length = recipe?.imageUrls.length!;
@@ -96,6 +93,39 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
       render: ({ measurement }) => measurement,
     },
   ];
+
+  const renderTabContent = () => {
+    if (tabs === 0) {
+      return (
+        <Stack
+          direction="column"
+          sx={{ marginBottom: "1rem", paddingInline: "1.5rem" }}>
+          <Ingredients
+            recipe={recipe}
+            bodyCells={BODY_CELLS}
+            headColumns={HEAD_COLUMNS}
+            isLoading={isLoading}
+          />
+        </Stack>
+      );
+    }
+
+    if (tabs === 1) {
+      return (
+        <Stack
+          direction="column"
+          sx={{
+            paddingInline: "1.5rem",
+            paddingBottom: "1.5rem",
+          }}>
+          <Instructions recipe={recipe} />
+        </Stack>
+      );
+    }
+
+    return <Feedback recipeId={recipe.id} />;
+  };
+
   return (
     <Box
       sx={{
@@ -103,6 +133,7 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
         maxHeight: "95dvh",
         backgroundColor: (theme) => theme.palette.background.paper,
         borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+        paddingBottom: "1rem",
       }}>
       <Box
         sx={{
@@ -354,77 +385,48 @@ const RecipeDetail = ({ recipeId, closeMenu }: Props) => {
                 </Stack>
               </Stack>
             )}
-
             <Stack
-              direction="column"
-              sx={{ marginBottom: "1rem", paddingInline: "1.5rem" }}>
-              <Stack sx={{ gap: 1 }} direction="column">
-                <Typography fontWeight={500} sx={{ mb: 0.25 }} variant="h5">
-                  Ingredients
-                </Typography>
-                <TableContainer
-                  sx={{
-                    "&": {
-                      borderTopRightRadius: (theme) =>
-                        `${theme.shape.borderRadius}px`,
-                      borderTopLeftRadius: (theme) =>
-                        `${theme.shape.borderRadius}px`,
-                    },
-                    "& .MuiTableHead-root .MuiTableCell-root": {
-                      paddingBlock: "1rem !important",
-                    },
-                  }}>
-                  <Table>
-                    <TableHead headColumns={HEAD_COLUMNS} />
-                    <TableBody
-                      isLoading={isLoading}
-                      size={recipe.ingredients.length}
-                      data={recipe.ingredients}
-                      bodyCells={BODY_CELLS}
-                    />
-                  </Table>
-                </TableContainer>
-              </Stack>
-            </Stack>
-
-            <Stack
-              direction="column"
               sx={{
                 paddingInline: "1.5rem",
-                paddingBottom: "1.5rem",
+                flexDirection: "row",
+                alignItems: "stretch",
+                justifyContent: "space-between",
+                gap: "0.5rem",
               }}>
-              <Stack sx={{ gap: 1.5 }} direction="column">
-                <Typography sx={{ mb: 0.25 }} fontWeight={500} variant="h5">
-                  Instructions
-                </Typography>
-                {recipe.instructionSections.map((section, index) => (
-                  <Accordion key={`${section.title} ${index}`}>
-                    <AccordionSummary
-                      expandIcon={<Icon icon="ic:twotone-expand-more" />}>
-                      {section.title}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Stack direction="column" sx={{ gap: 2 }}>
-                        {section.instructions.map((instruction) => (
-                          <Stack
-                            key={`${section.title} ${index} ${instruction.step}`}
-                            sx={{ gap: 1, paddingInline: "0.5rem" }}
-                            direction="row"
-                            alignItems={"center"}>
-                            <Typography lineHeight={1} variant="subtitle1">
-                              {instruction.step}.
-                            </Typography>
-                            <Typography lineHeight={1} variant="subtitle1">
-                              {instruction.description}
-                            </Typography>
-                          </Stack>
-                        ))}
-                      </Stack>
-                    </AccordionDetails>
-                  </Accordion>
-                ))}
-              </Stack>
+              {["Ingredients", "Instructions", "Feedbacks"].map(
+                (content, index) => (
+                  <Box
+                    onClick={() => onTabChange(index)}
+                    key={index}
+                    sx={{
+                      cursor: "pointer",
+                      transition: "all 0.25s ease-in-out",
+                      outline: (theme) => `1px solid ${theme.palette.divider}`,
+                      backgroundColor: (theme) =>
+                        tabs === index
+                          ? theme.palette.primary.main
+                          : "transparent",
+                      paddingBlock: "0.375rem",
+                      paddingInline: "1.25rem",
+                      mb: "1.5rem",
+                      flex: 1,
+                      borderRadius: (theme) =>
+                        `${theme.shape.borderRadius - 2}px`,
+                    }}>
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: (theme) => theme.palette.primary.contrastText,
+                        fontSize: "1rem",
+                      }}
+                      fontWeight={500}>
+                      {content}
+                    </Typography>
+                  </Box>
+                ),
+              )}
             </Stack>
+            {renderTabContent()}
           </Stack>
         </Box>
       </PerfectScrollbar>

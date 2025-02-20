@@ -36,6 +36,7 @@ import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -63,7 +64,6 @@ import {
   queryCategory,
   toggleStatusCategory,
 } from "@/services/categoryService";
-import { useSearchParams } from "react-router-dom";
 
 const CategoryList = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);

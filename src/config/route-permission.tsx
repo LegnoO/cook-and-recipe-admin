@@ -5,12 +5,12 @@ import { lazy } from "react";
 import { homeRoute, loginRoute } from "./url";
 
 // ** Pages
+import ErrorPage from "@/pages/ErrorPage";
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const EmployeePage = lazy(() => import("@/pages/EmployeePage"));
 const UserPage = lazy(() => import("@/pages/UserPage"));
-
 const GroupPage = lazy(() => import("@/pages/GroupPage"));
 const ChefList = lazy(() => import("@/pages/ChefPage/ChefList"));
 const ChefPendingList = lazy(() => import("@/pages/ChefPage/ChefPendingList"));
@@ -114,5 +114,9 @@ export const publicRoute: Route[] = [
   {
     component: <LoginPage />,
     path: loginRoute,
+  },
+  {
+    component: <ErrorPage />,
+    path: "/error",
   },
 ];

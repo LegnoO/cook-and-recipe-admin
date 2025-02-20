@@ -14,7 +14,6 @@ import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 // ** Layout
 import DefaultLayout from "@/layouts/DefaultLayout";
 import BlankLayout from "@/layouts/BlankLayout";
-import ErrorBoundary from "@/layouts/ErrorBoundary";
 import BouncingDotsLoader from "@/components/ui/BouncingDotsLoader";
 
 // ** Routes
@@ -49,22 +48,20 @@ const renderRoutes = (routes: Route[]) => {
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route errorElement={<ErrorBoundary />}>
-      <Route element={<App />}>
-        <Route index path="/" element={<Navigate to={homeRoute} />} />
-        <Route path="*" element={<Navigate to="/notfound" replace />} />
-        <Route index path={"/notfound"} element={<NotFoundScreen />} />
-        <Route element={<RouteGuard />}>
-          <Route element={<DefaultLayout />}>
-            <Route
-              element={<Suspense fallback={<BouncingDotsLoader layout />} />}>
-              {renderRoutes(protectedRoute)}
-            </Route>
+    <Route element={<App />} errorElement={<Navigate to="/error" />}>
+      <Route index path="/" element={<Navigate to={homeRoute} />} />
+      <Route path="*" element={<Navigate to="/notfound" replace />} />
+      <Route index path={"/notfound"} element={<NotFoundScreen />} />
+      <Route element={<RouteGuard />}>
+        <Route element={<DefaultLayout />}>
+          <Route
+            element={<Suspense fallback={<BouncingDotsLoader layout />} />}>
+            {renderRoutes(protectedRoute)}
           </Route>
-          <Route element={<BlankLayout />}>
-            <Route element={<Suspense fallback={<LoadingScreen />} />}>
-              {renderRoutes(publicRoute)}
-            </Route>
+        </Route>
+        <Route element={<BlankLayout />}>
+          <Route element={<Suspense fallback={<LoadingScreen />} />}>
+            {renderRoutes(publicRoute)}
           </Route>
         </Route>
       </Route>

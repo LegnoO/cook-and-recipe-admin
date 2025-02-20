@@ -46,7 +46,6 @@ import {
 } from "@/schemas/updateEmployeeSchema";
 
 // ** Types
-
 type Props = {
   employeeId: string;
   closeMenu: () => void;
@@ -169,7 +168,6 @@ const EmployeeUpdate = ({
   }
 
   async function onSubmit(data: UpdateEmployeeValues) {
-    console.log("🚀 ~ onSubmit ~ data:", data);
     const toastLoading = toast.loading("Loading...");
 
     const employeePayload = {

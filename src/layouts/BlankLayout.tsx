@@ -19,6 +19,7 @@ const LayoutWrapper = styled("div")(({ theme }) => ({
 const LayoutContent = styled("div")({
   display: "flex",
   flexDirection: "column",
+  justifyContent: "center",
   minHeight: "100dvh",
   padding: "1.5rem",
 });

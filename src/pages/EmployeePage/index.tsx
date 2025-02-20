@@ -38,6 +38,7 @@ import { queryOptions } from "@/config/query-options";
 // ** Component's
 import EmployeeUpdate from "./EmployeeUpdate";
 import EmployeeAdd from "./EmployeeAdd";
+import EmployeeDetail from "./EmployeeDetail";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
@@ -94,6 +95,7 @@ const EmployeePage = () => {
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
     modalUpdateEmployee: (id: string) => `modal-update-employee-${id}`,
+    modalDetailEmployee: (id: string) => `modal-detail-employee-${id}`,
     newEmployeeModal: "new-employee-modal",
   };
 
@@ -155,21 +157,36 @@ const EmployeePage = () => {
     },
     {
       render: ({ id }) => (
-        <IconButton
-          disableRipple
-          onClick={() => addId(ids.modalUpdateEmployee(id))}>
-          <Icon icon="heroicons:pencil-solid" />
-          <Modal
-            open={activeIds.includes(ids.modalUpdateEmployee(id))}
-            onClose={() => removeId(ids.modalUpdateEmployee(id))}>
-            <EmployeeUpdate
-              employeeId={id}
-              refetch={refetch}
-              closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
-              setController={setController}
-            />
-          </Modal>
-        </IconButton>
+        <Fragment>
+          <IconButton
+            disableRipple
+            onClick={() => addId(ids.modalDetailEmployee(id))}>
+            <Icon icon="hugeicons:view" />
+            <Modal
+              open={activeIds.includes(ids.modalDetailEmployee(id))}
+              onClose={() => removeId(ids.modalDetailEmployee(id))}>
+              <EmployeeDetail
+                employeeId={id}
+                closeMenu={() => handleCancel(ids.modalDetailEmployee(id))}
+              />
+            </Modal>
+          </IconButton>
+          <IconButton
+            disableRipple
+            onClick={() => addId(ids.modalUpdateEmployee(id))}>
+            <Icon icon="heroicons:pencil-solid" />
+            <Modal
+              open={activeIds.includes(ids.modalUpdateEmployee(id))}
+              onClose={() => removeId(ids.modalUpdateEmployee(id))}>
+              <EmployeeUpdate
+                employeeId={id}
+                refetch={refetch}
+                closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
+                setController={setController}
+              />
+            </Modal>
+          </IconButton>
+        </Fragment>
       ),
     },
   ];
@@ -390,7 +407,7 @@ const EmployeePage = () => {
       </Paper>
       <Divider />
       <TableContainer>
-        <ProgressBarLoading isLoading={queryLoading}/>
+        <ProgressBarLoading isLoading={queryLoading} />
         <Table>
           <TableHead<FilterEmployees>
             isLoading={queryLoading && !employees}

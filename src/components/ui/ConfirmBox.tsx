@@ -10,7 +10,7 @@ import { pushNotifySpecific } from "@/services/notifyService";
 // ** Types
 type Props = {
   variant: "success" | "error" | "info" | "warning";
-  notificationContent: {
+  notificationContent?: {
     title: string;
     message: string;
     receiver: string;
@@ -38,12 +38,10 @@ const ConfirmBox = ({
 }: Props) => {
   const {
     textCancel = "Cancel",
-    textSubmit = "Yes",
-    textTitle = "Title",
-    textContent = 'You are going to delete the "Demo" project.',
+    textSubmit,
+    textTitle,
+    textContent,
   } = boxContent;
-
-  const { title, message, receiver } = notificationContent;
 
   const iconMap = {
     success: "icon-park-outline:success",
@@ -61,12 +59,12 @@ const ConfirmBox = ({
       sx={{
         width: "100%",
         maxWidth: {
-          sm: "360px",
+          sm: "425px",
         },
         padding: "1.5rem",
         borderRadius: (theme) => `${theme.shape.borderRadius + 10}px`,
         backgroundColor: (theme) => theme.palette.background.paper,
-        boxShadow: (theme) => theme.shadows[6],
+        boxShadow: 24,
       }}>
       <Button
         color={variant}
@@ -121,7 +119,10 @@ const ConfirmBox = ({
           disabled={isLoading}
           onClick={async () => {
             onClick();
-            await pushNotifySpecific({ title, message, receiver });
+            if (notificationContent) {
+              const { title, message, receiver } = notificationContent;
+              await pushNotifySpecific({ title, message, receiver });
+            }
           }}
           sx={{ fontWeight: 500 }}
           variant="contained"

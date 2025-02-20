@@ -9,7 +9,7 @@ type Props = {
   children: ReactNode;
   onClick?: MouseEventHandler<HTMLDivElement>;
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   sx?: SxProps;
 };
 
@@ -41,7 +41,6 @@ const Modal = ({ children, onClick, open, onClose, sx, ...rest }: Props) => {
             left: "50%",
             width: "100%",
             transform: "translate(-50%, -50%)",
-            boxShadow: 24,
             maxWidth: {
               sm: "500px",
             },

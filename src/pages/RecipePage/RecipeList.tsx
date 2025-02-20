@@ -152,6 +152,8 @@ const RecipeList = () => {
     }
 
     setLoading(queryLoading);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeData]);
 
   useEffect(() => {
@@ -206,7 +208,7 @@ const RecipeList = () => {
       render: (row: Recipe) => formatDateTime(row.createdDate),
     },
     {
-      render: (row: Recipe) => row.approvalBy.fullName,
+      render: (row: Recipe) => row.approvalBy && row.approvalBy.fullName,
     },
     {
       render: (row: Recipe) => (
@@ -264,9 +266,16 @@ const RecipeList = () => {
                 <ConfirmBox
                   isLoading={isLoading}
                   variant="success"
-                  textSubmit={"Confirm"}
-                  textTitle={`Confirm revoke recipe ${row.name}`}
-                  textContent={`You're about to revoke recipe '${row.name}'. Are you sure?`}
+                  notificationContent={{
+                    title: "Recipe Approval Revoked",
+                    message: `Your recipe "${row.name}" has been revoked by an admin and is no longer public.`,
+                    receiver: row.createdBy.id,
+                  }}
+                  boxContent={{
+                    textSubmit: "Confirm",
+                    textTitle: `Confirm Revoking Recipe`,
+                    textContent: `Are you sure you want to revoke the approval of the recipe "${row.name}"? This action will remove it from public view.`,
+                  }}
                   onClick={async () => {
                     await revokeApprovalRecipe(row.id);
                   }}
@@ -290,10 +299,17 @@ const RecipeList = () => {
                 onClose={() => removeId(ids.modalPrivate(row.id))}>
                 <ConfirmBox
                   isLoading={isLoading}
-                  variant={"error"}
-                  textSubmit="Confirm"
-                  textTitle={`Confirm private recipe ${row.name}`}
-                  textContent={`You're about to private recipe '${row.name}'. Are you sure?`}
+                  variant="error"
+                  notificationContent={{
+                    title: "Recipe Status Update",
+                    message: `Your recipe "${row.name}" has been set to private by an admin.`,
+                    receiver: row.createdBy.id,
+                  }}
+                  boxContent={{
+                    textSubmit: "Confirm",
+                    textTitle: `Confirm Private Recipe`,
+                    textContent: `Are you sure you want to set the recipe "${row.name}" to private? This will restrict its visibility.`,
+                  }}
                   onClick={async () => {
                     await privateRecipe(row.id);
                   }}

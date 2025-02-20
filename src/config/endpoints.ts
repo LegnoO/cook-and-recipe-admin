@@ -49,6 +49,8 @@ export const recipeEndpoints = {
   queryRecipe: (params: string) => `/recipe/admin/find?${params}`,
   queryRecipePending: (params: string) =>
     `/recipe/admin/find/pending?${params}`,
+  queryFeedback: (id: string, params: string) =>
+    `/recipe/admin/find/${id}/feedbacks?${params}`,
   getDetailRecipe: (recipeId: string) => `/recipe/admin/find/${recipeId}`,
   toggleRecipeRequest: (recipeId: string) =>
     `/recipe/admin/find/pending/${recipeId}/approve-or-reject`,

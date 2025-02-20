@@ -34,10 +34,10 @@ import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
 // }));
 
 const Wrapper = styled(Box)(({ theme }) => ({
-  marginTop: "1.5rem",
   alignSelf: "center",
   maxWidth: "400px",
   width: "100%",
+  marginBottom: "2rem",
   [theme.breakpoints.down("xs")]: {
     maxWidth: "100%",
   },

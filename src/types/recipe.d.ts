@@ -47,6 +47,23 @@ interface Instructions {
 }
 [];
 
+interface Feedback {
+  userId: string;
+  feedbackDate: Date;
+  comment: string;
+  rating: number;
+  user: {
+    id: string;
+    avatar: string;
+    fullName: string;
+    email: string;
+  };
+}
+
+interface FeedbackResponse {
+  data: Feedback[];
+}
+
 interface RecipeDetail {
   id: string;
   name: string;
@@ -70,3 +87,7 @@ interface RecipeDetail {
   };
   approvalBy?: ChefUserInfo;
 }
+
+type FilterFeedback = {
+  fullName?: string;
+};

@@ -18,6 +18,14 @@ export async function queryRecipePending(params: string) {
   return response.data;
 }
 
+export async function queryFeedback(id: string, params: string) {
+  const response = await AxiosInstance.get<FeedbackResponse>(
+    recipeEndpoints.queryFeedback(id, params),
+  );
+
+  return response.data;
+}
+
 export async function getDetailRecipe(recipeId: string) {
   const response = await AxiosInstance.get<any>(
     recipeEndpoints.getDetailRecipe(recipeId),

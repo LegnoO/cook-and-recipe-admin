@@ -270,11 +270,14 @@ const ListChefPending = () => {
                 open={activeIds.includes(ids.modalConfirm(row.id))}
                 onClose={() => removeId(ids.modalConfirm(row.id))}>
                 <ConfirmBox
+                  boxContent={{
+                    textSubmit:
+                      row.status === "banned" ? "Yes, Unban!" : "Yes, Ban!",
+                    textTitle: `${row.status === "banned" ? "Unban" : "Ban"} Confirmation`,
+                    textContent: `Are you sure you want to ${row.status === "banned" ? "unban" : "ban"} '${row.userInfo.fullName}'? This action ${row.status === "banned" ? "will restore their access." : "will restrict their access."}`,
+                  }}
                   isLoading={isLoading}
                   variant={row.status === "banned" ? "success" : "error"}
-                  textSubmit={`Yes, ${row.status === "banned" ? "Unban" : "Ban"} !`}
-                  textTitle={`Confirm ${row.status === "banned" ? "Unban" : "Ban"} ${row.userInfo.fullName}`}
-                  textContent={`You're about to ${row.status === "banned" ? "Unban" : "Ban"} user '${row.userInfo.fullName}'. Are you sure?`}
                   onClick={async () => {
                     await handleBanChef(row);
                   }}

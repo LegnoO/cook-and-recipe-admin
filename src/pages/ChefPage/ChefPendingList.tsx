@@ -272,14 +272,14 @@ const ChefPendingList = () => {
                   isLoading={isLoading}
                   variant="warning"
                   notificationContent={{
-                    title: "test title",
-                    message: "test message",
+                    title: "Chef Application Rejected",
+                    message: `Your application to become a chef has been rejected.`,
                     receiver: row.userInfo.id,
                   }}
                   boxContent={{
-                    textSubmit: "Confirm",
-                    textTitle: `Confirm reject ${row.userInfo.fullName}`,
-                    textContent: `You're about to reject user '${row.userInfo.fullName}' as a chef. Are you sure?`,
+                    textSubmit: "Reject",
+                    textTitle: `Reject Chef Application`,
+                    textContent: `Are you sure you want to reject '${row.userInfo.fullName}' from becoming a chef? This action cannot be undone.`,
                   }}
                   onClick={async () => {
                     await handleApproveOrRejectChef(row.id, false);
@@ -311,14 +311,14 @@ const ChefPendingList = () => {
                   isLoading={isLoading}
                   variant="info"
                   notificationContent={{
-                    title: "test title",
-                    message: "test message",
+                    title: "Chef Application Approved",
+                    message: `Congratulations! Your application to become a chef has been approved.`,
                     receiver: row.userInfo.id,
                   }}
                   boxContent={{
-                    textSubmit: "Confirm",
-                    textTitle: `Confirm approve ${row.userInfo.fullName}`,
-                    textContent: `You're about to approve user '${row.userInfo.fullName}' as a chef. Are you sure?`,
+                    textSubmit: "Approve",
+                    textTitle: `Approve Chef Application`,
+                    textContent: `Are you sure you want to approve '${row.userInfo.fullName}' as a chef? This action will grant them chef privileges.`,
                   }}
                   onClick={async () => {
                     await handleApproveOrRejectChef(row.id, true);
