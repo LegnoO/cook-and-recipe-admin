@@ -32,6 +32,7 @@ import RecipeDetail from "./RecipeDetail";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -119,6 +120,29 @@ const RecipeList = () => {
       name,
     }));
   }, 300);
+
+
+  async function handleRevokeApprovalRecipe(id:string) {
+    const toastLoading = toast.loading("Loading...");
+    try {
+      await revokeApprovalRecipe(id);
+      handleCancel(ids.modalRevoke(id))
+    } finally {
+        toast.dismiss(toastLoading);
+    }
+  }
+
+  async function handlePrivateRecipe(id:string){
+    const toastLoading = toast.loading("Loading...");
+    try {
+    await privateRecipe(id);
+    handleCancel(ids.modalPrivate(id))
+    finally {
+      toast.dismiss(toastLoading);
+  }
+ }
+
+
 
   function handleResetFilter() {
     if (searchInputRef.current) searchInputRef.current.value = "";
@@ -269,16 +293,15 @@ const RecipeList = () => {
                   notificationContent={{
                     title: "Recipe Approval Revoked",
                     message: `Your recipe "${row.name}" has been revoked by an admin and is no longer public.`,
-                    receiver: row.createdBy.id,
+                    receiver: row.createdBy.userInfo.id,
                   }}
                   boxContent={{
                     textSubmit: "Confirm",
                     textTitle: `Confirm Revoking Recipe`,
                     textContent: `Are you sure you want to revoke the approval of the recipe "${row.name}"? This action will remove it from public view.`,
                   }}
-                  onClick={async () => {
-                    await revokeApprovalRecipe(row.id);
-                  }}
+
+                  onClick={()=> handleRevokeApprovalRecipe(row.id)}
                   onClose={() => handleCancel(ids.modalRevoke(row.id))}
                 />
               </Modal>
@@ -303,16 +326,14 @@ const RecipeList = () => {
                   notificationContent={{
                     title: "Recipe Status Update",
                     message: `Your recipe "${row.name}" has been set to private by an admin.`,
-                    receiver: row.createdBy.id,
+                    receiver: row.createdBy.userInfo.id,
                   }}
                   boxContent={{
                     textSubmit: "Confirm",
                     textTitle: `Confirm Private Recipe`,
                     textContent: `Are you sure you want to set the recipe "${row.name}" to private? This will restrict its visibility.`,
                   }}
-                  onClick={async () => {
-                    await privateRecipe(row.id);
-                  }}
+                  onClick={() => handlePrivateRecipe(row.id)}
                   onClose={() => handleCancel(ids.modalPrivate(row.id))}
                 />
               </Modal>
