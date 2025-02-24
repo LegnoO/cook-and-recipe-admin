@@ -116,6 +116,16 @@ const UserDropdown = () => {
         <Divider sx={{ my: "0.25rem" }} />
         <MenuItem
           className="menu-item"
+          onClick={() => handleDropdownClose("/dashboard")}>
+          <MenuItemContent className="menu-item-content">
+            <Icon icon="iconoir:mail-open" />
+            <Typography sx={{ fontSize: 15 }} variant="subtitle2">
+              Dashboard
+            </Typography>
+          </MenuItemContent>
+        </MenuItem>
+        <MenuItem
+          className="menu-item"
           onClick={() => handleDropdownClose("/profile")}>
           <MenuItemContent className="menu-item-content">
             <Icon icon="tabler:user-check" />
@@ -124,16 +134,7 @@ const UserDropdown = () => {
             </Typography>
           </MenuItemContent>
         </MenuItem>
-        <MenuItem
-          className="menu-item"
-          onClick={() => handleDropdownClose("/settings")}>
-          <MenuItemContent className="menu-item-content">
-            <Icon icon="tabler:settings" />
-            <Typography sx={{ fontSize: 15 }} variant="subtitle2">
-              Settings
-            </Typography>
-          </MenuItemContent>
-        </MenuItem>
+
         <Divider sx={{ my: "0.25rem" }} />
         <Box
           sx={{
