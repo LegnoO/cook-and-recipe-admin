@@ -296,9 +296,7 @@ const RecipePendingList = () => {
                       textTitle: `Confirm rejection of recipe ${row.name}`,
                       textContent: `You're about to reject the recipe '${row.name}'. This action will remove it from the review queue. Are you sure you want to proceed?`,
                     }}
-                    onClick={async () => {
-                      await handleApproveOrRejectRecipe(row.id, false);
-                    }}
+                    onClick={() => handleApproveOrRejectRecipe(row.id, false)}
                     onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
                   />
                 </Modal>
@@ -340,9 +338,7 @@ const RecipePendingList = () => {
                       textTitle: `Confirm approval of recipe ${row.name}`,
                       textContent: `You're about to approve the recipe '${row.name}'. This action will make it live for users to see. Are you sure you want to proceed?`,
                     }}
-                    onClick={async () => {
-                      await handleApproveOrRejectRecipe(row.id, true);
-                    }}
+                    onClick={() => handleApproveOrRejectRecipe(row.id, true)}
                     onClose={() =>
                       handleCancel(ids.modalConfirmApprove(row.id))
                     }

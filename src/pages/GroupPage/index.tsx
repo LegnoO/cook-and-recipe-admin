@@ -128,6 +128,15 @@ const GroupList = () => {
     removeId(ids.modalAction(id));
   }
 
+  async function handleDeleteGroup(id: string) {
+    try {
+      await deleteGroup(id);
+      refetch();
+    } catch (error) {
+      toast.error(handleAxiosError(error));
+    }
+  }
+
   async function handleChangeStatus(groupId: string) {
     try {
       addId(`loading-switch-${groupId}`);
@@ -395,6 +404,7 @@ const GroupList = () => {
                       open={activeIds.includes(ids.modalDeleteGroup(row.id))}
                       onClose={() => removeId(ids.modalDeleteGroup(row.id))}>
                       <ConfirmBox
+                        hideReason
                         isLoading={isLoading}
                         variant="error"
                         boxContent={{
@@ -402,9 +412,7 @@ const GroupList = () => {
                           textTitle: `Confirm delete group ${row.name}`,
                           textContent: `You're about to delete group '${row.name}'. Are you sure?`,
                         }}
-                        onClick={async () => {
-                          await deleteGroup(row.id);
-                        }}
+                        onClick={() => handleDeleteGroup(row.id)}
                         onClose={() =>
                           handleCancel(ids.modalDeleteGroup(row.id))
                         }

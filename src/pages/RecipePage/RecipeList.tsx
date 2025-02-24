@@ -32,7 +32,6 @@ import RecipeDetail from "./RecipeDetail";
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
-import { toast } from "react-toastify";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -121,28 +120,17 @@ const RecipeList = () => {
     }));
   }, 300);
 
-
-  async function handleRevokeApprovalRecipe(id:string) {
-    const toastLoading = toast.loading("Loading...");
-    try {
-      await revokeApprovalRecipe(id);
-      handleCancel(ids.modalRevoke(id))
-    } finally {
-        toast.dismiss(toastLoading);
-    }
+  async function handleRevokeApprovalRecipe(id: string) {
+    await revokeApprovalRecipe(id);
+    refetch();
+    handleCancel(ids.modalRevoke(id));
   }
 
-  async function handlePrivateRecipe(id:string){
-    const toastLoading = toast.loading("Loading...");
-    try {
+  async function handlePrivateRecipe(id: string) {
     await privateRecipe(id);
-    handleCancel(ids.modalPrivate(id))
-    finally {
-      toast.dismiss(toastLoading);
+    refetch();
+    handleCancel(ids.modalPrivate(id));
   }
- }
-
-
 
   function handleResetFilter() {
     if (searchInputRef.current) searchInputRef.current.value = "";
@@ -300,8 +288,7 @@ const RecipeList = () => {
                     textTitle: `Confirm Revoking Recipe`,
                     textContent: `Are you sure you want to revoke the approval of the recipe "${row.name}"? This action will remove it from public view.`,
                   }}
-
-                  onClick={()=> handleRevokeApprovalRecipe(row.id)}
+                  onClick={() => handleRevokeApprovalRecipe(row.id)}
                   onClose={() => handleCancel(ids.modalRevoke(row.id))}
                 />
               </Modal>
@@ -325,7 +312,7 @@ const RecipeList = () => {
                   variant="error"
                   notificationContent={{
                     title: "Recipe Status Update",
-                    message: `Your recipe "${row.name}" has been set to private by an admin.`,
+                    message: `Your recipe ${row.name} has been set to private by an admin.`,
                     receiver: row.createdBy.userInfo.id,
                   }}
                   boxContent={{

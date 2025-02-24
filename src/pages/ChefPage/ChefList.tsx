@@ -150,7 +150,6 @@ const ListChefPending = () => {
 
   async function handleBanChef(row: Chef) {
     setLoading(true);
-    const toastLoading = toast.loading("Loading...");
     try {
       const action = row.status === "banned" ? activeChef : disableChef;
       await action(`${row.id}`);
@@ -162,7 +161,6 @@ const ListChefPending = () => {
     } finally {
       handleCancel(ids.modalConfirm(row.id));
       setLoading(false);
-      toast.dismiss(toastLoading);
     }
   }
 
@@ -189,8 +187,8 @@ const ListChefPending = () => {
     { title: "Name", sortName: "fullName" },
     { title: "Level", sortName: "level" },
     { title: "Description", sortName: "description" },
-    { title: "Status", sortName: "status" },
     { title: "Started Date", sortName: "startedDate" },
+    { title: "Status", sortName: "status" },
     { title: "", sortName: "" },
   ];
 
@@ -270,6 +268,7 @@ const ListChefPending = () => {
                 open={activeIds.includes(ids.modalConfirm(row.id))}
                 onClose={() => removeId(ids.modalConfirm(row.id))}>
                 <ConfirmBox
+                  hideReason
                   boxContent={{
                     textSubmit:
                       row.status === "banned" ? "Yes, Unban!" : "Yes, Ban!",
@@ -278,9 +277,7 @@ const ListChefPending = () => {
                   }}
                   isLoading={isLoading}
                   variant={row.status === "banned" ? "success" : "error"}
-                  onClick={async () => {
-                    await handleBanChef(row);
-                  }}
+                  onClick={() => handleBanChef(row)}
                   onClose={() => handleCancel(ids.modalConfirm(row.id))}
                 />
               </Modal>

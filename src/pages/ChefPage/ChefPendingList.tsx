@@ -281,9 +281,7 @@ const ChefPendingList = () => {
                     textTitle: `Reject Chef Application`,
                     textContent: `Are you sure you want to reject '${row.userInfo.fullName}' from becoming a chef? This action cannot be undone.`,
                   }}
-                  onClick={async () => {
-                    await handleApproveOrRejectChef(row.id, false);
-                  }}
+                  onClick={() => handleApproveOrRejectChef(row.id, false)}
                   onClose={() => handleCancel(ids.modalConfirmReject(row.id))}
                 />
               </Modal>
@@ -320,9 +318,7 @@ const ChefPendingList = () => {
                     textTitle: `Approve Chef Application`,
                     textContent: `Are you sure you want to approve '${row.userInfo.fullName}' as a chef? This action will grant them chef privileges.`,
                   }}
-                  onClick={async () => {
-                    await handleApproveOrRejectChef(row.id, true);
-                  }}
+                  onClick={() => handleApproveOrRejectChef(row.id, true)}
                   onClose={() => handleCancel(ids.modalConfirmApprove(row.id))}
                 />
               </Modal>

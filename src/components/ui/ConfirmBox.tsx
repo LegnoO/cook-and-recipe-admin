@@ -1,11 +1,20 @@
+// ** React Imports
+import { useState } from "react";
+
 // ** Mui Imports
 import { Typography, Stack, Button } from "@mui/material";
 
 // ** Components
 import { Icon, TextField } from "@/components/ui";
 
+// ** Library Imports
+import { toast } from "react-toastify";
+
 // ** Services
 import { pushNotifySpecific } from "@/services/notifyService";
+
+// ** Utils
+import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Types
 type Props = {
@@ -22,10 +31,11 @@ type Props = {
     textContent: string;
     textTitle: string;
   };
-
   isLoading?: boolean;
+  hideReason?: boolean;
   onClose?: () => void;
-  onClick: () => void;
+  onClick: () => Promise<void>;
+  setReason?: (reason: string) => void;
 };
 
 const ConfirmBox = ({
@@ -34,8 +44,11 @@ const ConfirmBox = ({
   isLoading,
   boxContent,
   notificationContent,
+  hideReason,
   variant = "success",
 }: Props) => {
+  const [reason, setReason] = useState(notificationContent?.message || "");
+  const [error, setError] = useState(false);
   const {
     textCancel = "Cancel",
     textSubmit,
@@ -49,6 +62,34 @@ const ConfirmBox = ({
     info: "fluent:info-16-regular",
     warning: "lineicons:warning",
   };
+
+  async function onSubmit() {
+    if (!hideReason) {
+      if (!reason) {
+        setError(true);
+        return;
+      }
+    } else {
+      setError(false);
+      const toastLoading = toast.loading("Loading...");
+
+      try {
+        await onClick();
+        if (notificationContent) {
+          const { title, message, receiver } = notificationContent;
+          await pushNotifySpecific({
+            title,
+            message: reason || message,
+            receiver,
+          });
+        }
+      } catch (error) {
+        toast.error(handleAxiosError(error));
+      } finally {
+        toast.dismiss(toastLoading);
+      }
+    }
+  }
 
   return (
     <Stack
@@ -92,14 +133,29 @@ const ConfirmBox = ({
         {textContent}
       </Typography>
 
-      <TextField
-        label="Enter your reason"
-        multiline
-        rows={2}
-        variant="outlined"
-        fullWidth
-      />
-
+      {!hideReason && (
+        <TextField
+          label="Enter your reason"
+          multiline
+          rows={2}
+          variant="outlined"
+          defaultValue={reason}
+          fullWidth
+          onChange={(event) => {
+            setReason(event.target.value);
+          }}
+        />
+      )}
+      {error && !hideReason && (
+        <Typography
+          sx={{
+            width: "100%",
+            textAlign: "left",
+            color: (theme) => theme.palette.error.main,
+          }}>
+          Required
+        </Typography>
+      )}
       <Stack
         sx={{
           mt: "1.5rem",
@@ -117,13 +173,7 @@ const ConfirmBox = ({
         </Button>
         <Button
           disabled={isLoading}
-          onClick={async () => {
-            onClick();
-            if (notificationContent) {
-              const { title, message, receiver } = notificationContent;
-              await pushNotifySpecific({ title, message, receiver });
-            }
-          }}
+          onClick={onSubmit}
           sx={{ fontWeight: 500 }}
           variant="contained"
           color={variant}>

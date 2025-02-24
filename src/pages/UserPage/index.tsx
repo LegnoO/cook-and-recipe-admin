@@ -21,10 +21,12 @@ import {
   Paper,
   Select,
   Switch,
+  ConfirmBox,
 } from "@/components/ui";
 import { TableHead, TableBody, Pagination } from "@/components";
 import { SearchInput } from "@/components/fields";
 import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
+import UserDetail from "./UserDetail";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -50,7 +52,7 @@ import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import { queryUsers, toggleStatusUser } from "@/services/userService";
-import UserDetail from "./UserDetail";
+import { disableChef, activeChef } from "@/services/chefService";
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -88,6 +90,7 @@ const UserPage = () => {
   const ids = {
     loadingSwitch: (id: string) => `loading-switch-${id}`,
     modalDetail: (id: string) => `modal-update-user-${id}`,
+    modalConfirm: (id: string) => `modal-confirm-${id}`,
     newEmployeeModal: "new-employee-modal",
   };
 
@@ -156,7 +159,7 @@ const UserPage = () => {
       ),
     },
     {
-      render: ({ id }) => (
+      render: ({ id, status, fullName }) => (
         <Stack sx={{ flexDirection: "row" }}>
           <Tooltip title="View details">
             <IconButton
@@ -180,6 +183,44 @@ const UserPage = () => {
               <Icon icon="mdi:bell-outline" />
             </IconButton>
           </Tooltip>
+          <Tooltip
+            arrow
+            title={status ? "Ban User" : "Unban User"}
+            disableHoverListener={activeIds.includes(ids.modalConfirm(id))}>
+            <IconButton
+              sx={{
+                "& svg": {
+                  color: (theme) =>
+                    status
+                      ? theme.palette.error.main
+                      : theme.palette.success.main,
+                },
+              }}
+              onClick={() => {
+                addId(ids.modalConfirm(id));
+              }}
+              disableRipple>
+              <Icon
+                icon={status ? "basil:user-block-solid" : "mdi:user-unlocked"}
+              />
+              <Modal
+                open={activeIds.includes(ids.modalConfirm(id))}
+                onClose={() => removeId(ids.modalConfirm(id))}>
+                <ConfirmBox
+                  hideReason
+                  boxContent={{
+                    textSubmit: status ? "Yes, Ban!" : "Yes, Unban!",
+                    textTitle: `${status ? "Ban" : "Unban"} Confirmation`,
+                    textContent: `Are you sure you want to ${status ? "ban" : "unban"} '${fullName}'? This action ${status ? "will restrict their access." : "will restore their access."}`,
+                  }}
+                  isLoading={isLoading}
+                  variant={status ? "error" : "success"}
+                  onClick={() => handleBanChef({ status, id })}
+                  onClose={() => handleCancel(ids.modalConfirm(id))}
+                />
+              </Modal>
+            </IconButton>
+          </Tooltip>
         </Stack>
       ),
     },
@@ -187,6 +228,32 @@ const UserPage = () => {
 
   function handleViewNotification(userId: string) {
     navigate("/notification", { state: { receiverId: userId } });
+  }
+
+  async function handleBanChef({
+    status,
+    id,
+  }: {
+    status: boolean;
+    id: string;
+  }) {
+    console.log({
+      status,
+      id,
+    });
+    setLoading(true);
+    try {
+      const action = status ? activeChef : disableChef;
+      await action(`${id}`);
+      toast.success("Banned successfully");
+      refetch();
+    } catch (error) {
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
+      handleCancel(ids.modalConfirm(id));
+      setLoading(false);
+    }
   }
 
   function handleCancel(modalId: string) {

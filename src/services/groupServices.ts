@@ -69,7 +69,9 @@ export async function getDetailGroup(groupId: string) {
 }
 
 export async function deleteGroup(groupId: string) {
-  const response = await AxiosInstance.get(groupEndpoints.deleteGroup(groupId));
+  const response = await AxiosInstance.delete(
+    groupEndpoints.deleteGroup(groupId),
+  );
 
   return response.data;
 }
