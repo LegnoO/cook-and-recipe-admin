@@ -46,13 +46,16 @@ export async function createCategory(
 
 export async function updateCategory(
   id: string,
-  category: CategoryUpdate,
+  formData: FormData,
   controller?: AbortController,
 ) {
   const response = await AxiosInstance.put(
     categoryEndpoints.updateCategory(id),
-    category,
+    formData,
     {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
       signal: controller?.signal,
     },
   );

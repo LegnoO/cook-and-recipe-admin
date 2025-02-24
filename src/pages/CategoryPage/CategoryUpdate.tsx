@@ -8,10 +8,18 @@ import {
 } from "react";
 
 // ** Mui Imports
-import { Stack, Typography, Box, IconButton, Button } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Box,
+  IconButton,
+  Button,
+  Avatar,
+} from "@mui/material";
 
 // ** Components
 import { ModalLoading, Icon, TextField } from "@/components/ui";
+import { UploadImage } from "@/components";
 
 // ** Library Imports
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +33,11 @@ import { queryOptions } from "@/config/query-options";
 
 // ** Utils
 import { handleAxiosError } from "@/utils/errorHandler";
-import { handleToastMessages } from "@/utils/helpers";
+import {
+  createFormData,
+  handleToastMessages,
+  hexToRGBA,
+} from "@/utils/helpers";
 
 // ** Types
 type Props = {
@@ -47,16 +59,29 @@ const CategoryUpdate = ({
     queryFn: () => getCategoryDetail(categoryId),
     ...queryOptions,
   });
-
+  const [image, setImage] = useState<{
+    file: File | null;
+    url: string;
+  }>({ file: null, url: "" });
   const [isLoading, setLoading] = useState(false);
   const [category, setCategory] = useState<Partial<CategoryUpdate>>();
 
   function handleChangeCategory(
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | File,
     field: keyof CategoryUpdate,
   ) {
-    const value = event.target.value;
-    if (value) setCategory((prev) => ({ ...prev, [field]: value }));
+    if (field === "image") {
+      console.log("1");
+      if (event instanceof File) {
+        console.log("2");
+        setCategory((prev) => ({ ...prev, [field]: event }));
+      }
+    } else {
+      if (!(event instanceof File)) {
+        const value = event.target.value;
+        if (value) setCategory((prev) => ({ ...prev, [field]: value }));
+      }
+    }
   }
 
   async function handleSubmit() {
@@ -66,16 +91,13 @@ const CategoryUpdate = ({
       setLoading(true);
       const newController = new AbortController();
       setController(newController);
-
-      await updateCategory(
-        categoryId,
-        category as CategoryUpdate,
-        newController,
-      );
-
-      toast.success("Updated successfully");
-      refetch();
-      closeMenu();
+      if (category) {
+        const formData = createFormData(category);
+        await updateCategory(categoryId, formData, newController);
+        toast.success("Updated successfully");
+        refetch();
+        closeMenu();
+      }
 
       setController(null);
     } catch (error) {
@@ -87,6 +109,14 @@ const CategoryUpdate = ({
     }
   }
 
+  function handleFileSelect(file: File, imageDataUrl: string) {
+    const newFileUpdated = { file, url: imageDataUrl };
+    if (newFileUpdated) {
+      setImage(newFileUpdated);
+      handleChangeCategory(newFileUpdated.file, "image");
+    }
+  }
+
   useEffect(() => {
     if (categoryData) {
       setCategory({
@@ -95,6 +125,7 @@ const CategoryUpdate = ({
       });
     }
   }, [categoryData]);
+  console.log("🚀 ~ categoryData:", categoryData);
 
   if (!categoryData) {
     return <ModalLoading title={title} closeMenu={closeMenu} />;
@@ -140,10 +171,64 @@ const CategoryUpdate = ({
         }}
         direction="column"
         spacing={2}>
+        <Box
+          className="upload-category-image"
+          sx={{
+            "&": {
+              alignSelf: "center",
+              height: 125,
+              width: 125,
+              mb: 3,
+              cursor: "pointer",
+              position: "relative",
+            },
+          }}>
+          <Avatar
+            alt={categoryData?.name || "no data"}
+            src={image.url ? image.url : categoryData?.imageUrl}
+            sx={{ height: "100%", width: "100%" }}
+          />
+          <UploadImage
+            type="react-node"
+            name="avatar"
+            onFileSelect={handleFileSelect}>
+            <Stack
+              direction="column"
+              justifyContent={"center"}
+              alignItems="center"
+              spacing={1}
+              className="upload-category-placeholder"
+              sx={{
+                "&": {
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  transition: "opacity 300ms",
+                  opacity: 0,
+                  borderRadius: "50%",
+                  height: "100%",
+                  width: "100%",
+                  willChange: "opacity",
+                  backgroundColor: (theme) =>
+                    hexToRGBA(theme.palette.customColors.backdrop, 0.5),
+                  color: (theme) =>
+                    theme.palette.customColors.backdropContrastText,
+                },
+                "&:hover": { opacity: 1 },
+              }}>
+              <Icon fontSize="1.35rem" icon={"ic:sharp-add-a-photo"} />
+              <Typography
+                sx={{ lineHeight: 1, color: "inherit" }}
+                variant="body2">
+                Update image
+              </Typography>
+            </Stack>
+          </UploadImage>
+        </Box>
         <Stack spacing={1} direction="row" alignItems={"center"}>
           <TextField
             onChange={(event) => handleChangeCategory(event, "name")}
-            value={category?.name}
+            value={category?.name || ""}
             fullWidth
             label="Name"
           />
@@ -151,7 +236,7 @@ const CategoryUpdate = ({
         <Stack spacing={1} direction="row" alignItems={"center"}>
           <TextField
             onChange={(event) => handleChangeCategory(event, "description")}
-            value={category?.description}
+            value={category?.description || ""}
             fullWidth
             multiline
             placeholder="test"

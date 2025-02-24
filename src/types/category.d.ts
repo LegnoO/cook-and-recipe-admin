@@ -21,6 +21,7 @@ type CategoryDetail = Category & { disabledBy?: ChefUserInfo };
 type CategoryUpdate = {
   name: string;
   description: string;
+  image?: File;
 };
 
 type ListCategory = {
