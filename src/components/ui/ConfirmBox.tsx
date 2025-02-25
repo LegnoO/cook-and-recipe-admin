@@ -68,26 +68,25 @@ const ConfirmBox = ({
       if (!reason) {
         setError(true);
         return;
+      } else {
+        setError(false);
+
+        try {
+          await onClick();
+          if (notificationContent) {
+            const { title, message, receiver } = notificationContent;
+            await pushNotifySpecific({
+              title,
+              message: reason || message,
+              receiver,
+            });
+          }
+        } catch (error) {
+          toast.error(handleAxiosError(error));
+        }
       }
     } else {
-      setError(false);
-      const toastLoading = toast.loading("Loading...");
-
-      try {
-        await onClick();
-        if (notificationContent) {
-          const { title, message, receiver } = notificationContent;
-          await pushNotifySpecific({
-            title,
-            message: reason || message,
-            receiver,
-          });
-        }
-      } catch (error) {
-        toast.error(handleAxiosError(error));
-      } finally {
-        toast.dismiss(toastLoading);
-      }
+      return;
     }
   }
 

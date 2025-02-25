@@ -14,6 +14,7 @@ type ChefFilterPending = Omit<ChefFilter, "chefStatus">;
 type Chef = {
   id: string;
   level: ChefLevel;
+  approvalDate: Date;
   startedDate: Date;
   description: string;
   status: ChefStatus;

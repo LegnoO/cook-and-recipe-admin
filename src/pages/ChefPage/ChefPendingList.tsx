@@ -141,6 +141,7 @@ const ChefPendingList = () => {
   }
 
   async function handleApproveOrRejectChef(chefId: string, status: boolean) {
+    console.log("🚀 ~ handleApproveOrRejectChef ~ ");
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
 
@@ -198,8 +199,8 @@ const ChefPendingList = () => {
     { title: "Name", sortName: "fullName" },
     { title: "Level", sortName: "level" },
     { title: "Description", sortName: "description" },
-    { title: "Status", sortName: "status" },
     { title: "Started Date", sortName: "startedDate" },
+    { title: "Status", sortName: "status" },
     { title: "", sortName: "" },
   ];
 
