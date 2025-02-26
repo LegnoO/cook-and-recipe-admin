@@ -142,17 +142,15 @@ const PermissionList = ({
       sx={{ minWidth: "300px", width: "100%", paddingRight: "0.75rem" }}
       direction="column"
       spacing={1.5}>
-      {groupName && (
-        <TextField
-          defaultValue={groupName}
-          fullWidth
-          placeholder="Enter Group Name"
-          label="Group Name"
-          error={Boolean(groupNameError)}
-          helperText={groupNameError}
-          onChange={handleChangeGroupName}
-        />
-      )}
+      <TextField
+        defaultValue={groupName}
+        fullWidth
+        placeholder="Enter Group Name"
+        label="Group Name"
+        error={Boolean(groupNameError)}
+        helperText={groupNameError}
+        onChange={handleChangeGroupName}
+      />
 
       <Stack
         sx={{

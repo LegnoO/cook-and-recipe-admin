@@ -129,11 +129,16 @@ const GroupList = () => {
   }
 
   async function handleDeleteGroup(id: string) {
+    const toastLoading = toast.loading("Loading...");
+
     try {
       await deleteGroup(id);
+      toast.success("Delete group successfully");
       refetch();
     } catch (error) {
       toast.error(handleAxiosError(error));
+    } finally {
+      toast.dismiss(toastLoading);
     }
   }
 
