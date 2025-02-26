@@ -7,7 +7,6 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 // ** Mui Imports
 import {
@@ -40,6 +39,7 @@ import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "react-toastify";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // ** Config
 import { queryOptions } from "@/config/query-options";
@@ -51,6 +51,7 @@ import MoveMember from "./MoveMember";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
+import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import {
@@ -70,6 +71,13 @@ import {
 } from "@/services/groupServices";
 
 const GroupList = () => {
+  const navigate = useNavigate();
+  const { can } = useAuth();
+
+  if (!can("group", "read")) {
+    navigate("/dashboard");
+  }
+
   const pageSizeOptions = ["10", "15", "20"];
   const defaultFilter: DefaultFilter = {
     index: 1,
@@ -80,7 +88,7 @@ const GroupList = () => {
     new URLSearchParams(stringifyObjectValues(defaultFilter)),
   );
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
+
   const { activeIds, addId, removeId } = useSettings();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -226,7 +234,7 @@ const GroupList = () => {
     { title: "Permissions", sortName: "" },
     { title: "Members", sortName: "members" },
     { title: "Created Date", sortName: "createdDate" },
-    { title: "Status", sortName: "status" },
+    can("group", "update") ? { title: "Status", sortName: "status" } : null,
     { title: "", sortName: "" },
   ];
 
@@ -258,6 +266,7 @@ const GroupList = () => {
       render: (row: Group) => formatDateTime(row.createdDate),
     },
     {
+      permission: can("group", "update"),
       render: (row: Group) => (
         <Switch
           color="success"
@@ -332,100 +341,128 @@ const GroupList = () => {
                   </Typography>
                 </Stack>
 
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2102,
-                  }}
-                  onClick={() => {
-                    addId(ids.modalUpdateGroup(row.id));
-                    handleCloseAction(row.id);
-                  }}>
-                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="heroicons:pencil-solid" />
-                    <Modal
-                      open={activeIds.includes(ids.modalUpdateGroup(row.id))}
-                      onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
-                      <GroupUpdate
-                        groupId={row.id}
-                        refetch={refetch}
-                        closeMenu={() =>
-                          handleCancel(ids.modalUpdateGroup(row.id))
-                        }
-                        setController={setController}
+                {can("group", "update") && (
+                  <Stack
+                    alignItems="center"
+                    direction="row"
+                    sx={{
+                      gap: "0.5rem",
+                      zIndex: 2102,
+                    }}
+                    onClick={() => {
+                      addId(ids.modalUpdateGroup(row.id));
+                      handleCloseAction(row.id);
+                    }}>
+                    <IconButton
+                      sx={{
+                        p: 0,
+                        m: 0,
+                      }}
+                      disableRipple>
+                      <Icon
+                        className="update-icon"
+                        icon="heroicons:pencil-solid"
                       />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="text.secondary">Edit group</Typography>
-                </Stack>
+                      <Modal
+                        open={activeIds.includes(ids.modalUpdateGroup(row.id))}
+                        onClose={() => removeId(ids.modalUpdateGroup(row.id))}>
+                        <GroupUpdate
+                          groupId={row.id}
+                          refetch={refetch}
+                          closeMenu={() =>
+                            handleCancel(ids.modalUpdateGroup(row.id))
+                          }
+                          setController={setController}
+                        />
+                      </Modal>
+                    </IconButton>
+                    <Typography color="text.secondary">Edit group</Typography>
+                  </Stack>
+                )}
 
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2103,
-                  }}
-                  onClick={() => {
-                    addId(ids.modalMoveMember(row.id));
-                    handleCloseAction(row.id);
-                  }}>
-                  <IconButton sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="mingcute:transfer-line" />
-                    <Modal
-                      open={activeIds.includes(ids.modalMoveMember(row.id))}
-                      onClose={() => removeId(ids.modalMoveMember(row.id))}>
-                      <MoveMember
-                        group={row}
-                        refetch={refetch}
-                        closeMenu={() =>
-                          handleCancel(ids.modalMoveMember(row.id))
-                        }
-                        setController={setController}
+                {can("group", "update") && (
+                  <Stack
+                    alignItems="center"
+                    direction="row"
+                    sx={{
+                      gap: "0.5rem",
+                      zIndex: 2103,
+                    }}
+                    onClick={() => {
+                      addId(ids.modalMoveMember(row.id));
+                      handleCloseAction(row.id);
+                    }}>
+                    <IconButton
+                      sx={{
+                        p: 0,
+                        m: 0,
+                      }}
+                      disableRipple>
+                      <Icon
+                        className="move-member-icon"
+                        icon="mingcute:transfer-line"
                       />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="text.secondary">
-                    Move All Member
-                  </Typography>
-                </Stack>
+                      <Modal
+                        open={activeIds.includes(ids.modalMoveMember(row.id))}
+                        onClose={() => removeId(ids.modalMoveMember(row.id))}>
+                        <MoveMember
+                          group={row}
+                          refetch={refetch}
+                          closeMenu={() =>
+                            handleCancel(ids.modalMoveMember(row.id))
+                          }
+                          setController={setController}
+                        />
+                      </Modal>
+                    </IconButton>
+                    <Typography color="text.secondary">
+                      Move All Member
+                    </Typography>
+                  </Stack>
+                )}
 
-                <Stack
-                  alignItems="center"
-                  direction="row"
-                  sx={{
-                    gap: "0.5rem",
-                    zIndex: 2103,
-                  }}
-                  onClick={() => {
-                    addId(ids.modalDeleteGroup(row.id));
-                    handleCloseAction(row.id);
-                  }}>
-                  <IconButton color="error" sx={{ p: 0, m: 0 }} disableRipple>
-                    <Icon icon="ion:trash-outline" />
-                    <Modal
-                      open={activeIds.includes(ids.modalDeleteGroup(row.id))}
-                      onClose={() => removeId(ids.modalDeleteGroup(row.id))}>
-                      <ConfirmBox
-                        hideReason
-                        isLoading={isLoading}
-                        variant="error"
-                        boxContent={{
-                          textSubmit: "Delete",
-                          textTitle: `Confirm delete group ${row.name}`,
-                          textContent: `You're about to delete group '${row.name}'. Are you sure?`,
-                        }}
-                        onClick={() => handleDeleteGroup(row.id)}
-                        onClose={() =>
-                          handleCancel(ids.modalDeleteGroup(row.id))
-                        }
-                      />
-                    </Modal>
-                  </IconButton>
-                  <Typography color="error">Delete Group</Typography>
-                </Stack>
+                {can("group", "delete") && (
+                  <Stack
+                    alignItems="center"
+                    direction="row"
+                    sx={{
+                      gap: "0.5rem",
+                      zIndex: 2103,
+                    }}
+                    onClick={() => {
+                      addId(ids.modalDeleteGroup(row.id));
+                      handleCloseAction(row.id);
+                    }}>
+                    <IconButton
+                      sx={{
+                        p: 0,
+                        m: 0,
+                      }}
+                      color="error"
+                      disableRipple>
+                      <Icon className="delete-icon" icon="ion:trash-outline" />
+                      <Modal
+                        open={activeIds.includes(ids.modalDeleteGroup(row.id))}
+                        onClose={() => removeId(ids.modalDeleteGroup(row.id))}>
+                        <ConfirmBox
+                          hideReason
+                          isLoading={isLoading}
+                          variant="error"
+                          boxContent={{
+                            textSubmit: "Delete",
+                            textTitle: `Confirm delete group ${row.name}`,
+                            textContent: `You're about to delete group '${row.name}'. Are you sure?`,
+                          }}
+                          onClick={() => handleDeleteGroup(row.id)}
+                          onClose={() =>
+                            handleCancel(ids.modalDeleteGroup(row.id))
+                          }
+                        />
+                      </Modal>
+                    </IconButton>
+                    <Typography color="error">Delete Group</Typography>
+                  </Stack>
+                )}
               </Stack>
             </Popover>
           </IconButton>
@@ -523,6 +560,7 @@ const GroupList = () => {
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Refresh
             </Button>
+
             <Button
               sx={{
                 height: 40,

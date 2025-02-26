@@ -81,14 +81,14 @@ export const verticalNavItems: IVerticalNavItemsType = [
     icon: "stash:user-group",
     path: "/employees",
     action: "read",
-    page: "user",
+    page: "permission",
   },
   {
     title: "Groups",
     icon: "ph:lock-key-light",
     path: "/groups",
     action: "read",
-    page: "user",
+    page: "group",
   },
   {
     sectionTitle: "System",

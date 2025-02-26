@@ -36,11 +36,19 @@ const TableBody = <T, V>({
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
         }}>
-        {bodyCells.map(({ align, render }, index) => (
-          <TableCell align={align} key={index}>
-            {render(row)}
-          </TableCell>
-        ))}
+        {bodyCells.map(({ align, render, permission }, index) => {
+          return permission === undefined ? (
+            <TableCell align={align} key={index}>
+              {render(row)}
+            </TableCell>
+          ) : (
+            permission && (
+              <TableCell align={align} key={index}>
+                {render(row)}
+              </TableCell>
+            )
+          );
+        })}
       </TableRow>
     ));
   };
