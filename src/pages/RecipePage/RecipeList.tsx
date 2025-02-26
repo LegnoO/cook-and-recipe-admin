@@ -30,6 +30,7 @@ import ProgressBarLoading from "@/components/ui/ProgressBarLoading";
 import RecipeDetail from "./RecipeDetail";
 
 // ** Library Imports
+import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -43,9 +44,11 @@ import useSettings from "@/hooks/useSettings";
 import {
   formatDateTime,
   getTruthyObject,
+  handleToastMessages,
   shallowCompareObject,
   stringifyObjectValues,
 } from "@/utils/helpers";
+import { handleAxiosError } from "@/utils/errorHandler";
 
 // ** Services
 import {
@@ -121,15 +124,33 @@ const RecipeList = () => {
   }, 300);
 
   async function handleRevokeApprovalRecipe(id: string) {
-    await revokeApprovalRecipe(id);
-    refetch();
-    handleCancel(ids.modalRevoke(id));
+    const toastLoading = toast.loading("Loading...");
+    try {
+      await revokeApprovalRecipe(id);
+      refetch();
+      toast.success("Revoke successfully");
+      handleCancel(ids.modalRevoke(id));
+    } catch (error) {
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
+      toast.dismiss(toastLoading);
+    }
   }
 
   async function handlePrivateRecipe(id: string) {
-    await privateRecipe(id);
-    refetch();
-    handleCancel(ids.modalPrivate(id));
+    const toastLoading = toast.loading("Loading...");
+    try {
+      await privateRecipe(id);
+      refetch();
+      toast.success("Private successfully");
+      handleCancel(ids.modalPrivate(id));
+    } catch (error) {
+      const errorMessage = handleAxiosError(error);
+      handleToastMessages(toast.error)(errorMessage);
+    } finally {
+      toast.dismiss(toastLoading);
+    }
   }
 
   function handleResetFilter() {
@@ -267,8 +288,14 @@ const RecipeList = () => {
             title={"Revoke Verification"}
             disableHoverListener={activeIds.includes(ids.modalRevoke(row.id))}>
             <IconButton
+              sx={{
+                ...(row.verifyStatus === "rejected" && {
+                  color: (theme) => theme.palette.action.disabled,
+                }),
+              }}
               onClick={() => {
-                addId(ids.modalRevoke(row.id));
+                if (row.verifyStatus !== "rejected")
+                  addId(ids.modalRevoke(row.id));
               }}
               disableRipple>
               <Icon icon={"icon-park-outline:undo"} />
@@ -296,11 +323,16 @@ const RecipeList = () => {
           </Tooltip>
           <Tooltip
             arrow
-            title={"Private Recipe"}
+            title="Private Recipe"
             disableHoverListener={activeIds.includes(ids.modalPrivate(row.id))}>
             <IconButton
+              sx={{
+                ...(!row.status && {
+                  color: (theme) => theme.palette.action.disabled,
+                }),
+              }}
               onClick={() => {
-                addId(ids.modalPrivate(row.id));
+                if (row.status) addId(ids.modalPrivate(row.id));
               }}
               disableRipple>
               <Icon icon={"material-symbols:lock-outline"} />

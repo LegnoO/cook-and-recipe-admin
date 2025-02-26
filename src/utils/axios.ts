@@ -53,7 +53,6 @@ AxiosInstance.interceptors.response.use(
       responseUrl !== "/auth/refresh" &&
       responseUrl !== "/auth/logout"
     ) {
-      console.log("lỗi");
       try {
         const newToken = await refreshInfo(
           localStorage.getItem("rememberMe")
@@ -63,7 +62,6 @@ AxiosInstance.interceptors.response.use(
         error.config.headers.Authorization = `Bearer ${newToken}`;
         return axios.request(error.config);
       } catch (error) {
-        console.log("error refresh fail");
         handleAxiosError(error);
         window.location.href = loginRoute;
       }

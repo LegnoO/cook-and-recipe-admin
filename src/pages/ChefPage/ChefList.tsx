@@ -150,6 +150,7 @@ const ListChefPending = () => {
 
   async function handleBanChef(row: Chef) {
     setLoading(true);
+    const toastLoading = toast.loading("Loading...");
     try {
       const action = row.status === "banned" ? activeChef : disableChef;
       await action(`${row.id}`);
@@ -161,6 +162,7 @@ const ListChefPending = () => {
     } finally {
       handleCancel(ids.modalConfirm(row.id));
       setLoading(false);
+      toast.dismiss(toastLoading);
     }
   }
 

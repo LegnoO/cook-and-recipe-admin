@@ -272,7 +272,6 @@ export function shallowCompareObject(
   obj1: Record<string, unknown>,
   obj2: Record<string, unknown>,
 ) {
-  console.log({ obj1, obj2 });
   return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
 

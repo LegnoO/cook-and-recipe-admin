@@ -63,30 +63,34 @@ const ConfirmBox = ({
     warning: "lineicons:warning",
   };
 
-  async function onSubmit() {
+  function onSubmit() {
+    async function onPushNotification() {
+      setError(false);
+
+      try {
+        await onClick();
+        if (notificationContent) {
+          const { title, message, receiver } = notificationContent;
+          await pushNotifySpecific({
+            title,
+            message: reason || message,
+            receiver,
+          });
+        }
+      } catch (error) {
+        toast.error(handleAxiosError(error));
+      }
+    }
+
     if (!hideReason) {
       if (!reason) {
         setError(true);
         return;
       } else {
-        setError(false);
-
-        try {
-          await onClick();
-          if (notificationContent) {
-            const { title, message, receiver } = notificationContent;
-            await pushNotifySpecific({
-              title,
-              message: reason || message,
-              receiver,
-            });
-          }
-        } catch (error) {
-          toast.error(handleAxiosError(error));
-        }
+        onPushNotification();
       }
     } else {
-      return;
+      onPushNotification();
     }
   }
 
