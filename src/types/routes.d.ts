@@ -3,7 +3,7 @@ interface Route {
   component?: JSX.Element;
   permission?: {
     page: string;
-    action: "read";
+    action: "read" | "pending" | "approve";
   };
   children?: Route[];
 }

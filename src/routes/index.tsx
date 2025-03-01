@@ -20,7 +20,7 @@ import BouncingDotsLoader from "@/components/ui/BouncingDotsLoader";
 import RouteGuard from "./RouteGuard";
 
 // ** Config
-import { homeRoute } from "@/config/url";
+// import { homeRoute } from "@/config/url";
 
 // ** App
 import App from "@/App";
@@ -49,7 +49,7 @@ const renderRoutes = (routes: Route[]) => {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<App />} errorElement={<Navigate to="/error" />}>
-      <Route index path="/" element={<Navigate to={homeRoute} />} />
+      {/* <Route index path="/" element={<Navigate to={homeRoute} />} /> */}
       <Route path="*" element={<Navigate to="/notfound" replace />} />
       <Route index path={"/notfound"} element={<NotFoundScreen />} />
       <Route element={<RouteGuard />}>

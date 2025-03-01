@@ -41,7 +41,6 @@ const NotifyDetail = ({ closeMenu, notifyId }: Props) => {
     sent: "success",
   };
 
-  console.log("🚀 ~ NotifyDetail ~ notifyData:", notification);
   return (
     <Box
       sx={{

@@ -141,7 +141,6 @@ const ChefPendingList = () => {
   }
 
   async function handleApproveOrRejectChef(chefId: string, status: boolean) {
-    console.log("🚀 ~ handleApproveOrRejectChef ~ ");
     setLoading(true);
     const toastLoading = toast.loading("Loading...");
 

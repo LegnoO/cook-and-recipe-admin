@@ -1,11 +1,10 @@
 // ** Library Imports
-import { Outlet, useLocation, useParams, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 // ** Hooks
 import useAuth from "@/hooks/useAuth";
 
 // ** Components
-import LoadingScreen from "@/components/layouts/LoadingScreen";
 import NotFoundScreen from "@/components/layouts/NotFoundScreen";
 
 // ** Config
@@ -16,9 +15,8 @@ import { loginRoute } from "@/config/url";
 import { extractPaths } from "@/utils/helpers";
 
 const RouteGuard = () => {
-  const { can, user, isLoading } = useAuth();
+  const { can, user } = useAuth();
   const { pathname } = useLocation();
-  const params = useParams();
   const navigate = useNavigate();
 
   function checkPermissionRoutes(route: Route) {
@@ -31,44 +29,53 @@ const RouteGuard = () => {
       : false;
 
     if (route.children) {
-      return hasPermission && route.children.every(checkPermissionRoutes);
+      return hasPermission && route.children.some(checkPermissionRoutes);
     }
 
     return hasPermission;
   }
 
-  const permissionPathnames = extractPaths(
-    protectedRoute.filter(checkPermissionRoutes),
-  );
+  function filterRoutes(routes: Route[]): Route[] {
+    return routes
+      .map((route) => {
+        const filteredChildren = route.children
+          ? filterRoutes(route.children)
+          : undefined;
+
+        if (!route.permission) {
+          return { ...route, children: filteredChildren };
+        }
+
+        if (
+          route.permission &&
+          can(route.permission.page, route.permission?.action)
+        ) {
+          return { ...route, children: filteredChildren };
+        }
+        return null;
+      })
+      .filter(Boolean) as Route[];
+  }
+
+  const permissionPathnames = extractPaths(filterRoutes(protectedRoute));
 
   const publicPathnames = extractPaths(
     publicRoute.filter(checkPermissionRoutes),
   );
 
   function matchPatternWithParams(pattern: string) {
-    const pathnameSegments = pathname.split("/").slice(1);
-    const patternSegments = pattern.split("/").slice(1);
+    if (!pattern) return false;
 
-    if (!Object.keys(params).length) return pathname === pattern;
-
-    if (patternSegments.length !== pathnameSegments.length) return false;
-
-    return patternSegments.every((seg, index) => {
-      if (seg.startsWith(":")) {
-        const paramKey = seg.slice(1);
-        return params[paramKey] === pathnameSegments[index];
-      }
-
-      return seg === pathnameSegments[index];
-    });
+    const regexPathPattern = new RegExp(
+      "^" + pattern.replace(/:\w+/g, "[^/]+") + "$",
+    );
+    return regexPathPattern.test(pathname);
   }
 
   const allowAccessPermissionRoute = [
     ...permissionPathnames,
     ...publicPathnames,
   ].some((pattern) => matchPatternWithParams(pattern));
-
-  if (isLoading) return <LoadingScreen />;
 
   if (!user && publicPathnames.includes(pathname)) return <Outlet />;
 

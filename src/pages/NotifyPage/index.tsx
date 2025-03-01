@@ -105,7 +105,6 @@ const NotifyList = () => {
       (searchParams.get("sortOrder") as SortOrder) || defaultFilter.sortOrder,
     total: Number(searchParams.get("total")),
   });
-  console.log("🚀 ~ NotifyList ~ filter:", filter);
 
   const {
     data: notifyData,
@@ -116,7 +115,6 @@ const NotifyList = () => {
     queryFn: () => queryNotify(searchParams.toString()),
     ...queryOptions,
   });
-  console.log({ notifyData });
 
   const { activeIds, addId, removeId } = useSettings();
   function updateFilter(updates: Partial<Filter<NotifyFilter>>) {
@@ -306,11 +304,7 @@ const NotifyList = () => {
                     if (filter.toDate) {
                       const toDate = new Date(filter.toDate);
                       const fromDate = new Date(date.toISOString());
-                      console.log({
-                        toDate: fromDate.getTime(),
-                        fromDate: toDate.getTime(),
-                        compare: fromDate.getTime() >= toDate.getTime(),
-                      });
+
                       if (fromDate.getTime() >= toDate.getTime()) {
                         updateFilter({
                           index: 1,

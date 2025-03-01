@@ -4,11 +4,11 @@ export const loginFormSchema = z.object({
   username: z
     .string()
     .min(2, "Username must be at least 2 characters long")
-    .max(255, "Username must be at most 255 characters long")
-    .regex(
-      /^[a-zA-Z0-9_-]+$/,
-      "Username can only contain letters, numbers, underscores, and hyphens",
-    ),
+    .max(255, "Username must be at most 255 characters long"),
+  // .regex(
+  //   /^[a-zA-Z0-9_-]+$/,
+  //   "Username can only contain letters, numbers, underscores, and hyphens",
+  // ),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")

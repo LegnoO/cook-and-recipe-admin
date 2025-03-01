@@ -59,7 +59,6 @@ const Feedback = ({ recipeId }: Props) => {
   });
 
   const feedbackList = feedbackData?.data ?? [];
-  console.log("🚀 ~ Feedback ~ feedbackList:", feedbackList);
 
   function updateRating(value: string) {
     setFilter((prev) => ({

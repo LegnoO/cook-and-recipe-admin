@@ -30,7 +30,6 @@ export async function queryChefPending(params: string) {
 }
 
 export async function toggleChefRequest(chefId: string, status: boolean) {
-  console.log("🚀 ~ toggleChefRequest ~ ", { chefId, status });
   const response = await AxiosInstance.patch(
     chefEndpoints.toggleChefRequest(chefId),
     {

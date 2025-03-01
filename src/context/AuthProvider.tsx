@@ -21,7 +21,7 @@ import {
 } from "@/services/authService";
 
 // ** Config
-import { homeRoute, loginRoute } from "@/config/url";
+import { loginRoute } from "@/config/url";
 
 // ** Utils
 import { handleToastMessages } from "@/utils/helpers";
@@ -50,19 +50,32 @@ export const AuthContext = createContext<IAuthContext | undefined>(undefined);
 const AuthProvider = ({ children }: Props) => {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
-
   const navigate = useNavigate();
 
   const [user, setUser] = useState<User | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(true);
 
-  function redirectToHref() {
+  function redirectToHref(user: User) {
+    let href = "/recipes";
     const returnUrlHref = decodeURIComponent(window.location.search).split(
       "returnUrl=",
     )[1];
 
-    navigate(returnUrlHref || homeRoute);
+    if (user) {
+      const pageNames = user.permission.map((perm) => perm.page);
+      pageNames.forEach((pageName) => {
+        if (pageName === "dashboard") {
+          href = "/dashboard";
+        } else if (pageName === "recipes") {
+          href = "/recipes";
+        }
+      });
+    }
+
+    const url = returnUrlHref || href;
+
+    navigate(url);
   }
 
   async function fetchUserData() {
@@ -70,7 +83,7 @@ const AuthProvider = ({ children }: Props) => {
     const userPermission = await getUserPermission();
 
     const updatedUser = { ...userInfo, permission: userPermission };
-
+    redirectToHref(updatedUser);
     setUser(updatedUser);
   }
 
@@ -95,7 +108,6 @@ const AuthProvider = ({ children }: Props) => {
       try {
         if (accessTokenSession) {
           await fetchUserData();
-          redirectToHref();
         } else {
           await refreshUserData();
         }
@@ -116,7 +128,6 @@ const AuthProvider = ({ children }: Props) => {
       setLoading(true);
       await signIn(data);
       await fetchUserData();
-      redirectToHref();
     } catch (error) {
       const errorMessage = handleAxiosError(error);
       const showErrorMessages = handleToastMessages((error) =>
@@ -132,15 +143,11 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   async function handleLogout() {
-    try {
-      if (pathname !== loginRoute) {
-        await signOut();
-        navigate(loginRoute);
-        localStorage.removeItem("access-token");
-        setUser(null);
-      }
-    } catch (error) {
-      console.error(error);
+    if (pathname !== loginRoute) {
+      await signOut();
+      navigate(loginRoute);
+      localStorage.removeItem("access-token");
+      setUser(null);
     }
   }
 

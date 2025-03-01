@@ -16,7 +16,6 @@ import { Logo, BouncingDotsLoader, Form } from "@/components/ui";
 import ModeToggler from "@/components/ModeToggler";
 
 // ** Library Imports
-// import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,10 +27,6 @@ import useStorage from "@/hooks/useStorage";
 import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
 
 // ** Styled Components
-// const LinkStyled = styled(Link)(({ theme }) => ({
-//   textDecoration: "none",
-//   color: `${theme.palette.primary.main} !important`,
-// }));
 
 const Wrapper = styled(Box)(({ theme }) => ({
   alignSelf: "center",
@@ -61,8 +56,8 @@ const LoginPage = () => {
 
   const form = useForm<LoginFormValues>({
     defaultValues: {
-      username: "admin123",
-      password: "admin1234",
+      username: "",
+      password: "",
       rememberMe: rememberMe,
     },
     resolver: zodResolver(loginFormSchema),

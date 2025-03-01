@@ -42,6 +42,7 @@ import EmployeeDetail from "./EmployeeDetail";
 
 // ** Hooks
 import useSettings from "@/hooks/useSettings";
+import useAuth from "@/hooks/useAuth";
 
 // ** Utils
 import {
@@ -60,6 +61,7 @@ import {
 } from "@/services/employeeService";
 
 const EmployeePage = () => {
+  const { can } = useAuth();
   const { state } = useLocation();
 
   const pageSizeOptions = ["10", "15", "20"];
@@ -114,7 +116,11 @@ const EmployeePage = () => {
     { title: "Phone number", sortName: "phone" },
     { title: "Location", sortName: "address.number" },
     { title: "Group", sortName: "group" },
-    { title: "Status", sortName: "status" },
+    can("employee", "update")
+      ? { title: "Status", sortName: "status" }
+      : isLoading
+        ? { title: "", sortName: "" }
+        : null,
     { title: "", sortName: "" },
   ];
 
@@ -136,16 +142,18 @@ const EmployeePage = () => {
       render: ({ phone }) => phone,
     },
     {
-      render: ({ address }) => (
-        <Tooltip title={<Typography>{formatAddress(address)}</Typography>}>
-          <Typography>{formatAddress(address, 26)}</Typography>
-        </Tooltip>
-      ),
+      render: ({ address }) =>
+        address ? (
+          <Tooltip title={<Typography>{formatAddress(address)}</Typography>}>
+            <Typography>{formatAddress(address, 26)}</Typography>
+          </Tooltip>
+        ) : null,
     },
     {
       render: ({ group }) => group.name,
     },
     {
+      permission: can("employee", "update"),
       render: ({ id, status }) => (
         <Switch
           color="success"
@@ -171,21 +179,23 @@ const EmployeePage = () => {
               />
             </Modal>
           </IconButton>
-          <IconButton
-            disableRipple
-            onClick={() => addId(ids.modalUpdateEmployee(id))}>
-            <Icon icon="heroicons:pencil-solid" />
-            <Modal
-              open={activeIds.includes(ids.modalUpdateEmployee(id))}
-              onClose={() => removeId(ids.modalUpdateEmployee(id))}>
-              <EmployeeUpdate
-                employeeId={id}
-                refetch={refetch}
-                closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
-                setController={setController}
-              />
-            </Modal>
-          </IconButton>
+          {can("employee", "update") && (
+            <IconButton
+              disableRipple
+              onClick={() => addId(ids.modalUpdateEmployee(id))}>
+              <Icon icon="heroicons:pencil-solid" />
+              <Modal
+                open={activeIds.includes(ids.modalUpdateEmployee(id))}
+                onClose={() => removeId(ids.modalUpdateEmployee(id))}>
+                <EmployeeUpdate
+                  employeeId={id}
+                  refetch={refetch}
+                  closeMenu={() => handleCancel(ids.modalUpdateEmployee(id))}
+                  setController={setController}
+                />
+              </Modal>
+            </IconButton>
+          )}
         </Fragment>
       ),
     },
@@ -285,16 +295,18 @@ const EmployeePage = () => {
             }}
             spacing={3}
             alignItems="center">
-            <GroupSelect
-              value={!queryLoading && employees ? filter.groupId : undefined}
-              name="groupId-filter"
-              defaultOption="Select Group"
-              fullWidth
-              isLoading={queryLoading && !employees}
-              onChange={(event) =>
-                updateFilter({ index: 1, groupId: event.target.value })
-              }
-            />
+            {can("group", "read") ? (
+              <GroupSelect
+                value={!queryLoading && employees ? filter.groupId : undefined}
+                name="groupId-filter"
+                defaultOption="Select Group"
+                fullWidth
+                isLoading={queryLoading && !employees}
+                onChange={(event) =>
+                  updateFilter({ index: 1, groupId: event.target.value })
+                }
+              />
+            ) : null}
 
             <Select
               value={filter.gender || ""}
@@ -380,28 +392,30 @@ const EmployeePage = () => {
               startIcon={<Icon icon="carbon:filter-reset" />}>
               Refresh
             </Button>
-            <Button
-              sx={{
-                height: 40,
-                textWrap: "nowrap",
-                width: { xs: "100%", md: "max-content" },
-              }}
-              disabled={queryLoading && !employees}
-              disableRipple
-              variant="contained"
-              startIcon={<Icon icon="ic:sharp-plus" />}
-              onClick={() => addId(ids.newEmployeeModal)}>
-              Add New Employee
-              <Modal
-                open={activeIds.includes(ids.newEmployeeModal)}
-                onClose={() => removeId(ids.newEmployeeModal)}>
-                <EmployeeAdd
-                  refetch={refetch}
-                  closeMenu={() => handleCancel(ids.newEmployeeModal)}
-                  setController={setController}
-                />
-              </Modal>
-            </Button>
+            {can("employee", "create") && (
+              <Button
+                sx={{
+                  height: 40,
+                  textWrap: "nowrap",
+                  width: { xs: "100%", md: "max-content" },
+                }}
+                disabled={queryLoading && !employees}
+                disableRipple
+                variant="contained"
+                startIcon={<Icon icon="ic:sharp-plus" />}
+                onClick={() => addId(ids.newEmployeeModal)}>
+                Add New Employee
+                <Modal
+                  open={activeIds.includes(ids.newEmployeeModal)}
+                  onClose={() => removeId(ids.newEmployeeModal)}>
+                  <EmployeeAdd
+                    refetch={refetch}
+                    closeMenu={() => handleCancel(ids.newEmployeeModal)}
+                    setController={setController}
+                  />
+                </Modal>
+              </Button>
+            )}
           </Stack>
         </Stack>
       </Paper>

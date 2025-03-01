@@ -9,8 +9,12 @@ import {
   responsiveFontSizes,
 } from "@mui/material/styles";
 
+// ** Components
+import LoadingScreen from "@/components/layouts/LoadingScreen";
+
 // ** Hooks
 import { useMode } from "@/hooks/useMode";
+import useAuth from "@/hooks/useAuth";
 
 // ** Theme Override Imports
 import palette from "@/theme/palette";
@@ -25,6 +29,7 @@ type Props = {
 };
 
 const ThemeComponent = ({ children }: Props) => {
+  const { isLoading } = useAuth();
   const { mode } = useMode();
 
   let theme = createTheme({
@@ -51,7 +56,8 @@ const ThemeComponent = ({ children }: Props) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-      {children}
+
+      {isLoading ? <LoadingScreen /> : children}
     </ThemeProvider>
   );
 };

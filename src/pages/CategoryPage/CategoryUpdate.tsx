@@ -71,9 +71,7 @@ const CategoryUpdate = ({
     field: keyof CategoryUpdate,
   ) {
     if (field === "image") {
-      console.log("1");
       if (event instanceof File) {
-        console.log("2");
         setCategory((prev) => ({ ...prev, [field]: event }));
       }
     } else {
@@ -125,7 +123,6 @@ const CategoryUpdate = ({
       });
     }
   }, [categoryData]);
-  console.log("🚀 ~ categoryData:", categoryData);
 
   if (!categoryData) {
     return <ModalLoading title={title} closeMenu={closeMenu} />;

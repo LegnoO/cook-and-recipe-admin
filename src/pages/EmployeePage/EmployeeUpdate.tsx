@@ -203,7 +203,6 @@ const EmployeeUpdate = ({
 
   useEffect(() => {
     if (employeeDetail) {
-      console.log("🚀 ~ useEffect ~ employeeDetail:", employeeDetail);
       form.reset({
         ...employeeDetail,
         groupId: employeeDetail.group.id,
