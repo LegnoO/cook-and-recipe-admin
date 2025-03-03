@@ -58,7 +58,7 @@ const AuthProvider = ({ children }: Props) => {
 
   function redirectToHref(user: User) {
     let href = "/recipes";
-    const returnUrlHref = decodeURIComponent(window.location.search).split(
+    let returnUrlHref = decodeURIComponent(window.location.search).split(
       "returnUrl=",
     )[1];
 
@@ -71,6 +71,9 @@ const AuthProvider = ({ children }: Props) => {
           href = "/recipes";
         }
       });
+    }
+    if (returnUrlHref === "/") {
+      returnUrlHref = href;
     }
 
     const url = returnUrlHref || href;

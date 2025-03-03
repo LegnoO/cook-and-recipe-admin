@@ -4,7 +4,14 @@ import { useState, ChangeEvent } from "react";
 // ** Mui Imports
 import { Checkbox } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Box, CardContent, Typography, Button, Card } from "@mui/material";
+import {
+  Box,
+  Stack,
+  CardContent,
+  Typography,
+  Button,
+  Card,
+} from "@mui/material";
 import { Grid, InputAdornment, IconButton } from "@mui/material";
 import MuiFormControlLabel, {
   FormControlLabelProps,
@@ -22,6 +29,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // ** Hooks
 import useAuth from "@/hooks/useAuth";
 import useStorage from "@/hooks/useStorage";
+
+// ** Utils
+import { hexToRGBA } from "@/utils/helpers";
 
 // ** Schemas
 import { loginFormSchema, LoginFormValues } from "@/schemas/loginFormSchema";
@@ -104,6 +114,35 @@ const LoginPage = () => {
               variant="body1">
               Please sign-in to your account
             </Typography>
+
+            <Stack
+              sx={{
+                borderRadius: (theme) => `${theme.shape.borderRadius}px`,
+                backgroundColor: (theme) =>
+                  hexToRGBA(theme.palette.primary.main, 0.16),
+                padding: "0.75rem 1rem",
+                marginTop: "0.5rem",
+                width: "100%",
+                flexDirection: "column",
+                gap: "0.5rem",
+              }}>
+              <Typography
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "0.9rem",
+                }}
+                color="primary">
+                Admin: admin123 / admin1234
+              </Typography>
+              <Typography
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "0.9rem",
+                }}
+                color="primary">
+                Employee: johndoecnr / employee
+              </Typography>
+            </Stack>
           </Box>
 
           <Form
